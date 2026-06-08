@@ -53,13 +53,7 @@ Both targets can be combined:
 
     make all box
 
-Configuration is in config.mk. Override compiler and flags:
-
-    make CC=musl-gcc CFLAGS='-Os -static'
-
-Override install prefix:
-
-    make PREFIX=/usr install
+Configuration is in config.mk. You can override compile flags via make
 
 INSTALL
 =======
