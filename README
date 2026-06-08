@@ -118,6 +118,17 @@ pseudo: chroot, clear, cols, cron, flock, getty, halt, hostname,
 
 xsi:   mknod, passwd, su
 
+TODOs / PENDING RELEASE
+=======================
+sh - ported from freebsd
+awk - one true awk, with some stale PRs merged
+ip - new impl partially based on toybox's applet
+dhcpd - no idea where to start with this one
+init - situation/sctl rewrite
+pax - port minix's
+troff - neatroff
+man - unsure
+
 LICENSE
 =======
 
