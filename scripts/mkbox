@@ -1,7 +1,7 @@
 #!/bin/sh
 # mkbox - build aruu-box, the aruu multi-call binary
 #
-# expects CC CPPFLAGS CFLAGS LDFLAGS LDLIBS OBJCOPY from the environment;
+# expects CC CPPFLAGS CFLAGS LDFLAGS LDLIBS OBJCOPY YACC from the environment
 # defaults match config.mk but can be overridden
 #
 # run from the source root (the Makefile does this automatically)
@@ -14,6 +14,7 @@ set -e
 : "${LDFLAGS:=}"
 : "${LDLIBS:=-lcrypt -lresolv}"
 : "${OBJCOPY:=objcopy}"
+: "${YACC:=yacc}"
 
 ROOT=$(CDPATH= cd "$(dirname "$0")/.." && pwd)
 BDIR="${ROOT}/.box"
@@ -43,12 +44,15 @@ mkdir -p "${BDIR}"
 
 OBJS=""
 DECL_F="${BDIR}/decls.inc"
-ENT_F="${BDIR}/entries.inc"
 : > "${DECL_F}"
-: > "${ENT_F}"
+for _c in posix linux net pseudo xsi; do
+	: > "${BDIR}/entries_${_c}.inc"
+done
+unset _c
 
 alias_entry() {
-	printf '\t{ "%s", %s_main, "%s" },\n' "$1" "$2" "$3" >> "${ENT_F}"
+	printf '\t{ "%s", %s_main, "%s" },\n' "$1" "$2" "$3" \
+		>> "${BDIR}/entries_${3}.inc"
 }
 
 compile_tool() {
@@ -71,7 +75,8 @@ compile_tool() {
 	rm -f "${symf}"
 	OBJS="${OBJS} ${out}"
 	printf 'int %s_main(int, char **);\n' "${fn}" >> "${DECL_F}"
-	printf '\t{ "%s", %s_main, "%s" },\n' "${name}" "${fn}" "${catg}" >> "${ENT_F}"
+	printf '\t{ "%s", %s_main, "%s" },\n' "${name}" "${fn}" "${catg}" \
+		>> "${BDIR}/entries_${catg}.inc"
 }
 
 compile_make() {
@@ -104,7 +109,109 @@ compile_make() {
 
 	OBJS="${OBJS} ${combined}"
 	printf 'int make_main(int, char **);\n' >> "${DECL_F}"
-	printf '\t{ "make", make_main, "posix/make" },\n' >> "${ENT_F}"
+	printf '\t{ "make", make_main, "posix" },\n' >> "${BDIR}/entries_posix.inc"
+}
+
+compile_awk() {
+	adir="${ROOT}/cmd/posix/awk"
+	symf="${BDIR}/awk.syms"
+	awk_objs=""
+
+	printf 'mkbox: yacc awk/awkgram.y\n'
+	${YACC} -d -o "${adir}/awkgram.tab.c" "${adir}/awkgram.y" ||
+		die "yacc failed: awk/awkgram.y"
+
+	# maketab is a host code-generator, only needs CFLAGS, no CPPFLAGS
+	printf 'mkbox: cc awk/maketab\n'
+	${CC} ${CFLAGS} -o "${BDIR}/awk_maketab" "${adir}/maketab.c" ||
+		die "compile failed: awk/maketab.c"
+
+	printf 'mkbox: gen awk/proctab.c\n'
+	"${BDIR}/awk_maketab" "${adir}/awkgram.tab.h" > "${adir}/proctab.c" ||
+		die "maketab failed"
+
+	for s in b main parse proctab tran lib run lex math; do
+		out="${BDIR}/awk_${s}.o"
+		eval "${CC} ${CPPFLAGS} -I\"\$adir\" ${CFLAGS} -c \"\$adir/${s}.c\" -o \"\$out\"" ||
+			die "compile failed: awk/${s}.c"
+		awk_objs="${awk_objs} ${out}"
+	done
+	out="${BDIR}/awk_awkgram.tab.o"
+	eval "${CC} ${CPPFLAGS} -I\"\$adir\" ${CFLAGS} -c \"\$adir/awkgram.tab.c\" -o \"\$out\"" ||
+		die "compile failed: awk/awkgram.tab.c"
+	awk_objs="${awk_objs} ${out}"
+
+	combined="${BDIR}/awk_combined.o"
+	${LD:-ld} -r -o "${combined}" ${awk_objs} ||
+		die "ld -r failed: awk"
+
+	printf 'main awk_main\n' > "${symf}"
+	${OBJCOPY} --redefine-syms="${symf}" "${combined}" ||
+		die "objcopy failed: awk"
+	${OBJCOPY} --keep-global-symbol=awk_main "${combined}" ||
+		die "objcopy localize failed: awk"
+	rm -f "${symf}" ${awk_objs}
+
+	OBJS="${OBJS} ${combined}"
+	LDLIBS="${LDLIBS} -lm"
+	printf 'int awk_main(int, char **);\n' >> "${DECL_F}"
+	printf '\t{ "awk", awk_main, "posix" },\n' >> "${BDIR}/entries_posix.inc"
+}
+
+compile_sh() {
+	sdir="${ROOT}/cmd/posix/sh"
+	symf="${BDIR}/sh.syms"
+	sh_objs=""
+
+	# mknodes and mksyntax are host code-generators, not part of the shell
+	printf 'mkbox: cc sh/mknodes\n'
+	${CC} ${CFLAGS} -o "${BDIR}/sh_mknodes" "${sdir}/mknodes.c" ||
+		die "compile failed: sh/mknodes.c"
+
+	printf 'mkbox: cc sh/mksyntax\n'
+	${CC} ${CPPFLAGS} -I"${sdir}" ${CFLAGS} -o "${BDIR}/sh_mksyntax" "${sdir}/mksyntax.c" ||
+		die "compile failed: sh/mksyntax.c"
+
+	printf 'mkbox: gen sh/nodes.{c,h}\n'
+	(cd "${sdir}" && "${BDIR}/sh_mknodes" nodetypes nodes.c.pat) ||
+		die "mknodes failed"
+
+	printf 'mkbox: gen sh/syntax.{c,h}\n'
+	(cd "${sdir}" && "${BDIR}/sh_mksyntax") ||
+		die "mksyntax failed"
+
+	printf 'mkbox: gen sh/builtins.{c,h}\n'
+	(cd "${sdir}" && sh mkbuiltins .) ||
+		die "mkbuiltins failed"
+
+	printf 'mkbox: gen sh/token.h\n'
+	(cd "${sdir}" && sh mktokens) ||
+		die "mktokens failed"
+
+	for s in alias arith_yacc arith_yylex cd echo error eval exec \
+	          expand histedit input jobs kill mail main memalloc \
+	          miscbltin mystring options output parser printf redir \
+	          show test trap var builtins nodes syntax; do
+		out="${BDIR}/sh_${s}.o"
+		eval "${CC} ${CPPFLAGS} -DSHELL -I\"\$sdir\" ${CFLAGS} -c \"\$sdir/${s}.c\" -o \"\$out\"" ||
+			die "compile failed: sh/${s}.c"
+		sh_objs="${sh_objs} ${out}"
+	done
+
+	combined="${BDIR}/sh_combined.o"
+	${LD:-ld} -r -o "${combined}" ${sh_objs} ||
+		die "ld -r failed: sh"
+
+	printf 'main sh_main\n' > "${symf}"
+	${OBJCOPY} --redefine-syms="${symf}" "${combined}" ||
+		die "objcopy failed: sh"
+	${OBJCOPY} --keep-global-symbol=sh_main "${combined}" ||
+		die "objcopy localize failed: sh"
+	rm -f "${symf}" ${sh_objs}
+
+	OBJS="${OBJS} ${combined}"
+	printf 'int sh_main(int, char **);\n' >> "${DECL_F}"
+	printf '\t{ "sh", sh_main, "posix" },\n' >> "${BDIR}/entries_posix.inc"
 }
 
 process_dir() {
@@ -127,6 +234,8 @@ process_dir() {
 }
 
 process_dir "${ROOT}/cmd/posix" "posix"
+compile_awk
+compile_sh
 compile_make
 process_dir "${ROOT}/cmd/linux" "linux"
 process_dir "${ROOT}/cmd/net" "net"
@@ -166,7 +275,13 @@ struct Cmd {
 static struct Cmd cmds[] = {
 DISPATCH_STRUCT
 
-cat "${ENT_F}" >> "${DISP}"
+# sort each category alphabetically by tool name at build time;
+# entries have the form: \t{ "name", fn_main, "cat" },
+# splitting on " makes field 2 the tool name
+for _c in posix linux net pseudo xsi; do
+	sort -t'"' -k2,2 "${BDIR}/entries_${_c}.inc"
+done >> "${DISP}"
+unset _c
 
 cat >> "${DISP}" << 'DISPATCH_TAIL'
 	{ NULL, NULL, NULL }

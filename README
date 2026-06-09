@@ -29,7 +29,7 @@ REQUIREMENTS
 ============
 
   cc       POSIX.1-2008-compliant C compiler (pcc, etc)
-  make     POSIX make (pdpmake, gmake, bmake)
+  make     POSIX make (aruu make, pdpmake, gmake, bmake)
   ar       archive tool
   ranlib   archive indexer
   objcopy  for 'make box' only
@@ -84,44 +84,44 @@ SOURCE LAYOUT
 TOOLS
 =====
 
-posix: [, basename, cal, cat, chgrp, chmod, chown, cksum, cmp, comm,
-       cp, cut, date, dd, df, dirname, du, echo, ed, env, expand,
-       expr, false, find, fold, getconf, grep, head, id, join, kill,
-       link, ln, logger, logname, ls, mesg, mkdir, mkfifo, mv, nice,
-       nl, nohup, od, paste, pathchk, printf, ps, pwd, readlink,
-       renice, rm, rmdir, sed, sleep, sort, split, tail, tee, test,
-       time, touch, tr, true, tsort, tty, uname, unexpand, uniq,
-       unlink, uudecode, uuencode, wc, who, xargs
+posix:
+	[, awk, basename, cal, cat, chgrp, chmod, chown, cksum, cmp, comm, cp,
+	cut, date, dd, df, dirname, du, echo, ed, env, expand, expr, false,
+	find, fold, getconf, grep, head, id, join, kill, link, ln, logger,
+	logname, ls, make, mesg, mkdir, mkfifo, mv, nice, nl, nohup, od,
+	paste, pathchk, pax, printf, ps, pwd, readlink, renice, rm, rmdir,
+	sed, sh, sleep, sort, split, tail, tee, test, time, touch, tr, true,
+	tsort, tty, uname, unexpand, uniq, unlink, uudecode, uuencode, wc,
+	who, xargs
 
-posix/make: make
+linux:
+	blkdiscard, chvt, ctrlaltdel, dmesg, eject, fallocate, free,
+	freeramdisk, fsfreeze, hwclock, insmod, lsmod, lsusb, mkswap, mount,
+	mountpoint, pidof, pivot_root, pwdx, readahead, rmmod, swaplabel,
+	swapoff, swapon, switch_root, sysctl, umount, unshare, uptime,
+	vtallow
 
-linux: blkdiscard, chvt, ctrlaltdel, dmesg, eject, fallocate, free,
-       freeramdisk, fsfreeze, hwclock, insmod, lsmod, lsusb, mkswap,
-       mount, mountpoint, pidof, pivot_root, pwdx, readahead, rmmod,
-       swaplabel, swapoff, swapon, switch_root, sysctl, umount,
-       unshare, uptime, vtallow
+net:
+	host, httpd, ifconfig, netcat, ping, tftp, tunctl, wget
 
-net:   host, httpd, ifconfig, netcat, ping, tftp, tunctl, wget
+pseudo:
+	base64, chroot, clear, cols, cron, flock, getty, halt, hostname,
+	install, killall5, last, lastlog, login, md5sum, mktemp, nologin,
+	pagesize, printenv, respawn, rev, seq, setsid, sha1sum, sha224sum,
+	sha256sum, sha384sum, sha512-224sum, sha512-256sum, sha512sum, sponge,
+	stat, tar, truncate, watch, which, whoami, xinstall, yes
 
-pseudo: chroot, clear, cols, cron, flock, getty, halt, hostname,
-        install, killall5, last, lastlog, login, md5sum, mktemp,
-        nologin, pagesize, printenv, respawn, rev, seq, setsid,
-        sha1sum, sha224sum, sha256sum, sha384sum, sha512sum,
-        sha512-224sum, sha512-256sum, sponge, stat, tar, truncate,
-        watch, which, whoami, yes
-
-xsi:   mknod, passwd, su
+xsi:
+	mknod, passwd, su
 
 TODOs / PENDING RELEASE
 =======================
-sh - ported from freebsd
-awk - one true awk, with some stale PRs merged
 ip - new impl partially based on toybox's applet
 dhcpd - no idea where to start with this one
 init - situation/sctl rewrite
-pax - port minix's
 troff - neatroff
 man - unsure
+vendor and publish my compiler toolchain (small binutils + cproc), even if incomplete - unsure
 
 LICENSE
 =======
