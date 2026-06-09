@@ -96,7 +96,7 @@ main(int argc, char *argv[])
 		sflag = 1;
 		break;
 	case 'w':
-		width = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SIZE_MAX));
+		width = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	ARGNUM:
 		if (!(width = ARGNUMF()))

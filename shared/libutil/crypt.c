@@ -54,7 +54,7 @@ mdchecklist(FILE *listfp, struct crypt_ops *ops, uint8_t *md, size_t sz,
 			(*formatsucks)++;
 			continue;
 		}
-		if (file - line != sz * 2) {
+		if ((size_t)(file - line) != sz * 2) {
 			(*formatsucks)++; /* checksum length mismatch */
 			continue;
 		}

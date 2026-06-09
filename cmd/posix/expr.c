@@ -103,6 +103,8 @@ doop(int *ophead, int *opp, struct val *valhead, struct val *valp)
 	struct val ret = { .str = NULL, .num = 0 }, *a, *b;
 	int op;
 
+	(void)ophead;
+
 	/* an operation "a op b" needs an operator and two values */
 	if (opp[-1] == '(')
 		enprintf(2, "syntax error: extra (\n");
@@ -152,6 +154,8 @@ lex(char *s, struct val *v)
 {
 	int type = VAL;
 	char *ops = "|&=><+-*/%():";
+
+	(void)v;
 
 	if (s[0] && strchr(ops, s[0]) && !s[1]) {
 		/* one-char operand */

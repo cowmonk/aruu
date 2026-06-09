@@ -24,10 +24,10 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'l':
-		size = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SIZE_MAX));
+		size = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case 'o':
-		offset = estrtonum(EARGF(usage()), 0, MIN(LLONG_MAX, SIZE_MAX));
+		offset = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	default:
 		usage();

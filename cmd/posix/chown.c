@@ -21,6 +21,8 @@ chownpwgr(int dirfd, const char *name, struct stat *st, void *data, struct recur
 {
 	int flags = 0;
 
+	(void)data;
+
 	if ((r->maxdepth == 0 && r->follow == 'P') || (r->follow == 'H' && r->depth) || (hflag && !(r->depth)))
 		flags |= AT_SYMLINK_NOFOLLOW;
 

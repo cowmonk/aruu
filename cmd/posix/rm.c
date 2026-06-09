@@ -25,7 +25,7 @@ forbidden(char *path, struct stat *root)
 	for (s = t; s > path && s[-1] != '/'; --s)
 		;
 	n = t - s;
-	if (n == 1 && *s == '.' || n == 2 && s[0] == '.' && s[1] == '.') {
+	if ((n == 1 && *s == '.') || (n == 2 && s[0] == '.' && s[1] == '.')) {
 		if (!w1)
 			weprintf("\".\" and \"..\" may not be removed\n");
 		w1 = 1;
@@ -47,7 +47,6 @@ forbidden(char *path, struct stat *root)
 int
 main(int argc, char *argv[])
 {
-	char *s;
 	struct stat st;
 	struct recursor r = { .fn = rm, .maxdepth = 1, .follow = 'P' };
 

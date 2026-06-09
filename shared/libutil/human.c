@@ -13,7 +13,7 @@ humansize(off_t n)
 	double size;
 	int i;
 
-	for (size = n, i = 0; size >= 1024 && i < strlen(postfixes); i++)
+	for (size = n, i = 0; size >= 1024 && i < (int)strlen(postfixes); i++)
 		size /= 1024;
 
 	if (!i)

@@ -1,13 +1,13 @@
 /* See LICENSE file for copyright and license details. */
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "queue.h"
 #include "text.h"
 #include "utf.h"
 #include "util.h"
+
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct keydef {
 	int start_column;
@@ -36,6 +36,12 @@ enum {
 static TAILQ_HEAD(kdhead, keydef) kdhead = TAILQ_HEAD_INITIALIZER(kdhead);
 
 static int Cflag = 0, cflag = 0, uflag = 0;
+#if FEATURE_SORT_BIG
+static int zflag = 0;
+#endif
+#if FEATURE_SORT_STABLE
+static int sflag = 0;
+#endif
 static char *fieldsep = NULL;
 static size_t fieldseplen = 0;
 static struct column col1, col2;
@@ -94,7 +100,7 @@ columns(struct line *line, const struct keydef *kd, struct column *col)
 		skipcolumn(&start, 1);
 	if (kd->flags & MOD_STARTB)
 		skipblank(&start);
-	for (utflen = 0; start.len > 1 && utflen < kd->start_char - 1;) {
+	for (utflen = 0; start.len > 1 && utflen < (size_t)(kd->start_char - 1);) {
 		rlen = chartorune(&r, start.data);
 		start.data += rlen;
 		start.len -= rlen;
@@ -109,7 +115,7 @@ columns(struct line *line, const struct keydef *kd, struct column *col)
 		if (kd->flags & MOD_ENDB)
 			skipblank(&end);
 		if (kd->end_char) {
-			for (utflen = 0; end.len > 1 && utflen < kd->end_char;) {
+			for (utflen = 0; end.len > 1 && utflen < (size_t)kd->end_char;) {
 				rlen = chartorune(&r, end.data);
 				end.data += rlen;
 				end.len -= rlen;
@@ -173,6 +179,33 @@ skipmodcmp(struct line *a, struct line *b, int flags)
 	return r1 - r2;
 }
 
+#if FEATURE_SORT_BIG
+static void
+getlines_z(FILE *fp, struct linebuf *b)
+{
+	char *line = NULL;
+	size_t size = 0, linelen = 0;
+	ssize_t len;
+
+	while ((len = getdelim(&line, &size, '\0', fp)) > 0) {
+		if (++b->nlines > b->capacity) {
+			b->capacity += 512;
+			b->lines = ereallocarray(b->lines, b->capacity, sizeof(*b->lines));
+		}
+		linelen = len;
+		b->lines[b->nlines - 1].data = memcpy(emalloc(linelen + 1), line, linelen + 1);
+		b->lines[b->nlines - 1].len = linelen;
+	}
+	free(line);
+	if (b->lines && b->nlines && linelen && b->lines[b->nlines - 1].data[linelen - 1] != '\0') {
+		b->lines[b->nlines - 1].data = erealloc(b->lines[b->nlines - 1].data, linelen + 2);
+		b->lines[b->nlines - 1].data[linelen] = '\0';
+		b->lines[b->nlines - 1].data[linelen + 1] = '\0';
+		b->lines[b->nlines - 1].len++;
+	}
+}
+#endif
+
 static int
 slinecmp(struct line *a, struct line *b)
 {
@@ -208,19 +241,44 @@ slinecmp(struct line *a, struct line *b)
 	return res;
 }
 
+#if FEATURE_SORT_STABLE
+struct sort_item {
+	struct line line;
+	size_t index;
+};
+
+static int
+slinecmp_stable(const struct sort_item *a, const struct sort_item *b)
+{
+	int res = slinecmp((struct line *)&a->line, (struct line *)&b->line);
+	if (res == 0)
+		return (a->index < b->index) ? -1 : 1;
+	return res;
+}
+#endif
+
 static int
 check(FILE *fp, const char *fname)
 {
 	static struct line prev, cur, tmp;
 	static size_t prevsize, cursize, tmpsize;
 	ssize_t len;
+	int delim = '\n';
+
+#if FEATURE_SORT_BIG
+	if (zflag)
+		delim = '\0';
+#endif
 
 	if (!prev.data) {
-		if ((len = getline(&prev.data, &prevsize, fp)) < 0)
-			eprintf("getline:");
+		if ((len = getdelim(&prev.data, &prevsize, delim, fp)) < 0) {
+			if (feof(fp))
+				return 0;
+			eprintf("getdelim:");
+		}
 		prev.len = len;
 	}
-	while ((len = getline(&cur.data, &cursize, fp)) > 0) {
+	while ((len = getdelim(&cur.data, &cursize, delim, fp)) > 0) {
 		cur.len = len;
 		if (uflag > slinecmp(&cur, &prev)) {
 			if (!Cflag) {
@@ -319,8 +377,14 @@ addkeydef(char *kdstr, int flags)
 static void
 usage(void)
 {
-	enprintf(2, "usage: %s [-Cbcdfimnru] [-o outfile] [-t delim] "
-	         "[-k def]... [file ...]\n", argv0);
+	enprintf(2, "usage: %s [-Cbcdfimnru"
+#if FEATURE_SORT_STABLE
+	         "s"
+#endif
+#if FEATURE_SORT_BIG
+	         "z"
+#endif
+	         "] [-o outfile] [-t delim] [-k def]... [file ...]\n", argv0);
 }
 
 int
@@ -370,6 +434,11 @@ main(int argc, char *argv[])
 	case 'r':
 		global_flags |= MOD_R;
 		break;
+#if FEATURE_SORT_STABLE
+	case 's':
+		sflag = 1;
+		break;
+#endif
 	case 't':
 		fieldsep = EARGF(usage());
 		if (!*fieldsep)
@@ -379,6 +448,11 @@ main(int argc, char *argv[])
 	case 'u':
 		uflag = 1;
 		break;
+#if FEATURE_SORT_BIG
+	case 'z':
+		zflag = 1;
+		break;
+#endif
 	default:
 		usage();
 	} ARGEND
@@ -394,7 +468,12 @@ main(int argc, char *argv[])
 			if (check(stdin, "<stdin>") && !ret)
 				ret = 1;
 		} else {
-			getlines(stdin, &linebuf);
+#if FEATURE_SORT_BIG
+			if (zflag)
+				getlines_z(stdin, &linebuf);
+			else
+#endif
+				getlines(stdin, &linebuf);
 		}
 	} else for (; *argv; argc--, argv++) {
 		if (!strcmp(*argv, "-")) {
@@ -408,7 +487,12 @@ main(int argc, char *argv[])
 			if (check(fp, *argv) && !ret)
 				ret = 1;
 		} else {
-			getlines(fp, &linebuf);
+#if FEATURE_SORT_BIG
+			if (zflag)
+				getlines_z(fp, &linebuf);
+			else
+#endif
+				getlines(fp, &linebuf);
 		}
 		if (fp != stdin && fshut(fp, *argv))
 			ret = 2;
@@ -418,8 +502,26 @@ main(int argc, char *argv[])
 		if (outfile && !(ofp = fopen(outfile, "w")))
 			eprintf("fopen %s:", outfile);
 
-		qsort(linebuf.lines, linebuf.nlines, sizeof(*linebuf.lines),
-				(int (*)(const void *, const void *))slinecmp);
+#if FEATURE_SORT_STABLE
+		if (sflag) {
+			struct sort_item *items = ecalloc(linebuf.nlines, sizeof(*items));
+			for (i = 0; i < linebuf.nlines; i++) {
+				items[i].line = linebuf.lines[i];
+				items[i].index = i;
+			}
+			qsort(items, linebuf.nlines, sizeof(*items),
+			      (int (*)(const void *, const void *))slinecmp_stable);
+			for (i = 0; i < linebuf.nlines; i++) {
+				linebuf.lines[i] = items[i].line;
+			}
+			free(items);
+		} else {
+#endif
+			qsort(linebuf.lines, linebuf.nlines, sizeof(*linebuf.lines),
+			      (int (*)(const void *, const void *))slinecmp);
+#if FEATURE_SORT_STABLE
+		}
+#endif
 
 		for (i = 0; i < linebuf.nlines; i++) {
 			if (!uflag || i == 0 ||

@@ -16,6 +16,8 @@ rm(int dirfd, const char *name, struct stat *st, void *data, struct recursor *r)
 {
 	int quiet, ask, write, flags, ignore;
 
+	(void)data;
+
 	ignore = r->flags & IGNORE;
 	quiet = r->flags & SILENT;
 	ask = r->flags & CONFIRM;
@@ -27,7 +29,7 @@ rm(int dirfd, const char *name, struct stat *st, void *data, struct recursor *r)
 		goto err;
 	}
 
-	if (!quiet && (!write && isatty(0) || ask)) {
+	if (!quiet && ((!write && isatty(0)) || ask)) {
 		if (!confirm("remove file '%s'? ", r->path))
 			return;
 	}

@@ -56,6 +56,7 @@ main(int argc, char *argv[])
 	switch ((pid = fork())) {
 	case -1:
 		eprintf("fork:");
+		/* fallthrough */
 	case 0:
 		if (oflag && close(fd) < 0)
 			eprintf("close:");

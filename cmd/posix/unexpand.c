@@ -21,7 +21,7 @@ parselist(const char *s)
 		if (*p == '\0')
 			eprintf("empty field in tablist\n");
 		tablist = ereallocarray(tablist, i + 1, sizeof(*tablist));
-		tablist[i] = estrtonum(p, 1, MIN(LLONG_MAX, SIZE_MAX));
+		tablist[i] = estrtonum(p, 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		if (i > 0 && tablist[i - 1] >= tablist[i])
 			eprintf("tablist must be ascending\n");
 	}
@@ -140,7 +140,7 @@ main(int argc, char *argv[])
 		tl = EARGF(usage());
 		if (!*tl)
 			eprintf("tablist cannot be empty\n");
-		/* Fallthrough: -t implies -a */
+		/* fallthrough */
 	case 'a':
 		aflag = 1;
 		break;

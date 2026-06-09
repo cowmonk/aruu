@@ -244,7 +244,7 @@ gettxt(int line)
 
 repeat:
 	chksignals();
-	if (!csize || off < lasto || off - lasto >= csize) {
+	if (!csize || off < lasto || (size_t)(off - lasto) >= csize) {
 		block = off & ~(CACHESIZ-1);
 		if (lseek(scratch, block, SEEK_SET) < 0 ||
 		    (n = read(scratch, buf, CACHESIZ)) < 0) {
@@ -405,7 +405,7 @@ compile(int delim)
 	bracket = lastre.siz = 0;
 	for (n = 0;; ++n) {
 		c = input();
-		if (c == delim && !bracket || c == '\0') {
+		if ((c == delim && !bracket) || c == '\0') {
 			break;
 		} else if (c == '\\') {
 			addchar(c, &lastre);
@@ -450,6 +450,7 @@ match(int num)
 static int
 rematch(int num)
 {
+	(void)num;
 	regoff_t off = matchs[0].rm_eo;
 	regmatch_t *m;
 	int r;
@@ -527,6 +528,7 @@ ensureblank(void)
 	case ' ':
 	case '\t':
 		skipblank();
+		/* fallthrough */
 	case '\0':
 		back(c);
 		break;
@@ -809,6 +811,7 @@ expandcmd(void)
 				back(c);
 				c = '\\';
 			}
+			/* fallthrough */
 		default:
 			addchar(c, &cmd);
 		}
@@ -901,7 +904,7 @@ doread(const char *fname)
 	for (cnt = 0; (len = getline(&s, &n, fp)) > 0; cnt += (size_t)len) {
 		chksignals();
 		if (s[len-1] != '\n') {
-			if (len+1 >= n) {
+			if ((size_t)len + 1 >= n) {
 				if (n == SIZE_MAX || !(p = realloc(s, ++n)))
 					error("out of memory");
 				s = p;
@@ -1339,6 +1342,7 @@ repeat:
 	case 'v':
 	case 'V':
 		error("cannot nest global commands");
+		break;
 	case 'H':
 		if (nlines > 0)
 			goto unexpected;
@@ -1353,6 +1357,7 @@ repeat:
 		break;
 	case 'w':
 		trunc = 1;
+		/* fallthrough */
 	case 'W':
 		ensureblank();
 		deflines(nextln(0), lastln);
@@ -1468,6 +1473,7 @@ repeat:
 		break;
 	case 'x':
 		trunc = 1;
+		/* fallthrough */
 	case 'X':
 		ensureblank();
 		if (nlines > 0)
@@ -1475,6 +1481,7 @@ repeat:
 		exstatus = 0;
 		deflines(nextln(0), lastln);
 		dowrite(getfname(cmd), trunc);
+		/* fallthrough */
 	case 'Q':
 	case 'q':
 		if (nlines > 0)
@@ -1538,11 +1545,13 @@ chkglobal(void)
 	switch (c = input()) {
 	case 'g':
 		uflag = 0;
+		/* fallthrough */
 	case 'G':
 		dir = 1;
 		break;
 	case 'v':
 		uflag = 0;
+		/* fallthrough */
 	case 'V':
 		dir = 0;
 		break;
@@ -1643,12 +1652,14 @@ usage(void)
 static void
 sigintr(int n)
 {
+	(void)n;
 	intr = 1;
 }
 
 static void
 sighup(int dummy)
 {
+	(void)dummy;
 	hup = 1;
 }
 

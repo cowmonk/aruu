@@ -20,7 +20,7 @@ readrtctm(struct tm *tm, int fd)
 	struct rtc_time rt;
 
 	memset(&rt, 0, sizeof(rt));
-	if (ioctl(fd, RTC_RD_TIME, &rt) < 0)
+	if (ioctl(fd, (int)RTC_RD_TIME, &rt) < 0)
 		eprintf("RTC_RD_TIME:");
 	tm->tm_sec = rt.tm_sec;
 	tm->tm_min = rt.tm_min;
@@ -47,7 +47,7 @@ writertctm(struct tm *tm, int fd)
 	rt.tm_wday = tm->tm_wday;
 	rt.tm_yday = tm->tm_yday;
 	rt.tm_isdst = tm->tm_isdst;
-	if (ioctl(fd, RTC_SET_TIME, &rt) < 0)
+	if (ioctl(fd, (int)RTC_SET_TIME, &rt) < 0)
 		eprintf("RTC_SET_TIME:");
 }
 

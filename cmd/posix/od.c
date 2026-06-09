@@ -1,4 +1,7 @@
 /* See LICENSE file for copyright and license details. */
+#include "queue.h"
+#include "util.h"
+
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -6,9 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "queue.h"
-#include "util.h"
 
 struct type {
 	unsigned char     format;
@@ -141,7 +141,7 @@ od(int fd, char *fname, int last)
 	ssize_t n;
 
 	while (skip - addr > 0) {
-		n = read(fd, buf, MIN(skip - addr, sizeof(buf)));
+		n = read(fd, buf, MIN((size_t)(skip - addr), sizeof(buf)));
 		if (n < 0)
 			weprintf("read %s:", fname);
 		if (n <= 0)
@@ -153,10 +153,10 @@ od(int fd, char *fname, int last)
 
 	for (;;) {
 		if (max >= 0)
-			size = MIN(max - (addr - skip), size);
+			size = MIN((size_t)(max - (addr - skip)), size);
 		if ((n = read(fd, buf, size)) <= 0)
 			break;
-		for (i = 0; i < n; i++, addr++) {
+		for (i = 0; i < (size_t)n; i++, addr++) {
 			line[lineoff++] = buf[i];
 			if (lineoff == linelen) {
 				printline(line, lineoff, addr - lineoff + 1);
@@ -203,17 +203,19 @@ addtype(char format, int len)
 static void
 usage(void)
 {
-	eprintf("usage: %s [-bdosvx] [-A addressformat] [-E | -e] [-j skip] "
-	        "[-t outputformat] [file ...]\n", argv0);
+	eprintf("usage: %s [-bdosvx] [-A addressformat] "
+#if FEATURE_OD_ENDIAN
+	        "[-E | -e] "
+#endif
+	        "[-j skip] [-t outputformat] [file ...]\n", argv0);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int fd;
 	struct type *t;
-	int ret = 0, len;
-	char *s;
+	char *s, *end;
+	int fd, ret = 0, len, fmt_char;
 
 	big_endian = (*(uint16_t *)"\0\xff" == 0xff);
 
@@ -230,10 +232,12 @@ main(int argc, char *argv[])
 	case 'd':
 		addtype('u', 2);
 		break;
+#if FEATURE_OD_ENDIAN
 	case 'E':
 	case 'e':
 		big_endian = (ARGC() == 'E');
 		break;
+#endif
 	case 'j':
 		if ((skip = parseoffset(EARGF(usage()))) < 0)
 			usage();
@@ -260,28 +264,33 @@ main(int argc, char *argv[])
 			case 'o':
 			case 'u':
 			case 'x':
-				/* todo: allow multiple digits */
-				if (*(s+1) > '0' && *(s+1) <= '9') {
-					len = *(s+1) - '0';
+				fmt_char = *s;
+				if (isdigit((unsigned char)*(s + 1))) {
+					len = strtol(s + 1, &end, 10);
+					s = end - 1;
 				} else {
-					switch (*(s+1)) {
+					switch (*(s + 1)) {
 					case 'C':
 						len = sizeof(char);
+						s++;
 						break;
 					case 'S':
 						len = sizeof(short);
+						s++;
 						break;
 					case 'I':
 						len = sizeof(int);
+						s++;
 						break;
 					case 'L':
 						len = sizeof(long);
+						s++;
 						break;
 					default:
 						len = sizeof(int);
 					}
 				}
-				addtype(*s, len);
+				addtype(fmt_char, len);
 				break;
 			default:
 				usage();
@@ -289,7 +298,7 @@ main(int argc, char *argv[])
 		}
 		break;
 	case 'v':
-		/* always set - use uniq(1) to handle duplicate lines */
+		/* always set, use uniq(1) to handle duplicate lines */
 		break;
 	case 'x':
 		addtype('x', 2);

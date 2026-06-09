@@ -14,7 +14,8 @@ static void
 sequential(struct fdescr *dsc, int fdescrlen, Rune *delim, size_t delimlen)
 {
 	Rune c, last;
-	size_t i, d;
+	int i;
+	size_t d;
 
 	for (i = 0; i < fdescrlen; i++) {
 		d = 0;
@@ -41,20 +42,19 @@ static void
 parallel(struct fdescr *dsc, int fdescrlen, Rune *delim, size_t delimlen)
 {
 	Rune c, d;
-	size_t i, m;
-	ssize_t last;
+	int i, m, last;
 
 nextline:
 	last = -1;
 
 	for (i = 0; i < fdescrlen; i++) {
-		d = delim[i % delimlen];
+		d = delim[(size_t)i % delimlen];
 		c = 0;
 
 		while (efgetrune(&c, dsc[i].fp, dsc[i].name)) {
 			for (m = last + 1; m < i; m++) {
-				if (delim[m % delimlen] != '\0')
-					efputrune(&delim[m % delimlen], stdout, "<stdout>");
+				if (delim[(size_t)m % delimlen] != '\0')
+					efputrune(&delim[(size_t)m % delimlen], stdout, "<stdout>");
 			}
 			last = i;
 			if (c == '\n') {
@@ -89,8 +89,8 @@ main(int argc, char *argv[])
 {
 	struct fdescr *dsc;
 	Rune *delim_rune = NULL;
-	size_t delim_runelen, i, delim_bytelen = 1;
-	int seq = 0, ret = 0;
+	size_t delim_runelen, delim_bytelen = 1;
+	int seq = 0, ret = 0, i;
 	char *delim = "\t";
 
 	ARGBEGIN {

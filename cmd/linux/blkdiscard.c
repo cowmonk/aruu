@@ -39,9 +39,9 @@ main(int argc, char *argv[])
 	if (fd < 0)
 		eprintf("open: %s:", argv[0]);
 	range[OFFSET_IDX] = 0;
-	if (ioctl(fd, BLKGETSIZE64, &range[LENGTH_IDX]) < 0)
+	if (ioctl(fd, (int)BLKGETSIZE64, &range[LENGTH_IDX]) < 0)
 		eprintf("BLKGETSIZE64: %s:", argv[0]);
-	if (ioctl(fd, BLKDISCARD, range) < 0)
+	if (ioctl(fd, (int)BLKDISCARD, range) < 0)
 		eprintf("BLKDISCARD: %s:", argv[0]);
 	close(fd);
 	return 0;

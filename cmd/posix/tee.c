@@ -36,7 +36,7 @@ main(int argc, char *argv[])
 	nfds = argc + 1;
 	fds = ecalloc(nfds, sizeof(*fds));
 
-	for (i = 0; i < argc; i++) {
+	for (i = 0; i < (size_t)argc; i++) {
 		if ((fds[i] = open(argv[i], O_WRONLY|O_CREAT|aflag, 0666)) < 0) {
 			weprintf("open %s:", argv[i]);
 			ret = 1;
@@ -47,7 +47,7 @@ main(int argc, char *argv[])
 	while ((n = read(0, buf, sizeof(buf))) > 0) {
 		for (i = 0; i < nfds; i++) {
 			if (fds[i] >= 0 && writeall(fds[i], buf, n) < 0) {
-				weprintf("write %s:", (i != argc) ? argv[i] : "<stdout>");
+				weprintf("write %s:", (i != (size_t)argc) ? argv[i] : "<stdout>");
 				fds[i] = -1;
 				ret = 1;
 			}

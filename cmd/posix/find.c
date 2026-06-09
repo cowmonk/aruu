@@ -1,21 +1,22 @@
 /* See LICENSE file for copyright and license details. */
+#include "config.h"
+#include "util.h"
+
 #include <dirent.h>
 #include <errno.h>
 #include <fnmatch.h>
 #include <grp.h>
 #include <libgen.h>
 #include <pwd.h>
+#include <regex.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <unistd.h>
-
 #include <sys/stat.h>
 #include <sys/wait.h>
-
-#include "util.h"
+#include <time.h>
+#include <unistd.h>
 
 /* because putting integers in pointers is undefined by the standard */
 union extra {
@@ -116,6 +117,53 @@ static int do_stat(char *path, struct stat *sb, struct findhist *hist);
 
 /* Primaries */
 static int pri_name   (struct arg *arg);
+#if FEATURE_FIND_INAME
+static int pri_iname(struct arg *arg);
+#endif
+#if FEATURE_FIND_IPATH
+static int pri_ipath(struct arg *arg);
+#endif
+#if FEATURE_FIND_REGEX
+static int pri_regex(struct arg *arg);
+static char **get_regex_arg(char *argv[], union extra *extra);
+static void free_regex_arg(union extra extra);
+#endif
+#if FEATURE_FIND_INUM
+static int pri_inum(struct arg *arg);
+static char **get_inum_arg(char *argv[], union extra *extra);
+#endif
+#if FEATURE_FIND_SAMEFILE
+static int pri_samefile(struct arg *arg);
+static char **get_samefile_arg(char *argv[], union extra *extra);
+#endif
+#if FEATURE_FIND_MAXDEPTH
+static int pri_maxdepth(struct arg *arg);
+static char **get_maxdepth_arg(char *argv[], union extra *extra);
+#endif
+#if FEATURE_FIND_MINDEPTH
+static int pri_mindepth(struct arg *arg);
+static char **get_mindepth_arg(char *argv[], union extra *extra);
+#endif
+#if FEATURE_FIND_DELETE
+static int pri_delete(struct arg *arg);
+static char **get_delete_arg(char *argv[], union extra *extra);
+#endif
+#if FEATURE_FIND_QUIT
+static int pri_quit(struct arg *arg);
+static char **get_quit_arg(char *argv[], union extra *extra);
+#endif
+#if FEATURE_FIND_EMPTY
+static int pri_empty(struct arg *arg);
+#endif
+#if FEATURE_FIND_MMIN
+static int pri_mmin(struct arg *arg);
+#endif
+#if FEATURE_FIND_AMIN
+static int pri_amin(struct arg *arg);
+#endif
+#if FEATURE_FIND_CMIN
+static int pri_cmin(struct arg *arg);
+#endif
 static int pri_path   (struct arg *arg);
 static int pri_nouser (struct arg *arg);
 static int pri_nogroup(struct arg *arg);
@@ -133,7 +181,9 @@ static int pri_mtime  (struct arg *arg);
 static int pri_exec   (struct arg *arg);
 static int pri_ok     (struct arg *arg);
 static int pri_print  (struct arg *arg);
+#if FEATURE_FIND_PRINT0
 static int pri_print0 (struct arg *arg);
+#endif
 static int pri_newer  (struct arg *arg);
 static int pri_depth  (struct arg *arg);
 
@@ -174,6 +224,45 @@ static int cmp_lt(int a, int b) { return a <  b; }
 
 /* order from find(1p), may want to alphabetize */
 static struct pri_info primaries[] = {
+#if FEATURE_FIND_INAME
+	{ "-iname"  , pri_iname  , get_name_arg , NULL         , 1 },
+#endif
+#if FEATURE_FIND_IPATH
+	{ "-ipath"  , pri_ipath  , get_path_arg , NULL         , 1 },
+#endif
+#if FEATURE_FIND_REGEX
+	{ "-regex"  , pri_regex  , get_regex_arg, free_regex_arg, 1 },
+#endif
+#if FEATURE_FIND_INUM
+	{ "-inum"   , pri_inum   , get_inum_arg , NULL         , 1 },
+#endif
+#if FEATURE_FIND_SAMEFILE
+	{ "-samefile", pri_samefile, get_samefile_arg, free_extra, 1 },
+#endif
+#if FEATURE_FIND_MAXDEPTH
+	{ "-maxdepth", pri_maxdepth, get_maxdepth_arg, NULL    , 1 },
+#endif
+#if FEATURE_FIND_MINDEPTH
+	{ "-mindepth", pri_mindepth, get_mindepth_arg, NULL    , 1 },
+#endif
+#if FEATURE_FIND_DELETE
+	{ "-delete" , pri_delete , get_delete_arg, NULL        , 0 },
+#endif
+#if FEATURE_FIND_QUIT
+	{ "-quit"   , pri_quit   , get_quit_arg , NULL         , 0 },
+#endif
+#if FEATURE_FIND_MMIN
+	{ "-mmin"   , pri_mmin   , get_n_arg    , free_extra   , 1 },
+#endif
+#if FEATURE_FIND_AMIN
+	{ "-amin"   , pri_amin   , get_n_arg    , free_extra   , 1 },
+#endif
+#if FEATURE_FIND_CMIN
+	{ "-cmin"   , pri_cmin   , get_n_arg    , free_extra   , 1 },
+#endif
+#if FEATURE_FIND_EMPTY
+	{ "-empty"  , pri_empty  , NULL         , NULL         , 1 },
+#endif
 	{ "-name"   , pri_name   , get_name_arg , NULL         , 1 },
 	{ "-path"   , pri_path   , get_path_arg , NULL         , 1 },
 	{ "-nouser" , pri_nouser , NULL         , NULL         , 1 },
@@ -192,7 +281,9 @@ static struct pri_info primaries[] = {
 	{ "-exec"   , pri_exec   , get_exec_arg , free_exec_arg, 1 },
 	{ "-ok"     , pri_ok     , get_ok_arg   , free_ok_arg  , 1 },
 	{ "-print"  , pri_print  , get_print_arg, NULL         , 0 },
+#if FEATURE_FIND_PRINT0
 	{ "-print0" , pri_print0 , get_print_arg, NULL         , 0 },
+#endif
 	{ "-newer"  , pri_newer  , get_newer_arg, NULL         , 1 },
 	{ "-depth"  , pri_depth  , get_depth_arg, NULL         , 0 },
 
@@ -227,6 +318,9 @@ static struct {
 	char prune; /* hit -prune                                         */
 	char xdev ; /* -xdev, prune directories on different devices      */
 	char print; /* whether we will need -print when parsing           */
+	char quit ; /* quit execution immediately                         */
+	long maxdepth; /* max depth of recursion                          */
+	long mindepth; /* min depth of recursion                          */
 } gflags;
 
 /*
@@ -246,14 +340,19 @@ spawn(char *argv[])
 	switch((pid = fork())) {
 	case -1:
 		eprintf("fork:");
+		break;
 	case 0:
 		execvp(*argv, argv);
 		weprintf("exec %s failed:", *argv);
 		_exit(1);
 	}
 
-	/* FIXME: proper course of action for waitpid() on EINTR? */
-	waitpid(pid, &status, 0);
+	while (waitpid(pid, &status, 0) < 0) {
+		if (errno != EINTR) {
+			status = -1;
+			break;
+		}
+	}
 	return status;
 }
 
@@ -310,12 +409,14 @@ pri_nogroup(struct arg *arg)
 static int
 pri_xdev(struct arg *arg)
 {
+	(void)arg;
 	return 1;
 }
 
 static int
 pri_prune(struct arg *arg)
 {
+	(void)arg;
 	return gflags.prune = 1;
 }
 
@@ -454,7 +555,7 @@ pri_ok(struct arg *arg)
 		 * byte? */
 		;
 
-	if (feof(stdin)) /* FIXME: ferror()? */
+	if (feof(stdin) || ferror(stdin))
 		clearerr(stdin);
 
 	if (reply != 'y' && reply != 'Y')
@@ -476,6 +577,7 @@ pri_print(struct arg *arg)
 	return 1;
 }
 
+#if FEATURE_FIND_PRINT0
 static int
 pri_print0(struct arg *arg)
 {
@@ -483,6 +585,7 @@ pri_print0(struct arg *arg)
 		eprintf("fwrite failed:");
 	return 1;
 }
+#endif
 
 /* FIXME: ignoring nanoseconds */
 static int
@@ -494,6 +597,7 @@ pri_newer(struct arg *arg)
 static int
 pri_depth(struct arg *arg)
 {
+	(void)arg;
 	return 1;
 }
 
@@ -519,6 +623,7 @@ get_path_arg(char *argv[], union extra *extra)
 static char **
 get_xdev_arg(char *argv[], union extra *extra)
 {
+	(void)extra;
 	gflags.xdev = 1;
 	return argv;
 }
@@ -683,6 +788,7 @@ get_ok_arg(char *argv[], union extra *extra)
 static char **
 get_print_arg(char *argv[], union extra *extra)
 {
+	(void)extra;
 	gflags.print = 0;
 	return argv;
 }
@@ -703,6 +809,7 @@ get_newer_arg(char *argv[], union extra *extra)
 static char **
 get_depth_arg(char *argv[], union extra *extra)
 {
+	(void)extra;
 	gflags.depth = 1;
 	return argv;
 }
@@ -959,6 +1066,250 @@ eval(struct tok *tok, struct arg *arg)
 /* evaluate path, if it's a directory iterate through directory entries and
  * recurse
  */
+#if FEATURE_FIND_INAME
+static int
+pri_iname(struct arg *arg)
+{
+	int ret;
+	char *path;
+
+	path = estrdup(arg->path);
+	ret = !fnmatch((char *)arg->extra.p, basename(path), FNM_CASEFOLD);
+	free(path);
+
+	return ret;
+}
+#endif
+
+#if FEATURE_FIND_IPATH
+static int
+pri_ipath(struct arg *arg)
+{
+	return !fnmatch((char *)arg->extra.p, arg->path, FNM_CASEFOLD);
+}
+#endif
+
+#if FEATURE_FIND_REGEX
+static int
+pri_regex(struct arg *arg)
+{
+	regex_t *re = arg->extra.p;
+	regmatch_t match;
+	if (regexec(re, arg->path, 1, &match, 0) == 0) {
+		return match.rm_so == 0 && (size_t)match.rm_eo == strlen(arg->path);
+	}
+	return 0;
+}
+
+static char **
+get_regex_arg(char *argv[], union extra *extra)
+{
+	regex_t *re = emalloc(sizeof(*re));
+	eregcomp(re, *argv, 0);
+	extra->p = re;
+	return argv;
+}
+
+static void
+free_regex_arg(union extra extra)
+{
+	regex_t *re = extra.p;
+	regfree(re);
+	free(re);
+}
+#endif
+
+#if FEATURE_FIND_INUM
+static int
+pri_inum(struct arg *arg)
+{
+	ino_t ino = (ino_t)arg->extra.i;
+	return arg->st->st_ino == ino;
+}
+
+static char **
+get_inum_arg(char *argv[], union extra *extra)
+{
+	char *end;
+	extra->i = strtol(*argv, &end, 10);
+	if (end == *argv || *end)
+		eprintf("bad number '%s'\n", *argv);
+	return argv;
+}
+#endif
+
+#if FEATURE_FIND_SAMEFILE
+struct SameFileArg {
+	ino_t ino;
+	dev_t dev;
+};
+
+static int
+pri_samefile(struct arg *arg)
+{
+	struct SameFileArg *s = arg->extra.p;
+	return arg->st->st_ino == s->ino && arg->st->st_dev == s->dev;
+}
+
+static char **
+get_samefile_arg(char *argv[], union extra *extra)
+{
+	struct stat st;
+	struct SameFileArg *s = emalloc(sizeof(*s));
+	if (do_stat(*argv, &st, NULL))
+		eprintf("failed to stat '%s':", *argv);
+	s->ino = st.st_ino;
+	s->dev = st.st_dev;
+	extra->p = s;
+	return argv;
+}
+#endif
+
+#if FEATURE_FIND_MAXDEPTH
+static int
+pri_maxdepth(struct arg *arg)
+{
+	(void)arg;
+	return 1;
+}
+
+static char **
+get_maxdepth_arg(char *argv[], union extra *extra)
+{
+	(void)extra;
+	char *end;
+	gflags.maxdepth = strtol(*argv, &end, 10);
+	if (end == *argv || *end || gflags.maxdepth < 0)
+		eprintf("bad number '%s'\n", *argv);
+	return argv;
+}
+#endif
+
+#if FEATURE_FIND_MINDEPTH
+static int
+pri_mindepth(struct arg *arg)
+{
+	(void)arg;
+	return 1;
+}
+
+static char **
+get_mindepth_arg(char *argv[], union extra *extra)
+{
+	(void)extra;
+	char *end;
+	gflags.mindepth = strtol(*argv, &end, 10);
+	if (end == *argv || *end || gflags.mindepth < 0)
+		eprintf("bad number '%s'\n", *argv);
+	return argv;
+}
+#endif
+
+#if FEATURE_FIND_DELETE
+static int
+pri_delete(struct arg *arg)
+{
+	if (remove(arg->path) < 0) {
+		weprintf("remove %s failed:", arg->path);
+		gflags.ret = 1;
+		return 0;
+	}
+	return 1;
+}
+
+static char **
+get_delete_arg(char *argv[], union extra *extra)
+{
+	(void)extra;
+	gflags.depth = 1;
+	gflags.print = 0;
+	return argv;
+}
+#endif
+
+#if FEATURE_FIND_QUIT
+static int
+pri_quit(struct arg *arg)
+{
+	(void)arg;
+	gflags.quit = 1;
+	return 1;
+}
+
+static char **
+get_quit_arg(char *argv[], union extra *extra)
+{
+	(void)extra;
+	gflags.print = 0;
+	return argv;
+}
+#endif
+
+#if FEATURE_FIND_EMPTY
+static int
+pri_empty(struct arg *arg)
+{
+	DIR *dir;
+	struct dirent *de;
+	int empty = 1;
+
+	if (S_ISREG(arg->st->st_mode)) {
+		return arg->st->st_size == 0;
+	} else if (S_ISDIR(arg->st->st_mode)) {
+		dir = opendir(arg->path);
+		if (!dir)
+			return 0;
+		while ((de = readdir(dir))) {
+			if (strcmp(de->d_name, ".") && strcmp(de->d_name, "..")) {
+				empty = 0;
+				break;
+			}
+		}
+		closedir(dir);
+		return empty;
+	}
+	return 0;
+}
+#endif
+
+#if FEATURE_FIND_MMIN
+static int
+pri_mmin(struct arg *arg)
+{
+	struct narg *n = arg->extra.p;
+	return n->cmp((start.tv_sec - arg->st->st_mtime) / 60, n->n);
+}
+#endif
+
+#if FEATURE_FIND_AMIN
+static int
+pri_amin(struct arg *arg)
+{
+	struct narg *n = arg->extra.p;
+	return n->cmp((start.tv_sec - arg->st->st_atime) / 60, n->n);
+}
+#endif
+
+#if FEATURE_FIND_CMIN
+static int
+pri_cmin(struct arg *arg)
+{
+	struct narg *n = arg->extra.p;
+	return n->cmp((start.tv_sec - arg->st->st_ctime) / 60, n->n);
+}
+#endif
+
+static int
+get_depth(struct findhist *hist)
+{
+	int d = 0;
+	while (hist) {
+		d++;
+		hist = hist->next;
+	}
+	return d;
+}
+
 static void
 find(char *path, struct findhist *hist)
 {
@@ -969,6 +1320,10 @@ find(char *path, struct findhist *hist)
 	size_t namelen, pathcap = 0, len;
 	struct arg arg = { path, &st, { NULL } };
 	char *p, *pathbuf = NULL;
+	int depth = get_depth(hist);
+
+	if (gflags.quit)
+		return;
 
 	len = strlen(path) + 2; /* \0 and '/' */
 
@@ -980,13 +1335,27 @@ find(char *path, struct findhist *hist)
 
 	gflags.prune = 0;
 
-	/* don't eval now iff we will hit the eval at the bottom which means
-	 * 1. we are a directory 2. we have -depth 3. we don't have -xdev or we are
-	 * on same device (so most of the time we eval here) */
-	if (!S_ISDIR(st.st_mode) ||
-	    !gflags.depth        ||
-	    (gflags.xdev && hist && st.st_dev != hist->dev))
-		eval(root, &arg);
+	if (gflags.maxdepth >= 0 && depth > gflags.maxdepth)
+		return;
+
+	if (gflags.mindepth < 0 || depth >= gflags.mindepth) {
+		/* don't eval now iff we will hit the eval at the bottom which means
+		 * 1. we are a directory 2. we have -depth 3. we don't have -xdev or we are
+		 * on same device (so most of the time we eval here) */
+		if (!S_ISDIR(st.st_mode) ||
+		    !gflags.depth        ||
+		    (gflags.xdev && hist && st.st_dev != hist->dev))
+			eval(root, &arg);
+	}
+
+	if (gflags.maxdepth >= 0 && depth >= gflags.maxdepth) {
+		if (gflags.depth && (gflags.mindepth < 0 || depth >= gflags.mindepth)) {
+			if (S_ISDIR(st.st_mode) &&
+			    (!gflags.xdev || !hist || st.st_dev == hist->dev))
+				eval(root, &arg);
+		}
+		return;
+	}
 
 	if (!S_ISDIR(st.st_mode)                          ||
 	    gflags.prune                                  ||
@@ -1009,12 +1378,14 @@ find(char *path, struct findhist *hist)
 		weprintf("failed to opendir %s:", path);
 		gflags.ret = 1;
 		/* should we just ignore this since we hit an error? */
-		if (gflags.depth)
+		if (gflags.depth && (gflags.mindepth < 0 || depth >= gflags.mindepth))
 			eval(root, &arg);
 		return;
 	}
 
 	while (errno = 0, (de = readdir(dir))) {
+		if (gflags.quit)
+			break;
 		if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))
 			continue;
 		namelen = strlen(de->d_name);
@@ -1037,7 +1408,7 @@ find(char *path, struct findhist *hist)
 	}
 	closedir(dir);
 
-	if (gflags.depth)
+	if (gflags.depth && (gflags.mindepth < 0 || depth >= gflags.mindepth))
 		eval(root, &arg);
 }
 
@@ -1053,6 +1424,9 @@ main(int argc, char **argv)
 	char **paths;
 	int npaths;
 	struct tok *t;
+
+	gflags.maxdepth = -1;
+	gflags.mindepth = -1;
 
 	ARGBEGIN {
 	case 'H':

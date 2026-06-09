@@ -77,7 +77,7 @@ printgrid(size_t year, int month, int fday, int line)
 		if (trans && !(line == 2 && fday == 3))
 			dom += 11;
 	}
-	if (ltime && year == ltime->tm_year + 1900 && month == ltime->tm_mon)
+	if (ltime && year == (size_t)(ltime->tm_year + 1900) && month == ltime->tm_mon)
 		today = ltime->tm_mday;
 	for (; d < 7 && dom <= monthlength(year, month, cal); ++d, ++dom) {
 		if (dom == today)
@@ -98,8 +98,8 @@ drawcal(size_t year, int month, size_t ncols, size_t nmons, int fday)
 	                 "May", "June", "July", "August",
 	                 "September", "October", "November", "December" };
 	char *days[] = { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", };
-	size_t m, n, col, cur_year, cur_month, dow;
-	int line, pad;
+	size_t m, n, col, cur_year, cur_month;
+	int line, pad, dow;
 	char month_year[sizeof("Su Mo Tu We Th Fr Sa")];
 
 	for (m = 0; m < nmons; ) {
@@ -141,8 +141,12 @@ drawcal(size_t year, int month, size_t ncols, size_t nmons, int fday)
 static void
 usage(void)
 {
+#ifdef FEATURE_CAL_EXT
 	eprintf("usage: %s [-1 | -3 | -y | -n num] "
 	        "[-s | -m | -f num] [-c num] [[month] year]\n", argv0);
+#else
+	eprintf("usage: %s [-y] [[month] year]\n", argv0);
+#endif
 }
 
 int
@@ -161,10 +165,16 @@ main(int argc, char *argv[])
 	if (!isatty(STDOUT_FILENO))
 		ltime = NULL; /* don't highlight today's date */
 
+#ifdef FEATURE_CAL_EXT
 	ncols = 3;
 	nmons = 0;
+#else
+	ncols = 1;
+	nmons = 1;
+#endif
 
 	ARGBEGIN {
+#ifdef FEATURE_CAL_EXT
 	case '1':
 		nmons = 1;
 		break;
@@ -176,7 +186,7 @@ main(int argc, char *argv[])
 		}
 		break;
 	case 'c':
-		ncols = estrtonum(EARGF(usage()), 0, MIN(SIZE_MAX, LLONG_MAX));
+		ncols = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
 	case 'f':
 		fday = estrtonum(EARGF(usage()), 0, 6);
@@ -185,11 +195,12 @@ main(int argc, char *argv[])
 		fday = 1;
 		break;
 	case 'n':
-		nmons = estrtonum(EARGF(usage()), 1, MIN(SIZE_MAX, LLONG_MAX));
+		nmons = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
 	case 's': /* Sunday */
 		fday = 0;
 		break;
+#endif
 	case 'y':
 		month = 1;
 		nmons = 12;
@@ -198,6 +209,7 @@ main(int argc, char *argv[])
 		usage();
 	} ARGEND
 
+#ifdef FEATURE_CAL_EXT
 	if (nmons == 0) {
 		if (argc == 1) {
 			month = 1;
@@ -206,12 +218,14 @@ main(int argc, char *argv[])
 			nmons = 1;
 		}
 	}
+#endif
 
 	switch (argc) {
 	case 2:
 		month = estrtonum(argv[0], 1, 12);
 		argv++;
-	case 1: /* fallthrough */
+		/* fallthrough */
+	case 1:
 		year = estrtonum(argv[0], 0, INT_MAX);
 		break;
 	case 0:

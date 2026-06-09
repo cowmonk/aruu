@@ -345,14 +345,19 @@ freecte(struct ctabentry *cte, int nfields)
 	switch (nfields) {
 	case 6:
 		free(cte->cmd);
+		/* fallthrough */
 	case 5:
 		free(cte->wday.val);
+		/* fallthrough */
 	case 4:
 		free(cte->mon.val);
+		/* fallthrough */
 	case 3:
 		free(cte->mday.val);
+		/* fallthrough */
 	case 2:
 		free(cte->hour.val);
+		/* fallthrough */
 	case 1:
 		free(cte->min.val);
 	}

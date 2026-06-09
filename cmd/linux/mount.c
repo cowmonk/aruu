@@ -264,9 +264,10 @@ main(int argc, char *argv[])
 					target = me->mnt_dir;
 					source = me->mnt_fsname;
 				}
-				if (!fsopts[0])
+				if (!fsopts[0]) {
 					estrlcat(fsopts, me->mnt_opts, sizeof(fsopts));
 					parseopts(fsopts, &flags, data, sizeof(data));
+				}
 				if (!types)
 					types = me->mnt_type;
 				goto mountsingle;

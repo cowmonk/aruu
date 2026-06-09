@@ -128,6 +128,7 @@ main(int argc, char *argv[])
 		switch (utflen((d = EARGF(usage())))) {
 		case 0:
 			eprintf("empty logical page delimiter\n");
+			break;
 		case 1:
 			s = strlen(d);
 			delim = emalloc(s + 1 + 1);
@@ -151,10 +152,10 @@ main(int argc, char *argv[])
 		type[2] = getlinetype(EARGF(usage()), preg + 2);
 		break;
 	case 'i':
-		incr = estrtonum(EARGF(usage()), 0, MIN(LLONG_MAX, SIZE_MAX));
+		incr = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case 'l':
-		blines = estrtonum(EARGF(usage()), 0, MIN(LLONG_MAX, SIZE_MAX));
+		blines = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case 'n':
 		formattype = EARGF(usage());
@@ -181,7 +182,7 @@ main(int argc, char *argv[])
 		seplen = unescape(sep);
 		break;
 	case 'v':
-		startnum = estrtonum(EARGF(usage()), 0, MIN(LLONG_MAX, SIZE_MAX));
+		startnum = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case 'w':
 		width = estrtonum(EARGF(usage()), 1, INT_MAX);

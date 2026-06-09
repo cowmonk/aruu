@@ -7,14 +7,18 @@
  * POSIX says don't flush on N when out of input, but GNU and busybox do.
  */
 
+#include "config.h"
+#include "utf.h"
+#include "util.h"
+
 #include <ctype.h>
 #include <errno.h>
+#include <libgen.h>
 #include <regex.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "utf.h"
-#include "util.h"
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* Types */
 
@@ -353,6 +357,32 @@ leprintf(char *s)
 }
 
 /* FIXME: write usage message */
+#if FEATURE_SED_INPLACE
+static int iflag = 0;
+static char *backup_suffix = NULL;
+
+static int
+create_temp_file(const char *orig_path, char **temp_path)
+{
+	char *dir, *dircopy, *tmpl;
+	int fd;
+
+	dircopy = estrdup(orig_path);
+	dir = dirname(dircopy);
+	tmpl = emalloc(strlen(dir) + 16);
+	sprintf(tmpl, "%s/sedtmpXXXXXX", dir);
+	free(dircopy);
+
+	fd = mkstemp(tmpl);
+	if (fd < 0) {
+		free(tmpl);
+		return -1;
+	}
+	*temp_path = tmpl;
+	return fd;
+}
+#endif
+
 static void
 usage(void)
 {
@@ -1463,7 +1493,9 @@ cmd_s(Cmd *c)
 				strnacat(&genbuf, p, len);
 				p += len;
 				switch (*p) {
-				default: leprintf("this shouldn't be possible");
+				default:
+					leprintf("this shouldn't be possible");
+					break;
 				case '\0':
 					/* we're at the end, back up one so the ++p will put us on
 					 * the null byte to break out of the loop */
@@ -1594,6 +1626,7 @@ cmd_y(Cmd *c)
 static void
 cmd_colon(Cmd *c)
 {
+	(void)c;
 }
 
 static void
@@ -1620,12 +1653,14 @@ cmd_lbrace(Cmd *c)
 static void
 cmd_rbrace(Cmd *c)
 {
+	(void)c;
 }
 
 /* not actually a sed function, but acts like one, put in last spot of script */
 static void
 cmd_last(Cmd *c)
 {
+	(void)c;
 	if (!gflags.n)
 		check_puts(patt.str, stdout);
 	do_writes();
@@ -1713,6 +1748,17 @@ main(int argc, char *argv[])
 		compile(arg, 1);
 		script = 1;
 		break;
+#if FEATURE_SED_INPLACE
+	case 'i':
+		iflag = 1;
+		if (argv[0][1] != '\0') {
+			backup_suffix = &argv[0][1];
+			brk_ = 1;
+		} else {
+			backup_suffix = "";
+		}
+		break;
+#endif
 	default : usage();
 	} ARGEND
 
@@ -1729,8 +1775,113 @@ main(int argc, char *argv[])
 	pc = prog + pcap - 1;
 	pc->fninfo = &(Fninfo){ cmd_last, NULL, NULL, 0 };
 
-	files = argv;
-	run();
+#if FEATURE_SED_INPLACE
+	if (iflag) {
+		char *single_file[2] = { NULL, NULL };
+		char **orig_files = argv;
+		int i;
+
+		if (!*orig_files)
+			eprintf("no input files\n");
+
+		for (i = 0; orig_files[i]; i++) {
+			char *temp_path = NULL;
+			int temp_fd;
+			int real_stdout;
+			struct stat st;
+			Cmd *c;
+
+			if (strcmp(orig_files[i], "-") == 0) {
+				weprintf("cannot edit stdin in-place\n");
+				ret = 1;
+				continue;
+			}
+
+			if (stat(orig_files[i], &st) < 0) {
+				weprintf("stat %s:", orig_files[i]);
+				ret = 1;
+				continue;
+			}
+
+			temp_fd = create_temp_file(orig_files[i], &temp_path);
+			if (temp_fd < 0) {
+				weprintf("create_temp_file:");
+				ret = 1;
+				continue;
+			}
+
+			real_stdout = dup(1);
+			if (real_stdout < 0) {
+				weprintf("dup stdout:");
+				close(temp_fd);
+				free(temp_path);
+				ret = 1;
+				continue;
+			}
+			if (dup2(temp_fd, 1) < 0) {
+				weprintf("dup2 stdout:");
+				close(temp_fd);
+				close(real_stdout);
+				free(temp_path);
+				ret = 1;
+				continue;
+			}
+			close(temp_fd);
+
+			single_file[0] = orig_files[i];
+			files = single_file;
+
+			/* reset state for next file */
+			lineno = 0;
+			gflags.halt = 0;
+			stracpy(&hold, "");
+			stracpy(&patt, "");
+			writes.size = 0;
+			for (c = prog; c->fninfo->fn != cmd_last; c++) {
+				c->in_match = 0;
+			}
+
+			run();
+
+			fflush(stdout);
+			dup2(real_stdout, 1);
+			close(real_stdout);
+
+			if (backup_suffix && *backup_suffix) {
+				char *backup_path = emalloc(strlen(orig_files[i]) + strlen(backup_suffix) + 1);
+				sprintf(backup_path, "%s%s", orig_files[i], backup_suffix);
+				if (rename(orig_files[i], backup_path) < 0) {
+					weprintf("rename %s to %s:", orig_files[i], backup_path);
+					unlink(temp_path);
+					free(backup_path);
+					free(temp_path);
+					ret = 1;
+					continue;
+				}
+				free(backup_path);
+			} else {
+				unlink(orig_files[i]);
+			}
+
+			if (rename(temp_path, orig_files[i]) < 0) {
+				weprintf("rename %s to %s:", temp_path, orig_files[i]);
+				unlink(temp_path);
+				free(temp_path);
+				ret = 1;
+				continue;
+			}
+
+			chmod(orig_files[i], st.st_mode);
+			chown(orig_files[i], st.st_uid, st.st_gid);
+
+			free(temp_path);
+		}
+	} else
+#endif
+	{
+		files = argv;
+		run();
+	}
 
 	ret |= fshut(stdin, "<stdin>") | fshut(stdout, "<stdout>");
 

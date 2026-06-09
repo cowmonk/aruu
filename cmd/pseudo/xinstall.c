@@ -45,6 +45,8 @@ install(const char *s1, const char *s2, int depth)
 {
 	int f1, f2;
 
+	(void)depth;
+
 	if ((f1 = open(s1, O_RDONLY)) < 0)
 		eprintf("open %s:", s1);
 	if ((f2 = creat(s2, 0600)) < 0) {

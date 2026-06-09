@@ -322,7 +322,7 @@ makespec(char *s)
 		fldno = 0;
 	} else if ((s[0] == '1' || s[0] == '2') && s[1] == '.') {
 		fileno = s[0] - '0';
-		fldno = estrtonum(&s[2], 1, MIN(LLONG_MAX, SIZE_MAX)) - 1;
+		fldno = estrtonum(&s[2], 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX)) - 1;
 	} else {
 		eprintf("%s: invalid format\n", s);
 	}
@@ -459,10 +459,10 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case '1':
-		jf[0] = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SIZE_MAX));
+		jf[0] = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case '2':
-		jf[1] = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SIZE_MAX));
+		jf[1] = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case 'a':
 		fno = EARGF(usage());

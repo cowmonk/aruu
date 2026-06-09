@@ -16,7 +16,7 @@ digitsleft(const char *d)
 	exp = strpbrk(d, "eE");
 	shift = exp ? estrtonum(exp + 1, INT_MIN, INT_MAX) : 0;
 
-	return MAX(0, strspn(d, "-0123456789") + shift);
+	return MAX(0, (int)strspn(d, "-0123456789") + shift);
 }
 
 static int

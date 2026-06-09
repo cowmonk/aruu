@@ -30,7 +30,7 @@ main(int argc, char *argv[])
 	ARGBEGIN {
 	case 'c':
 		cflag = 1;
-		chars = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SIZE_MAX));
+		chars = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	default:
 		usage();
@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 
 	if (!cflag) {
 		if ((p = getenv("COLUMNS")))
-			chars = estrtonum(p, 1, MIN(LLONG_MAX, SIZE_MAX));
+			chars = estrtonum(p, 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		else if (!ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) && w.ws_col > 0)
 			chars = w.ws_col;
 	}

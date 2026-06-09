@@ -32,7 +32,7 @@ psout(struct procstat *ps)
 {
 	struct procstatus pstatus;
 	char cmdline[BUFSIZ], *cmd;
-	char buf[BUFSIZ];
+	char buf[sizeof(cmdline) + sizeof(ps->comm) + 1024];
 	char ttystr[TTY_NAME_MAX], *myttystr;
 	int tty_maj, tty_min;
 	uid_t myeuid;

@@ -39,7 +39,7 @@ unescape(char *s)
 		} else if (is_odigit(*r)) {
 			for (q = 0, m = 3; m && is_odigit(*r); m--, r++)
 				q = q * 8 + (*r - '0');
-			*w++ = MIN(q, 255);
+			*w++ = MIN(q, (size_t)255);
 		} else if (*r == 'x' && isxdigit(r[1])) {
 			r++;
 			for (q = 0, m = 2; m && isxdigit(*r); m--, r++)

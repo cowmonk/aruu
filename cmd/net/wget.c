@@ -130,13 +130,18 @@ find_header(const char *headers, const char *name)
 static int
 stream_getc(struct Stream *s)
 {
+	ssize_t r;
+
 	if (s->idx < s->len) {
 		return (unsigned char)s->buf[s->idx++];
 	}
 	s->idx = 0;
-	s->len = read(s->fd, s->buf, sizeof(s->buf));
-	if (s->len <= 0)
+	r = read(s->fd, s->buf, sizeof(s->buf));
+	if (r <= 0) {
+		s->len = 0;
 		return EOF;
+	}
+	s->len = (size_t)r;
 	return (unsigned char)s->buf[s->idx++];
 }
 
@@ -146,6 +151,7 @@ stream_read(struct Stream *s, void *ptr, size_t size)
 	size_t total = 0;
 	size_t n;
 	char *p = ptr;
+	ssize_t r;
 
 	while (total < size) {
 		if (s->idx < s->len) {
@@ -155,9 +161,12 @@ stream_read(struct Stream *s, void *ptr, size_t size)
 			total += n;
 		} else {
 			s->idx = 0;
-			s->len = read(s->fd, s->buf, sizeof(s->buf));
-			if (s->len <= 0)
+			r = read(s->fd, s->buf, sizeof(s->buf));
+			if (r <= 0) {
+				s->len = 0;
 				break;
+			}
+			s->len = (size_t)r;
 		}
 	}
 	return total;

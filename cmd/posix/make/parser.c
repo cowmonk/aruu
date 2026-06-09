@@ -70,7 +70,7 @@ static Macro *
 lookup(char *name)
 {
 	Macro *mp;
-	int h = hash(name) & TABSIZ-1;
+	int h = hash(name) & (TABSIZ-1);
 
 	for (mp = htab[h]; mp && strcmp(mp->name, name); mp = mp->next)
 		;
@@ -305,7 +305,6 @@ trim(char *s)
 static void
 include(char *s)
 {
-	int len;
 	FILE *fp;
 	char *fil, *t;
 
@@ -471,8 +470,8 @@ expandmacro(char *name)
 static void
 replace(char *line, char *repl, char *to)
 {
-	int siz, at, len, replsiz, tosiz, sep, pos;
-	char *oline, *s, *cur, *buf;
+	int siz, at, len, replsiz, tosiz, pos;
+	char *oline, *cur, *buf;
 
 	debug("replacing '%s', with '%s' to '%s'", line, repl, to);
 	oline = line;
@@ -804,6 +803,7 @@ repeat:
 	case '#':
 		comment();
 		c = '\n';
+		/* fallthrough */
 	case ';':
 	case ':':
 	case '=':

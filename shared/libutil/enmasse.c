@@ -29,7 +29,7 @@ enmasse(int argc, char *argv[], int (*fn)(const char *, const char *, int))
 			len = snprintf(buf, sizeof(buf), "%s%s", dir, basename(argv[i]));
 		else
 			len = snprintf(buf, sizeof(buf), "%s/%s", dir, basename(argv[i]));
-		if (len < 0 || len >= sizeof(buf)) {
+		if (len < 0 || (size_t)len >= sizeof(buf)) {
 			eprintf("%s/%s: filename too long\n", dir,
 			        basename(argv[i]));
 		}

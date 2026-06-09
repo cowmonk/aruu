@@ -34,7 +34,7 @@ dropinit(int fd, const char *fname, size_t count)
 			}
 			break;
 		case 'c':  /* bytes */
-			if (count > n) {
+			if (count > (size_t)n) {
 				count -= n;
 			} else {
 				p = buf + count;
@@ -165,8 +165,8 @@ main(int argc, char *argv[])
 	case 'n':
 		mode = ARGC();
 		numstr = EARGF(usage());
-		n = MIN(llabs(estrtonum(numstr, LLONG_MIN + 1,
-		                        MIN(LLONG_MAX, SIZE_MAX))), SIZE_MAX);
+		n = MIN((unsigned long long)llabs(estrtonum(numstr, LLONG_MIN + 1,
+		                        MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX))), (unsigned long long)SIZE_MAX);
 		if (strchr(numstr, '+'))
 			tail = dropinit;
 		break;

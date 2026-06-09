@@ -25,7 +25,7 @@ main(int argc, char *argv[])
 {
 	size_t len;
 	long res;
-	int i;
+	size_t i;
 	char *str;
 
 	ARGBEGIN {

@@ -113,6 +113,7 @@ uudecodeb64(FILE *fp, FILE *outfp)
 				case 1:
 					eprintf("%d: unexpected \"=\""
 					        "appeared\n", l);
+					/* fallthrough */
 				case 2:
 					*po++ = b24[0];
 					b = 0;

@@ -193,7 +193,7 @@ main(int argc, char *argv[])
 					continue;
 				ret = 0;
 			}
-			if (ret < ibs) {
+			if ((size_t)ret < ibs) {
 				ipart++;
 				if (conv & SYNC) {
 					memset(buf + ipos + ret, 0, ibs - ret);
@@ -220,7 +220,7 @@ main(int argc, char *argv[])
 				eprintf("write:");
 			if (ret == 0)
 				eprintf("write returned 0\n");
-			if (ret < obs)
+			if ((size_t)ret < obs)
 				opart++;
 			else
 				ofull++;

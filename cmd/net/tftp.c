@@ -99,7 +99,7 @@ unpackerrc(unsigned char *buf)
 	int errc;
 
 	errc = (buf[2] << 8) | (buf[3] & 0xff);
-	if (errc < 0 || errc >= LEN(errtext))
+	if (errc < 0 || (size_t)errc >= LEN(errtext))
 		eprintf("bad error code: %d\n", errc);
 	return errc;
 }

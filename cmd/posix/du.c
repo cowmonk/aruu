@@ -98,7 +98,7 @@ du(int dirfd, const char *path, struct stat *st, void *data, struct recursor *r)
 print:
 	if (!r->depth)
 		printpath(*total, r->path);
-	else if (!sflag && r->depth <= maxdepth && (S_ISDIR(st->st_mode) || aflag))
+	else if (!sflag && (size_t)r->depth <= maxdepth && (S_ISDIR(st->st_mode) || aflag))
 		printpath(subtotal, r->path);
 }
 
@@ -122,7 +122,7 @@ main(int argc, char *argv[])
 		break;
 	case 'd':
 		dflag = 1;
-		maxdepth = estrtonum(EARGF(usage()), 0, MIN(LLONG_MAX, SIZE_MAX));
+		maxdepth = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	case 'h':
 		hflag = 1;
@@ -150,7 +150,7 @@ main(int argc, char *argv[])
 
 	bsize = getenv("BLOCKSIZE");
 	if (bsize)
-		blksize = estrtonum(bsize, 1, MIN(LLONG_MAX, SIZE_MAX));
+		blksize = estrtonum(bsize, 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 	if (kflag)
 		blksize = 1024;
 

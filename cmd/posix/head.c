@@ -37,7 +37,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'n':
-		n = estrtonum(EARGF(usage()), 0, MIN(LLONG_MAX, SIZE_MAX));
+		n = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
 	ARGNUM:
 		n = ARGNUMF();

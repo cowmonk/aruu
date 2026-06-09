@@ -36,7 +36,7 @@ static Target *
 lookup(char *name)
 {
 	Target *tp;
-	int h = hash(name) & TABSIZ-1;
+	int h = hash(name) & (TABSIZ-1);
 
 	for (tp = htab[h]; tp && strcmp(tp->name, name); tp = tp->next)
 		;
@@ -89,29 +89,14 @@ cleanup(Target *tp)
 static int
 depends(char *target, char *dep)
 {
-	int i;
 	Target **p, *tp = lookup(target);
 
 	for (p = tp->deps; p && *p; ++p) {
-		if (strcmp((*p)->name, target) == 0)
+		if (strcmp((*p)->name, dep) == 0)
 			return 1;
 	}
 
 	return 0;
-}
-
-static int
-is_suffix(char *s)
-{
-	int n;
-
-	if (s[0] != '.')
-		return 0;
-
-	for (n = 0; s = strchr(s, '.'); n++)
-		s++;
-
-	return n == 2;
 }
 
 void
@@ -152,7 +137,6 @@ addtarget(char *target, int ndeps)
 void
 adddep(char *target, char *dep)
 {
-	int i;
 	size_t siz;
 	Target **p, *tp = lookup(target);
 
@@ -213,8 +197,9 @@ static int
 execline(Target *tp, char *line, int ignore, int silence)
 {
 	char *s, *t;
-	Target *p, **q;
 	int r, at, plus, minus, l;
+
+	(void)tp;
 
 	debug("executing '%s'", line);
 
@@ -398,7 +383,7 @@ inference(Target *tp, int force)
 	to = strrchr(tp->name, '.');
 	if (to && !enabled(to))
 		return NULL;
-	tolen = to ? to - tp->name : strlen(tp->name);
+	tolen = to ? (int)(to - tp->name) : (int)strlen(tp->name);
 
 	if (!to)
 		to = "";
@@ -413,7 +398,7 @@ inference(Target *tp, int force)
 		             "%s%s",
 		             from, to);
 
-		if (r < 0 || r >= sizeof(buf))
+		if (r < 0 || (size_t)r >= sizeof(buf))
 			error("suffixes too long %s %s", from, to);
 
 		q = lookup(buf);
@@ -425,7 +410,7 @@ inference(Target *tp, int force)
 		             "%*.*s%s",
 		             tolen, tolen, tp->name, from);
 
-		if (r < 0 || r >= sizeof(fname)) {
+		if (r < 0 || (size_t)r >= sizeof(fname)) {
 			error("prerequisite name too long %s %s",
 			      tp->name, from);
 		}
@@ -492,7 +477,7 @@ update(Target *tp)
 static int 
 rebuild(Target *tp, int *buildp)
 {
-	Target **p, *q;;
+	Target **p, *q;
 	int r, need, build, err, def;
 
 	debug("checking rebuild of %s", tp->name);
@@ -565,7 +550,7 @@ rebuild(Target *tp, int *buildp)
 int
 build(char *name)
 {
-	int build, r;
+	int build;
 
 	if (!name) {
 		if (!deftarget) {

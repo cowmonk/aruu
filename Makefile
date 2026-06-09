@@ -97,11 +97,12 @@ LIBUTILOBJ =\
 	shared/libutil/proc.o\
 	shared/libutil/tty.o\
 	shared/libutil/fconcat.o\
-	shared/libutil/recurse_dir.o
+	shared/libutil/recurse_dir.o\
+	shared/libutil/sig.o
 
 LIB = shared/libutf/libutf.a shared/libutil/libutil.a
 
-POSIX_BIN =\
+POSIX_BIN_ALL =\
 	cmd/posix/basename\
 	cmd/posix/cal\
 	cmd/posix/cat\
@@ -175,9 +176,12 @@ POSIX_BIN =\
 	cmd/posix/uuencode\
 	cmd/posix/wc\
 	cmd/posix/who\
-	cmd/posix/xargs
+	cmd/posix/xargs\
+	cmd/posix/awk/awk\
+	cmd/posix/sh/sh\
+	cmd/posix/pax
 
-LINUX_BIN =\
+LINUX_BIN_ALL =\
 	cmd/linux/blkdiscard\
 	cmd/linux/chvt\
 	cmd/linux/ctrlaltdel\
@@ -207,7 +211,7 @@ LINUX_BIN =\
 	cmd/linux/uptime\
 	cmd/linux/vtallow
 
-NET_BIN =\
+NET_BIN_ALL =\
 	cmd/net/netcat\
 	cmd/net/tftp\
 	cmd/net/tunctl\
@@ -217,12 +221,12 @@ NET_BIN =\
 	cmd/net/host\
 	cmd/net/httpd
 
-XSI_BIN =\
+XSI_BIN_ALL =\
 	cmd/xsi/mknod\
 	cmd/xsi/passwd\
 	cmd/xsi/su
 
-PSEUDO_BIN =\
+PSEUDO_BIN_ALL =\
 	cmd/pseudo/chroot\
 	cmd/pseudo/clear\
 	cmd/pseudo/cols\
@@ -259,7 +263,8 @@ PSEUDO_BIN =\
 	cmd/pseudo/which\
 	cmd/pseudo/whoami\
 	cmd/pseudo/xinstall\
-	cmd/pseudo/yes
+	cmd/pseudo/yes\
+	cmd/pseudo/base64
 
 MAKEOBJ =\
 	cmd/posix/make/defaults.o\
@@ -268,13 +273,340 @@ MAKEOBJ =\
 	cmd/posix/make/posix.o\
 	cmd/posix/make/rules.o
 
+BIN_basename_1 = cmd/posix/basename
+BIN_cal_1 = cmd/posix/cal
+BIN_cat_1 = cmd/posix/cat
+BIN_chgrp_1 = cmd/posix/chgrp
+BIN_chmod_1 = cmd/posix/chmod
+BIN_chown_1 = cmd/posix/chown
+BIN_cksum_1 = cmd/posix/cksum
+BIN_cmp_1 = cmd/posix/cmp
+BIN_comm_1 = cmd/posix/comm
+BIN_cp_1 = cmd/posix/cp
+BIN_cut_1 = cmd/posix/cut
+BIN_date_1 = cmd/posix/date
+BIN_dd_1 = cmd/posix/dd
+BIN_df_1 = cmd/posix/df
+BIN_dirname_1 = cmd/posix/dirname
+BIN_du_1 = cmd/posix/du
+BIN_echo_1 = cmd/posix/echo
+BIN_ed_1 = cmd/posix/ed
+BIN_env_1 = cmd/posix/env
+BIN_expand_1 = cmd/posix/expand
+BIN_expr_1 = cmd/posix/expr
+BIN_false_1 = cmd/posix/false
+BIN_find_1 = cmd/posix/find
+BIN_fold_1 = cmd/posix/fold
+BIN_getconf_1 = cmd/posix/getconf
+BIN_grep_1 = cmd/posix/grep
+BIN_head_1 = cmd/posix/head
+BIN_id_1 = cmd/posix/id
+BIN_join_1 = cmd/posix/join
+BIN_kill_1 = cmd/posix/kill
+BIN_link_1 = cmd/posix/link
+BIN_ln_1 = cmd/posix/ln
+BIN_logger_1 = cmd/posix/logger
+BIN_logname_1 = cmd/posix/logname
+BIN_ls_1 = cmd/posix/ls
+BIN_mesg_1 = cmd/posix/mesg
+BIN_mkdir_1 = cmd/posix/mkdir
+BIN_mkfifo_1 = cmd/posix/mkfifo
+BIN_mv_1 = cmd/posix/mv
+BIN_nice_1 = cmd/posix/nice
+BIN_nl_1 = cmd/posix/nl
+BIN_nohup_1 = cmd/posix/nohup
+BIN_od_1 = cmd/posix/od
+BIN_paste_1 = cmd/posix/paste
+BIN_pathchk_1 = cmd/posix/pathchk
+BIN_printf_1 = cmd/posix/printf
+BIN_ps_1 = cmd/posix/ps
+BIN_pwd_1 = cmd/posix/pwd
+BIN_readlink_1 = cmd/posix/readlink
+BIN_renice_1 = cmd/posix/renice
+BIN_rm_1 = cmd/posix/rm
+BIN_rmdir_1 = cmd/posix/rmdir
+BIN_sed_1 = cmd/posix/sed
+BIN_sleep_1 = cmd/posix/sleep
+BIN_sort_1 = cmd/posix/sort
+BIN_split_1 = cmd/posix/split
+BIN_tail_1 = cmd/posix/tail
+BIN_tee_1 = cmd/posix/tee
+BIN_test_1 = cmd/posix/test
+BIN_time_1 = cmd/posix/time
+BIN_touch_1 = cmd/posix/touch
+BIN_tr_1 = cmd/posix/tr
+BIN_true_1 = cmd/posix/true
+BIN_tsort_1 = cmd/posix/tsort
+BIN_tty_1 = cmd/posix/tty
+BIN_uname_1 = cmd/posix/uname
+BIN_unexpand_1 = cmd/posix/unexpand
+BIN_uniq_1 = cmd/posix/uniq
+BIN_unlink_1 = cmd/posix/unlink
+BIN_uudecode_1 = cmd/posix/uudecode
+BIN_uuencode_1 = cmd/posix/uuencode
+BIN_wc_1 = cmd/posix/wc
+BIN_who_1 = cmd/posix/who
+BIN_xargs_1 = cmd/posix/xargs
+BIN_awk_1 = cmd/posix/awk/awk
+BIN_sh_1 = cmd/posix/sh/sh
+BIN_pax_1 = cmd/posix/pax
+
+BIN_blkdiscard_1 = cmd/linux/blkdiscard
+BIN_chvt_1 = cmd/linux/chvt
+BIN_ctrlaltdel_1 = cmd/linux/ctrlaltdel
+BIN_dmesg_1 = cmd/linux/dmesg
+BIN_eject_1 = cmd/linux/eject
+BIN_fallocate_1 = cmd/linux/fallocate
+BIN_free_1 = cmd/linux/free
+BIN_freeramdisk_1 = cmd/linux/freeramdisk
+BIN_fsfreeze_1 = cmd/linux/fsfreeze
+BIN_hwclock_1 = cmd/linux/hwclock
+BIN_insmod_1 = cmd/linux/insmod
+BIN_lsmod_1 = cmd/linux/lsmod
+BIN_mkswap_1 = cmd/linux/mkswap
+BIN_mount_1 = cmd/linux/mount
+BIN_mountpoint_1 = cmd/linux/mountpoint
+BIN_pidof_1 = cmd/linux/pidof
+BIN_pivot_root_1 = cmd/linux/pivot_root
+BIN_pwdx_1 = cmd/linux/pwdx
+BIN_readahead_1 = cmd/linux/readahead
+BIN_rmmod_1 = cmd/linux/rmmod
+BIN_swaplabel_1 = cmd/linux/swaplabel
+BIN_swapoff_1 = cmd/linux/swapoff
+BIN_swapon_1 = cmd/linux/swapon
+BIN_switch_root_1 = cmd/linux/switch_root
+BIN_umount_1 = cmd/linux/umount
+BIN_unshare_1 = cmd/linux/unshare
+BIN_uptime_1 = cmd/linux/uptime
+BIN_vtallow_1 = cmd/linux/vtallow
+
+BIN_netcat_1 = cmd/net/netcat
+BIN_tftp_1 = cmd/net/tftp
+BIN_tunctl_1 = cmd/net/tunctl
+BIN_wget_1 = cmd/net/wget
+BIN_ping_1 = cmd/net/ping
+BIN_ifconfig_1 = cmd/net/ifconfig
+BIN_host_1 = cmd/net/host
+BIN_httpd_1 = cmd/net/httpd
+
+BIN_mknod_1 = cmd/xsi/mknod
+BIN_passwd_1 = cmd/xsi/passwd
+BIN_su_1 = cmd/xsi/su
+
+BIN_chroot_1 = cmd/pseudo/chroot
+BIN_clear_1 = cmd/pseudo/clear
+BIN_cols_1 = cmd/pseudo/cols
+BIN_cron_1 = cmd/pseudo/cron
+BIN_flock_1 = cmd/pseudo/flock
+BIN_getty_1 = cmd/pseudo/getty
+BIN_halt_1 = cmd/pseudo/halt
+BIN_hostname_1 = cmd/pseudo/hostname
+BIN_killall5_1 = cmd/pseudo/killall5
+BIN_last_1 = cmd/pseudo/last
+BIN_lastlog_1 = cmd/pseudo/lastlog
+BIN_login_1 = cmd/pseudo/login
+BIN_md5sum_1 = cmd/pseudo/md5sum
+BIN_mktemp_1 = cmd/pseudo/mktemp
+BIN_nologin_1 = cmd/pseudo/nologin
+BIN_pagesize_1 = cmd/pseudo/pagesize
+BIN_printenv_1 = cmd/pseudo/printenv
+BIN_respawn_1 = cmd/pseudo/respawn
+BIN_rev_1 = cmd/pseudo/rev
+BIN_seq_1 = cmd/pseudo/seq
+BIN_setsid_1 = cmd/pseudo/setsid
+BIN_sha1sum_1 = cmd/pseudo/sha1sum
+BIN_sha224sum_1 = cmd/pseudo/sha224sum
+BIN_sha256sum_1 = cmd/pseudo/sha256sum
+BIN_sha384sum_1 = cmd/pseudo/sha384sum
+BIN_sha512sum_1 = cmd/pseudo/sha512sum
+BIN_sha512_224sum_1 = cmd/pseudo/sha512-224sum
+BIN_sha512_256sum_1 = cmd/pseudo/sha512-256sum
+BIN_sponge_1 = cmd/pseudo/sponge
+BIN_stat_1 = cmd/pseudo/stat
+BIN_tar_1 = cmd/pseudo/tar
+BIN_truncate_1 = cmd/pseudo/truncate
+BIN_watch_1 = cmd/pseudo/watch
+BIN_which_1 = cmd/pseudo/which
+BIN_whoami_1 = cmd/pseudo/whoami
+BIN_xinstall_1 = cmd/pseudo/xinstall
+BIN_yes_1 = cmd/pseudo/yes
+BIN_base64_1 = cmd/pseudo/base64
+
+BIN_make_tool_1 = cmd/posix/make/make
+
+POSIX_BIN = \
+	$(BIN_basename_$(BUILD_POSIX_BASENAME)) \
+	$(BIN_cal_$(BUILD_POSIX_CAL)) \
+	$(BIN_cat_$(BUILD_POSIX_CAT)) \
+	$(BIN_chgrp_$(BUILD_POSIX_CHGRP)) \
+	$(BIN_chmod_$(BUILD_POSIX_CHMOD)) \
+	$(BIN_chown_$(BUILD_POSIX_CHOWN)) \
+	$(BIN_cksum_$(BUILD_POSIX_CKSUM)) \
+	$(BIN_cmp_$(BUILD_POSIX_CMP)) \
+	$(BIN_comm_$(BUILD_POSIX_COMM)) \
+	$(BIN_cp_$(BUILD_POSIX_CP)) \
+	$(BIN_cut_$(BUILD_POSIX_CUT)) \
+	$(BIN_date_$(BUILD_POSIX_DATE)) \
+	$(BIN_dd_$(BUILD_POSIX_DD)) \
+	$(BIN_df_$(BUILD_POSIX_DF)) \
+	$(BIN_dirname_$(BUILD_POSIX_DIRNAME)) \
+	$(BIN_du_$(BUILD_POSIX_DU)) \
+	$(BIN_echo_$(BUILD_POSIX_ECHO)) \
+	$(BIN_ed_$(BUILD_POSIX_ED)) \
+	$(BIN_env_$(BUILD_POSIX_ENV)) \
+	$(BIN_expand_$(BUILD_POSIX_EXPAND)) \
+	$(BIN_expr_$(BUILD_POSIX_EXPR)) \
+	$(BIN_false_$(BUILD_POSIX_FALSE)) \
+	$(BIN_find_$(BUILD_POSIX_FIND)) \
+	$(BIN_fold_$(BUILD_POSIX_FOLD)) \
+	$(BIN_getconf_$(BUILD_POSIX_GETCONF)) \
+	$(BIN_grep_$(BUILD_POSIX_GREP)) \
+	$(BIN_head_$(BUILD_POSIX_HEAD)) \
+	$(BIN_id_$(BUILD_POSIX_ID)) \
+	$(BIN_join_$(BUILD_POSIX_JOIN)) \
+	$(BIN_kill_$(BUILD_POSIX_KILL)) \
+	$(BIN_link_$(BUILD_POSIX_LINK)) \
+	$(BIN_ln_$(BUILD_POSIX_LN)) \
+	$(BIN_logger_$(BUILD_POSIX_LOGGER)) \
+	$(BIN_logname_$(BUILD_POSIX_LOGNAME)) \
+	$(BIN_ls_$(BUILD_POSIX_LS)) \
+	$(BIN_mesg_$(BUILD_POSIX_MESG)) \
+	$(BIN_mkdir_$(BUILD_POSIX_MKDIR)) \
+	$(BIN_mkfifo_$(BUILD_POSIX_MKFIFO)) \
+	$(BIN_mv_$(BUILD_POSIX_MV)) \
+	$(BIN_nice_$(BUILD_POSIX_NICE)) \
+	$(BIN_nl_$(BUILD_POSIX_NL)) \
+	$(BIN_nohup_$(BUILD_POSIX_NOHUP)) \
+	$(BIN_od_$(BUILD_POSIX_OD)) \
+	$(BIN_paste_$(BUILD_POSIX_PASTE)) \
+	$(BIN_pathchk_$(BUILD_POSIX_PATHCHK)) \
+	$(BIN_printf_$(BUILD_POSIX_PRINTF)) \
+	$(BIN_ps_$(BUILD_POSIX_PS)) \
+	$(BIN_pwd_$(BUILD_POSIX_PWD)) \
+	$(BIN_readlink_$(BUILD_POSIX_READLINK)) \
+	$(BIN_renice_$(BUILD_POSIX_RENICE)) \
+	$(BIN_rm_$(BUILD_POSIX_RM)) \
+	$(BIN_rmdir_$(BUILD_POSIX_RMDIR)) \
+	$(BIN_sed_$(BUILD_POSIX_SED)) \
+	$(BIN_sleep_$(BUILD_POSIX_SLEEP)) \
+	$(BIN_sort_$(BUILD_POSIX_SORT)) \
+	$(BIN_split_$(BUILD_POSIX_SPLIT)) \
+	$(BIN_tail_$(BUILD_POSIX_TAIL)) \
+	$(BIN_tee_$(BUILD_POSIX_TEE)) \
+	$(BIN_test_$(BUILD_POSIX_TEST)) \
+	$(BIN_time_$(BUILD_POSIX_TIME)) \
+	$(BIN_touch_$(BUILD_POSIX_TOUCH)) \
+	$(BIN_tr_$(BUILD_POSIX_TR)) \
+	$(BIN_true_$(BUILD_POSIX_TRUE)) \
+	$(BIN_tsort_$(BUILD_POSIX_TSORT)) \
+	$(BIN_tty_$(BUILD_POSIX_TTY)) \
+	$(BIN_uname_$(BUILD_POSIX_UNAME)) \
+	$(BIN_unexpand_$(BUILD_POSIX_UNEXPAND)) \
+	$(BIN_uniq_$(BUILD_POSIX_UNIQ)) \
+	$(BIN_unlink_$(BUILD_POSIX_UNLINK)) \
+	$(BIN_uudecode_$(BUILD_POSIX_UUDECODE)) \
+	$(BIN_uuencode_$(BUILD_POSIX_UUENCODE)) \
+	$(BIN_wc_$(BUILD_POSIX_WC)) \
+	$(BIN_who_$(BUILD_POSIX_WHO)) \
+	$(BIN_xargs_$(BUILD_POSIX_XARGS)) \
+	$(BIN_awk_$(BUILD_POSIX_AWK)) \
+	$(BIN_sh_$(BUILD_POSIX_SH)) \
+	$(BIN_pax_$(BUILD_POSIX_PAX))
+
+LINUX_BIN = \
+	$(BIN_blkdiscard_$(BUILD_LINUX_BLKDISCARD)) \
+	$(BIN_chvt_$(BUILD_LINUX_CHVT)) \
+	$(BIN_ctrlaltdel_$(BUILD_LINUX_CTRLALTDEL)) \
+	$(BIN_dmesg_$(BUILD_LINUX_DMESG)) \
+	$(BIN_eject_$(BUILD_LINUX_EJECT)) \
+	$(BIN_fallocate_$(BUILD_LINUX_FALLOCATE)) \
+	$(BIN_free_$(BUILD_LINUX_FREE)) \
+	$(BIN_freeramdisk_$(BUILD_LINUX_FREERAMDISK)) \
+	$(BIN_fsfreeze_$(BUILD_LINUX_FSFREEZE)) \
+	$(BIN_hwclock_$(BUILD_LINUX_HWCLOCK)) \
+	$(BIN_insmod_$(BUILD_LINUX_INSMOD)) \
+	$(BIN_lsmod_$(BUILD_LINUX_LSMOD)) \
+	$(BIN_mkswap_$(BUILD_LINUX_MKSWAP)) \
+	$(BIN_mount_$(BUILD_LINUX_MOUNT)) \
+	$(BIN_mountpoint_$(BUILD_LINUX_MOUNTPOINT)) \
+	$(BIN_pidof_$(BUILD_LINUX_PIDOF)) \
+	$(BIN_pivot_root_$(BUILD_LINUX_PIVOT_ROOT)) \
+	$(BIN_pwdx_$(BUILD_LINUX_PWDX)) \
+	$(BIN_readahead_$(BUILD_LINUX_READAHEAD)) \
+	$(BIN_rmmod_$(BUILD_LINUX_RMMOD)) \
+	$(BIN_swaplabel_$(BUILD_LINUX_SWAPLABEL)) \
+	$(BIN_swapoff_$(BUILD_LINUX_SWAPOFF)) \
+	$(BIN_swapon_$(BUILD_LINUX_SWAPON)) \
+	$(BIN_switch_root_$(BUILD_LINUX_SWITCH_ROOT)) \
+	$(BIN_umount_$(BUILD_LINUX_UMOUNT)) \
+	$(BIN_unshare_$(BUILD_LINUX_UNSHARE)) \
+	$(BIN_uptime_$(BUILD_LINUX_UPTIME)) \
+	$(BIN_vtallow_$(BUILD_LINUX_VTALLOW))
+
+NET_BIN = \
+	$(BIN_netcat_$(BUILD_NET_NETCAT)) \
+	$(BIN_tftp_$(BUILD_NET_TFTP)) \
+	$(BIN_tunctl_$(BUILD_NET_TUNCTL)) \
+	$(BIN_wget_$(BUILD_NET_WGET)) \
+	$(BIN_ping_$(BUILD_NET_PING)) \
+	$(BIN_ifconfig_$(BUILD_NET_IFCONFIG)) \
+	$(BIN_host_$(BUILD_NET_HOST)) \
+	$(BIN_httpd_$(BUILD_NET_HTTPD))
+
+XSI_BIN = \
+	$(BIN_mknod_$(BUILD_XSI_MKNOD)) \
+	$(BIN_passwd_$(BUILD_XSI_PASSWD)) \
+	$(BIN_su_$(BUILD_XSI_SU))
+
+PSEUDO_BIN = \
+	$(BIN_chroot_$(BUILD_PSEUDO_CHROOT)) \
+	$(BIN_clear_$(BUILD_PSEUDO_CLEAR)) \
+	$(BIN_cols_$(BUILD_PSEUDO_COLS)) \
+	$(BIN_cron_$(BUILD_PSEUDO_CRON)) \
+	$(BIN_flock_$(BUILD_PSEUDO_FLOCK)) \
+	$(BIN_getty_$(BUILD_PSEUDO_GETTY)) \
+	$(BIN_halt_$(BUILD_PSEUDO_HALT)) \
+	$(BIN_hostname_$(BUILD_PSEUDO_HOSTNAME)) \
+	$(BIN_killall5_$(BUILD_PSEUDO_KILLALL5)) \
+	$(BIN_last_$(BUILD_PSEUDO_LAST)) \
+	$(BIN_lastlog_$(BUILD_PSEUDO_LASTLOG)) \
+	$(BIN_login_$(BUILD_PSEUDO_LOGIN)) \
+	$(BIN_md5sum_$(BUILD_PSEUDO_MD5SUM)) \
+	$(BIN_mktemp_$(BUILD_PSEUDO_MKTEMP)) \
+	$(BIN_nologin_$(BUILD_PSEUDO_NOLOGIN)) \
+	$(BIN_pagesize_$(BUILD_PSEUDO_PAGESIZE)) \
+	$(BIN_printenv_$(BUILD_PSEUDO_PRINTENV)) \
+	$(BIN_respawn_$(BUILD_PSEUDO_RESPAWN)) \
+	$(BIN_rev_$(BUILD_PSEUDO_REV)) \
+	$(BIN_seq_$(BUILD_PSEUDO_SEQ)) \
+	$(BIN_setsid_$(BUILD_PSEUDO_SETSID)) \
+	$(BIN_sha1sum_$(BUILD_PSEUDO_SHA1SUM)) \
+	$(BIN_sha224sum_$(BUILD_PSEUDO_SHA224SUM)) \
+	$(BIN_sha256sum_$(BUILD_PSEUDO_SHA256SUM)) \
+	$(BIN_sha384sum_$(BUILD_PSEUDO_SHA384SUM)) \
+	$(BIN_sha512sum_$(BUILD_PSEUDO_SHA512SUM)) \
+	$(BIN_sha512_224sum_$(BUILD_PSEUDO_SHA512_224SUM)) \
+	$(BIN_sha512_256sum_$(BUILD_PSEUDO_SHA512_256SUM)) \
+	$(BIN_sponge_$(BUILD_PSEUDO_SPONGE)) \
+	$(BIN_stat_$(BUILD_PSEUDO_STAT)) \
+	$(BIN_tar_$(BUILD_PSEUDO_TAR)) \
+	$(BIN_truncate_$(BUILD_PSEUDO_TRUNCATE)) \
+	$(BIN_watch_$(BUILD_PSEUDO_WATCH)) \
+	$(BIN_which_$(BUILD_PSEUDO_WHICH)) \
+	$(BIN_whoami_$(BUILD_PSEUDO_WHOAMI)) \
+	$(BIN_xinstall_$(BUILD_PSEUDO_XINSTALL)) \
+	$(BIN_yes_$(BUILD_PSEUDO_YES)) \
+	$(BIN_base64_$(BUILD_PSEUDO_BASE64))
+
+MAKE_BIN = $(BIN_make_tool_$(BUILD_MAKE_MAKE))
+
 OBJ = $(LIBUTFOBJ) $(LIBUTILOBJ) $(MAKEOBJ)
 
-all: $(LIB) $(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN) cmd/posix/make/make
+all: $(LIB) $(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN) $(MAKE_BIN)
 
-$(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN): $(LIB)
+$(POSIX_BIN_ALL) $(LINUX_BIN_ALL) $(NET_BIN_ALL) $(XSI_BIN_ALL) $(PSEUDO_BIN_ALL): $(LIB)
 
-$(OBJ) $(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN): $(HDR)
+$(OBJ) $(POSIX_BIN_ALL) $(LINUX_BIN_ALL) $(NET_BIN_ALL) $(XSI_BIN_ALL) $(PSEUDO_BIN_ALL): $(HDR)
 
 .o:
 	$(CC) $(LDFLAGS) -o $@ $< $(LIB) $(LDLIBS)
@@ -315,7 +647,106 @@ box: $(LIB)
 	scripts/mkbox
 
 clean:
-	rm -f shared/libutf/*.o shared/libutil/*.o cmd/posix/make/*.o
-	rm -f $(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN) $(LIB)
+	rm -f shared/libutf/*.o shared/libutil/*.o cmd/posix/make/*.o cmd/posix/awk/*.o cmd/posix/sh/*.o cmd/dev/ar/*.o cmd/dev/ld/*.o
+	rm -f $(POSIX_BIN_ALL) $(LINUX_BIN_ALL) $(NET_BIN_ALL) $(XSI_BIN_ALL) $(PSEUDO_BIN_ALL) $(LIB)
 	rm -f cmd/posix/make/make cmd/posix/getconf.h cmd/posix/bc.c
+	rm -f cmd/posix/awk/awk cmd/posix/awk/maketab cmd/posix/awk/awkgram.tab.c cmd/posix/awk/awkgram.tab.h cmd/posix/awk/proctab.c
+	rm -f cmd/posix/sh/sh cmd/posix/sh/mknodes cmd/posix/sh/mksyntax
+	rm -f cmd/posix/sh/syntax.c cmd/posix/sh/syntax.h cmd/posix/sh/nodes.c cmd/posix/sh/nodes.h cmd/posix/sh/builtins.c cmd/posix/sh/builtins.h cmd/posix/sh/token.h
 	rm -rf aruu-box .box
+
+AWKOBJ =\
+	cmd/posix/awk/b.o\
+	cmd/posix/awk/main.o\
+	cmd/posix/awk/parse.o\
+	cmd/posix/awk/proctab.o\
+	cmd/posix/awk/tran.o\
+	cmd/posix/awk/lib.o\
+	cmd/posix/awk/run.o\
+	cmd/posix/awk/lex.o\
+	cmd/posix/awk/math.o\
+	cmd/posix/awk/awkgram.tab.o
+
+SH_GENHDRS =\
+	cmd/posix/sh/syntax.h\
+	cmd/posix/sh/nodes.h\
+	cmd/posix/sh/builtins.h\
+	cmd/posix/sh/token.h
+
+SHOBJ =\
+	cmd/posix/sh/alias.o\
+	cmd/posix/sh/arith_yacc.o\
+	cmd/posix/sh/arith_yylex.o\
+	cmd/posix/sh/cd.o\
+	cmd/posix/sh/echo.o\
+	cmd/posix/sh/error.o\
+	cmd/posix/sh/eval.o\
+	cmd/posix/sh/exec.o\
+	cmd/posix/sh/expand.o\
+	cmd/posix/sh/histedit.o\
+	cmd/posix/sh/input.o\
+	cmd/posix/sh/jobs.o\
+	cmd/posix/sh/kill.o\
+	cmd/posix/sh/mail.o\
+	cmd/posix/sh/main.o\
+	cmd/posix/sh/memalloc.o\
+	cmd/posix/sh/miscbltin.o\
+	cmd/posix/sh/mystring.o\
+	cmd/posix/sh/options.o\
+	cmd/posix/sh/output.o\
+	cmd/posix/sh/parser.o\
+	cmd/posix/sh/printf.o\
+	cmd/posix/sh/redir.o\
+	cmd/posix/sh/show.o\
+	cmd/posix/sh/test.o\
+	cmd/posix/sh/trap.o\
+	cmd/posix/sh/var.o\
+	cmd/posix/sh/builtins.o\
+	cmd/posix/sh/nodes.o\
+	cmd/posix/sh/syntax.o
+
+cmd/posix/awk/awkgram.tab.c cmd/posix/awk/awkgram.tab.h: cmd/posix/awk/awkgram.y
+	$(YACC) -d -o cmd/posix/awk/awkgram.tab.c cmd/posix/awk/awkgram.y
+
+cmd/posix/awk/maketab: cmd/posix/awk/maketab.c cmd/posix/awk/awkgram.tab.h
+	$(CC) $(CFLAGS) -o $@ cmd/posix/awk/maketab.c
+
+cmd/posix/awk/proctab.c: cmd/posix/awk/maketab
+	cmd/posix/awk/maketab cmd/posix/awk/awkgram.tab.h > $@
+
+$(AWKOBJ): cmd/posix/awk/awk.h cmd/posix/awk/awkgram.tab.h cmd/posix/awk/proto.h
+
+cmd/posix/awk/%.o: cmd/posix/awk/%.c
+	$(CC) $(CPPFLAGS) -Icmd/posix/awk $(CFLAGS) -o $@ -c $<
+
+cmd/posix/awk/awk: $(AWKOBJ) $(LIB)
+	$(CC) $(LDFLAGS) -o $@ $(AWKOBJ) $(LIB) $(LDLIBS) -lm
+
+cmd/posix/sh/mknodes: cmd/posix/sh/mknodes.c
+	$(CC) $(CFLAGS) -o $@ cmd/posix/sh/mknodes.c
+
+cmd/posix/sh/mksyntax: cmd/posix/sh/mksyntax.c
+	$(CC) $(CPPFLAGS) -Icmd/posix/sh $(CFLAGS) -o $@ cmd/posix/sh/mksyntax.c
+
+cmd/posix/sh/syntax.c cmd/posix/sh/syntax.h: cmd/posix/sh/mksyntax
+	cd cmd/posix/sh && ./mksyntax
+
+cmd/posix/sh/nodes.c cmd/posix/sh/nodes.h: cmd/posix/sh/mknodes cmd/posix/sh/nodetypes cmd/posix/sh/nodes.c.pat
+	cd cmd/posix/sh && ./mknodes nodetypes nodes.c.pat
+
+cmd/posix/sh/builtins.c cmd/posix/sh/builtins.h: cmd/posix/sh/mkbuiltins cmd/posix/sh/builtins.def cmd/posix/sh/shell.h
+	cd cmd/posix/sh && sh mkbuiltins .
+
+cmd/posix/sh/token.h: cmd/posix/sh/mktokens
+	cd cmd/posix/sh && sh mktokens
+
+$(SHOBJ): $(SH_GENHDRS)
+
+cmd/posix/sh/%.o: cmd/posix/sh/%.c
+	$(CC) $(CPPFLAGS) -DSHELL -Icmd/posix/sh $(CFLAGS) -o $@ -c $<
+
+cmd/posix/sh/sh: $(SHOBJ) $(LIB)
+	$(CC) $(LDFLAGS) -o $@ $(SHOBJ) $(LIB) $(LDLIBS)
+
+cmd/pseudo/base64: cmd/pseudo/base64.o $(LIB)
+	$(CC) $(LDFLAGS) -o $@ cmd/pseudo/base64.o $(LIB) $(LDLIBS)

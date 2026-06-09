@@ -1,4 +1,7 @@
 /* See LICENSE file for copyright and license details. */
+#include "sig.h"
+#include "util.h"
+
 #include <sys/wait.h>
 
 #include <ctype.h>
@@ -8,45 +11,28 @@
 #include <string.h>
 #include <strings.h>
 
-#include "util.h"
-
-struct {
-	const char *name;
-	const int   sig;
-} sigs[] = {
-	{ "0", 0 },
-#define SIG(n) { #n, SIG##n }
-	SIG(ABRT), SIG(ALRM), SIG(BUS),  SIG(CHLD), SIG(CONT), SIG(FPE),  SIG(HUP),
-	SIG(ILL),  SIG(INT),  SIG(KILL), SIG(PIPE), SIG(QUIT), SIG(SEGV), SIG(STOP),
-	SIG(TERM), SIG(TRAP), SIG(TSTP), SIG(TTIN), SIG(TTOU), SIG(USR1), SIG(USR2),
-	SIG(URG),
-#undef SIG
-};
-
-const char *
-sig2name(const int sig)
+static const char *
+sig2name(int sig)
 {
-	size_t i;
+	static char name[SIG2STR_MAX];
 
-	for (i = 0; i < LEN(sigs); i++)
-		if (sigs[i].sig == sig)
-			return sigs[i].name;
-	eprintf("%d: bad signal number\n", sig);
-
-	return NULL; /* not reached */
+	if (sig == 0)
+		return "0";
+	if (sig2str(sig, name) < 0)
+		eprintf("%d: bad signal number\n", sig);
+	return name;
 }
 
-int
+static int
 name2sig(const char *name)
 {
-	size_t i;
+	int sig;
 
-	for (i = 0; i < LEN(sigs); i++)
-		if (!strcasecmp(sigs[i].name, name))
-			return sigs[i].sig;
-	eprintf("%s: bad signal name\n", name);
-
-	return -1; /* not reached */
+	if (strcmp(name, "0") == 0)
+		return 0;
+	if (str2sig(name, &sig) < 0)
+		eprintf("%s: bad signal name\n", name);
+	return sig;
 }
 
 static void
@@ -75,8 +61,9 @@ main(int argc, char *argv[])
 				goto longopt;
 			argc--, argv++;
 			if (!argc) {
-				for (i = 0; i < LEN(sigs); i++)
-					puts(sigs[i].name);
+				for (i = 1; i < (size_t)sys_nsig; i++)
+					if (sys_signame[i])
+						puts(sys_signame[i]);
 			} else if (argc == 1) {
 				sig = estrtonum(*argv, 0, INT_MAX);
 				if (sig > 128)

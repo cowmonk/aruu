@@ -1,12 +1,12 @@
-/* See LICENSE file for copyright and license details. */
+#include "config.h"
+#include "queue.h"
+#include "util.h"
+
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-
-#include "queue.h"
-#include "util.h"
 
 enum { Match = 0, NoMatch = 1, Error = 2 };
 
@@ -27,6 +27,13 @@ static int wflag;
 static int xflag;
 static int many;
 static int mode;
+#if FEATURE_GREP_CONTEXT
+static long Aflag = 0;
+static long Bflag = 0;
+#endif
+#if FEATURE_GREP_MAX_COUNT
+static long mval = -1;
+#endif
 
 struct pattern {
 	regex_t preg;
@@ -75,6 +82,18 @@ addpatternfile(FILE *fp)
 		enprintf(Error, "read error:");
 }
 
+#if FEATURE_GREP_CONTEXT
+static void
+print_line(const char *str, const char *line, long line_no, char sep)
+{
+	if (!hflag && (many || Hflag))
+		printf("%s%c", str, sep);
+	if (mode == 'n')
+		printf("%ld%c", line_no, sep);
+	puts(line);
+}
+#endif
+
 static int
 grep(FILE *fp, const char *str)
 {
@@ -84,9 +103,24 @@ grep(FILE *fp, const char *str)
 	long c = 0, n;
 	struct pattern *pnode;
 	int match, result = NoMatch;
+#if FEATURE_GREP_MAX_COUNT
+	long matches = 0;
+#endif
+#if FEATURE_GREP_CONTEXT
+	struct context_line {
+		char *str;
+		long line_no;
+	} *before_buf = NULL;
+	size_t before_head = 0, before_count = 0, i = 0, idx = 0;
+	long after_left = 0;
+	long last_printed_line = 0;
+
+	if (Bflag > 0 && !(mode == 'c' || mode == 'l' || mode == 'q'))
+		before_buf = ecalloc(Bflag, sizeof(*before_buf));
+#endif
 
 	for (n = 1; (len = getline(&buf, &size, fp)) > 0; n++) {
-		/* Remove the trailing newline if one is present. */
+		/* remove the trailing newline if one is present */
 		if (buf[len - 1] == '\n')
 			buf[len - 1] = '\0';
 		match = 0;
@@ -112,6 +146,9 @@ grep(FILE *fp, const char *str)
 		}
 		if (match != vflag) {
 			result = Match;
+#if FEATURE_GREP_MAX_COUNT
+			matches++;
+#endif
 			switch (mode) {
 			case 'c':
 				c++;
@@ -122,18 +159,69 @@ grep(FILE *fp, const char *str)
 			case 'q':
 				exit(Match);
 			default:
-				if (!hflag && (many || Hflag))
-					printf("%s:", str);
-				if (mode == 'n')
-					printf("%ld:", n);
-				puts(buf);
+#if FEATURE_GREP_CONTEXT
+				if (Aflag > 0 || Bflag > 0) {
+					if (last_printed_line > 0 && n > last_printed_line + 1)
+						puts("--");
+					for (i = 0; i < before_count; i++) {
+						idx = (before_head - before_count + i + Bflag) % Bflag;
+						print_line(str, before_buf[idx].str, before_buf[idx].line_no, '-');
+						free(before_buf[idx].str);
+						before_buf[idx].str = NULL;
+					}
+					before_count = 0;
+					before_head = 0;
+					print_line(str, buf, n, ':');
+					after_left = Aflag;
+					last_printed_line = n;
+				} else {
+#endif
+					if (!hflag && (many || Hflag))
+						printf("%s:", str);
+					if (mode == 'n')
+						printf("%ld:", n);
+					puts(buf);
+#if FEATURE_GREP_CONTEXT
+				}
+#endif
 				break;
 			}
+#if FEATURE_GREP_MAX_COUNT
+			if (mval >= 0 && matches >= mval)
+				goto end;
+#endif
 		}
+#if FEATURE_GREP_CONTEXT
+		else if (Aflag > 0 || Bflag > 0) {
+			if (mode != 'c' && mode != 'l' && mode != 'q') {
+				if (after_left > 0) {
+					print_line(str, buf, n, '-');
+					after_left--;
+					last_printed_line = n;
+				}
+				if (Bflag > 0) {
+					if (before_count == (size_t)Bflag)
+						free(before_buf[before_head].str);
+					before_buf[before_head].str = estrdup(buf);
+					before_buf[before_head].line_no = n;
+					before_head = (before_head + 1) % Bflag;
+					if (before_count < (size_t)Bflag)
+						before_count++;
+				}
+			}
+		}
+#endif
 	}
 	if (mode == 'c')
 		printf("%ld\n", c);
 end:
+#if FEATURE_GREP_CONTEXT
+	if (before_buf) {
+		for (i = 0; i < (size_t)Bflag; i++)
+			free(before_buf[i].str);
+		free(before_buf);
+	}
+#endif
 	if (ferror(fp)) {
 		weprintf("%s: read error:", str);
 		result = Error;
@@ -144,8 +232,14 @@ end:
 static void
 usage(void)
 {
-	enprintf(Error, "usage: %s [-EFHchilnqsvwx] [-e pattern] [-f file] "
-	         "[pattern] [file ...]\n", argv0);
+	enprintf(Error, "usage: %s [-EFHchilnqsvwx]"
+#if FEATURE_GREP_CONTEXT
+	         " [-A num] [-B num] [-C num]"
+#endif
+#if FEATURE_GREP_MAX_COUNT
+	         " [-m num]"
+#endif
+	         " [-e pattern] [-f file] [pattern] [file ...]\n", argv0);
 }
 
 int
@@ -159,6 +253,25 @@ main(int argc, char *argv[])
 	SLIST_INIT(&phead);
 
 	ARGBEGIN {
+#if FEATURE_GREP_CONTEXT
+	case 'A':
+		Aflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
+		break;
+	case 'B':
+		Bflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
+		break;
+	case 'C':
+		Aflag = Bflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
+		break;
+	ARGNUM:
+		Aflag = Bflag = ARGNUMF();
+		break;
+#endif
+#if FEATURE_GREP_MAX_COUNT
+	case 'm':
+		mval = estrtonum(EARGF(usage()), 0, LONG_MAX);
+		break;
+#endif
 	case 'E':
 		Eflag = 1;
 		Fflag = 0;
@@ -234,7 +347,7 @@ main(int argc, char *argv[])
 	}
 
 	if (!Fflag)
-		/* Compile regex for all search patterns */
+		/* compile regex for all search patterns */
 		SLIST_FOREACH(pnode, &phead, entry)
 			enregcomp(Error, &pnode->preg, pnode->pattern, flags);
 	many = (argc > 1);

@@ -47,7 +47,7 @@ unescape_pct(char *s, char *is_pct)
 			for (q = 0, m = 3; m && is_odigit(*r); m--, r++)
 				q = q * 8 + (*r - '0');
 			is_pct[w - s] = 0;
-			*w++ = MIN(q, 255);
+			*w++ = MIN(q, (size_t)255);
 		} else if (*r == 'x' && isxdigit(r[1])) {
 			r++;
 			for (q = 0, m = 2; m && isxdigit(*r); m--, r++)

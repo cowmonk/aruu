@@ -448,8 +448,9 @@ main(int argc, char *argv[])
 	} ARGEND
 
 	switch (argc) {
-	case 0: /* fallthrough */
+	case 0:
 		*--argv = ".", ++argc;
+		/* fallthrough */
 	case 1:
 		mkent(&ent, argv[0], 1, Hflag || Lflag);
 		ls("", &ent, (!dflag && S_ISDIR(ent.mode)) ||
@@ -458,7 +459,7 @@ main(int argc, char *argv[])
 
 		break;
 	default:
-		for (i = ds = fs = 0, fents = dents = NULL; i < argc; ++i) {
+		for (i = ds = fs = 0, fents = dents = NULL; i < (size_t)argc; ++i) {
 			mkent(&ent, argv[i], 1, Hflag || Lflag);
 
 			if ((!dflag && S_ISDIR(ent.mode)) ||

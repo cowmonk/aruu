@@ -48,7 +48,7 @@ hash(char *name)
 	int c;
 	unsigned h = 5381;
 
-	while (c = *name++)
+	while ((c = *name++))
 		h = h*33 ^ c;
 
 	return h;
@@ -253,7 +253,7 @@ parseargv(char **argv, char ***targets, int where, int export)
 static void
 parsemakeflags(void)
 {
-	int c, n;
+	int n;
 	char *s, *flags, **arr;
 
 	if ((flags = getenv("MAKEFLAGS")) == NULL)
@@ -293,7 +293,7 @@ parsemakefiles(char **argv)
 
 	hasmake = 0;
 	for ( ; *argv && **argv == '-'; ++argv) {
-		for (s = *argv; c = *s; ++s) {
+		for (s = *argv; (c = *s); ++s) {
 			if (hasargs(c))
 				arg = getarg(&s, &argv);
 
@@ -328,7 +328,7 @@ enadebug(char *argv[])
 
 	for ( ; *argv && **argv == '-'; ++argv) {
 		p = *argv;
-		for (++p; c = *p; ++p) {
+		for (++p; (c = *p); ++p) {
 			if (hasargs(c))
 				getarg(&p, &argv);
 			if (c == 'd')
@@ -341,6 +341,8 @@ int
 main(int argc, char *argv[])
 {
 	char *arg0, **targets;
+
+	(void)argc;
 
 	signal(SIGINT, sighandler);
 	signal(SIGHUP, sighandler);

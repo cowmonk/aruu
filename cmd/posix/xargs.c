@@ -241,6 +241,7 @@ dospawn:
 	switch (fork()) {
 	case -1:
 		eprintf("fork:");
+		/* fallthrough */
 	case 0:
 		execvp(*cmd, cmd);
 		savederrno = errno;
@@ -283,7 +284,7 @@ main(int argc, char *argv[])
 	case 'n':
 		nflag = 1;
 		maxargs =
-			estrtonum(EARGF(usage()), 1, MIN(SIZE_MAX, LLONG_MAX));
+			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
 	case 'p':
 		pflag = 1;
@@ -293,7 +294,7 @@ main(int argc, char *argv[])
 		break;
 	case 's':
 		argmaxsz =
-			estrtonum(EARGF(usage()), 1, MIN(SIZE_MAX, LLONG_MAX));
+			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
 	case 't':
 		tflag = 1;
@@ -314,11 +315,11 @@ main(int argc, char *argv[])
 	case 'L':
 		Lflag = 1;
 		maxlines =
-			estrtonum(EARGF(usage()), 1, MIN(SIZE_MAX, LLONG_MAX));
+			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
 	case 'P':
 		maxprocs =
-			estrtonum(EARGF(usage()), 1, MIN(SIZE_MAX, LLONG_MAX));
+			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
 	default:
 		usage();

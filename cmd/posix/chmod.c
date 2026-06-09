@@ -14,6 +14,8 @@ chmodr(int dirfd, const char *name, struct stat *st, void *data, struct recursor
 {
 	mode_t m;
 
+	(void)data;
+
 	m = parsemode(modestr, st->st_mode, mask);
 	if (!S_ISLNK(st->st_mode) && fchmodat(dirfd, name, m, 0) < 0) {
 		weprintf("chmod %s:", r->path);

@@ -1,25 +1,23 @@
-/* See LICENSE file for copyright and license details. */
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#ifndef major
-#include <sys/sysmacros.h>
-#endif
+#include "config.h"
+#include "fs.h"
+#include "utf.h"
+#include "util.h"
 
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 #include <grp.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/sysmacros.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
-
-#include "fs.h"
-#include "utf.h"
-#include "util.h"
 
 #ifdef STD_NON_POSIX
 static void
@@ -98,6 +96,33 @@ static dev_t tardev;
 
 static int mflag, vflag;
 static int filtermode;
+
+#if FEATURE_TAR_EXCLUDE
+static char **excludes = NULL;
+static size_t excludes_cnt = 0;
+
+static void
+add_exclude(const char *pattern)
+{
+	excludes = ereallocarray(excludes, excludes_cnt + 1, sizeof(*excludes));
+	excludes[excludes_cnt++] = estrdup(pattern);
+}
+
+static int
+is_excluded(const char *path)
+{
+	size_t i;
+	const char *base = strrchr(path, '/');
+	base = base ? base + 1 : path;
+
+	for (i = 0; i < excludes_cnt; i++) {
+		if (fnmatch(excludes[i], path, 0) == 0 ||
+		    fnmatch(excludes[i], base, 0) == 0)
+			return 1;
+	}
+	return 0;
+}
+#endif
 static const char *filtertool;
 
 static const char *filtertools[] = {
@@ -138,6 +163,7 @@ comp(int fd, const char *tool, const char *flags)
 	switch (fork()) {
 	case -1:
 		eprintf("fork:");
+		/* fallthrough */
 	case 0:
 		dup2(fd, 1);
 		dup2(fds[0], 0);
@@ -163,6 +189,7 @@ decomp(int fd, const char *tool, const char *flags)
 	switch (fork()) {
 	case -1:
 		eprintf("fork:");
+		/* fallthrough */
 	case 0:
 		dup2(fd, 0);
 		dup2(fds[1], 1);
@@ -197,7 +224,7 @@ ewrite(int fd, const void *buf, size_t n)
 {
 	ssize_t r;
 
-	if ((r = write(fd, buf, n)) != n)
+	if ((r = write(fd, buf, n)) < 0 || (size_t)r != n)
 		eprintf("write:");
 	return r;
 }
@@ -213,6 +240,7 @@ chksum(struct header *h)
 	return sum;
 }
 
+#if FEATURE_TAR_CREATE
 static void
 putoctal(char *dst, unsigned num, int size)
 {
@@ -224,8 +252,17 @@ static int
 archive(const char *path)
 {
 	static const struct header blank = {
-		"././@LongLink", "0000600", "0000000", "0000000", "00000000000",
-		"00000000000"  , "       ",  AREG    , ""       , "ustar", "00",
+		.name = "././@LongLink",
+		.mode = "0000600",
+		.uid = "0000000",
+		.gid = "0000000",
+		.size = "00000000000",
+		.mtime = "00000000000",
+		.chksum = "       ",
+		.type = AREG,
+		.linkname = "",
+		.magic = "ustar",
+		.version = { '0', '0' }
 	};
 	char   b[BLKSIZ + BLKSIZ], *p;
 	struct header *h = (struct header *)b;
@@ -247,7 +284,7 @@ archive(const char *path)
 
 	*h = blank;
 	n  = strlcpy(h->name, path, sizeof(h->name));
-	if (n >= sizeof(h->name)) {
+	if ((size_t)n >= sizeof(h->name)) {
 		*++h = blank;
 		h->type = 'L';
 		putoctal(h->size,   n,         sizeof(h->size));
@@ -255,9 +292,9 @@ archive(const char *path)
 		ewrite(tarfd, (char *)h, BLKSIZ);
 
 		for (p = (char *)path; n > 0; n -= BLKSIZ, p += BLKSIZ) {
-			if (n < BLKSIZ) {
+			if ((size_t)n < BLKSIZ) {
 				p = memcpy(h--, p, n);
-				memset(p + n, 0, BLKSIZ - n);
+				memset(p + n, 0, BLKSIZ - (size_t)n);
 			}
 			ewrite(tarfd, p, BLKSIZ);
 		}
@@ -296,8 +333,8 @@ archive(const char *path)
 
 	if (fd != -1) {
 		while ((l = eread(fd, b, BLKSIZ)) > 0) {
-			if (l < BLKSIZ)
-				memset(b + l, 0, BLKSIZ - l);
+			if ((size_t)l < BLKSIZ)
+				memset(b + l, 0, BLKSIZ - (size_t)l);
 			ewrite(tarfd, b, BLKSIZ);
 		}
 		close(fd);
@@ -305,6 +342,7 @@ archive(const char *path)
 
 	return 0;
 }
+#endif
 
 static int
 unarchive(char *fname, ssize_t l, char b[BLKSIZ])
@@ -420,14 +458,21 @@ skipblk(ssize_t l)
 static int
 print(char *fname, ssize_t l, char b[BLKSIZ])
 {
+	(void)b;
 	safe_puts(fname);
 	skipblk(l);
 	return 0;
 }
 
+#if FEATURE_TAR_CREATE
 static void
 c(int dirfd, const char *name, struct stat *st, void *data, struct recursor *r)
 {
+	(void)data;
+#if FEATURE_TAR_EXCLUDE
+	if (is_excluded(r->path))
+		return;
+#endif
 	archive(r->path);
 	if (vflag)
 		safe_puts(r->path);
@@ -435,6 +480,7 @@ c(int dirfd, const char *name, struct stat *st, void *data, struct recursor *r)
 	if (S_ISDIR(st->st_mode))
 		recurse(dirfd, name, NULL, r);
 }
+#endif
 
 static void
 sanitize(struct header *h)
@@ -489,7 +535,7 @@ chktar(struct header *h)
 		tmp[i] = '\0';
 	}
 	sum = strtol(tmp, &err, 8);
-	if (sum < 0 || sum >= BLKSIZ*256 || *err != '\0') {
+	if (sum < 0 || sum >= (long)(BLKSIZ*256) || *err != '\0') {
 		reason = "invalid checksum";
 		goto bad;
 	}
@@ -594,27 +640,40 @@ int argn;
 static void
 usage(void)
 {
+#if FEATURE_TAR_CREATE
 	eprintf("usage: %s [x | t | -x | -t] [-C dir] [-J | -Z | -a | -j | -z] [-m] [-p] "
 	        "[-f file] [file ...]\n"
 	        "       %s [c | -c] [-C dir] [-J | -Z | -a | -j | -z] [-h] path ... "
 	        "[-f file]\n", argv0, argv0);
+#else
+	eprintf("usage: %s [x | t | -x | -t] [-C dir] [-J | -Z | -a | -j | -z] [-m] [-p] "
+	        "[-f file] [file ...]\n", argv0);
+#endif
 }
 
 int
 main(int argc, char *argv[])
 {
+#if FEATURE_TAR_CREATE
 	struct recursor r = { .fn = c, .follow = 'P', .flags = DIRFIRST };
+#endif
 	struct stat st;
 	char *file = NULL, *dir = ".", mode = '\0';
 	int fd;
 
 	argv0 = argv[0];
+#if FEATURE_TAR_CREATE
 	if (argc > 1 && strchr("cxt", mode = *argv[1]))
+#else
+	if (argc > 1 && strchr("xt", mode = *argv[1]))
+#endif
 		*(argv[1]+1) ? *argv[1] = '-' : (*++argv = argv0, --argc);
 
 	ARGBEGIN {
 	case 'x':
+#if FEATURE_TAR_CREATE
 	case 'c':
+#endif
 	case 't':
 		mode = ARGC();
 		break;
@@ -636,18 +695,35 @@ main(int argc, char *argv[])
 		filtertool = filtertools[filtermode];
 		break;
 	case 'h':
+#if FEATURE_TAR_CREATE
 		r.follow = 'L';
+#endif
 		break;
 	case 'v':
 		vflag = 1;
 		break;
 	case 'p':
-		break;  /* Do nothing as already default behaviour */
+		break;  /* do nothing as already default behaviour */
+#if FEATURE_TAR_EXCLUDE
+	case '-':
+		if (strncmp(argv[0], "-exclude=", 9) == 0) {
+			add_exclude(argv[0] + 9);
+			brk_ = 1;
+		} else if (strcmp(argv[0], "-exclude") == 0) {
+			argv[0] = "-";
+			add_exclude(EARGF(usage()));
+			brk_ = 1;
+		} else {
+			usage();
+		}
+		break;
+#endif
 	default:
 		usage();
 	} ARGEND
 
 	switch (mode) {
+#if FEATURE_TAR_CREATE
 	case 'c':
 		if (!argc)
 			usage();
@@ -670,6 +746,7 @@ main(int argc, char *argv[])
 		for (; *argv; argc--, argv++)
 			recurse(AT_FDCWD, *argv, NULL, &r);
 		break;
+#endif
 	case 't':
 	case 'x':
 		tarfd = 0;
@@ -693,5 +770,13 @@ main(int argc, char *argv[])
 		usage();
 	}
 
+#if FEATURE_TAR_EXCLUDE
+	if (excludes) {
+		size_t i;
+		for (i = 0; i < excludes_cnt; i++)
+			free(excludes[i]);
+		free(excludes);
+	}
+#endif
 	return recurse_status;
 }

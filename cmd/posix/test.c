@@ -176,6 +176,7 @@ find_test(struct test *tests, char *name)
 static int
 noarg(char *argv[])
 {
+	(void)argv;
 	return 0;
 }
 
