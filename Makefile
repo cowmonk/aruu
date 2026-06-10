@@ -264,7 +264,8 @@ PSEUDO_BIN_ALL =\
 	cmd/pseudo/whoami\
 	cmd/pseudo/xinstall\
 	cmd/pseudo/yes\
-	cmd/pseudo/base64
+	cmd/pseudo/base64\
+	cmd/extra/b3sum
 
 MAKEOBJ =\
 	cmd/posix/make/defaults.o\
@@ -431,6 +432,7 @@ BIN_whoami_1 = cmd/pseudo/whoami
 BIN_xinstall_1 = cmd/pseudo/xinstall
 BIN_yes_1 = cmd/pseudo/yes
 BIN_base64_1 = cmd/pseudo/base64
+BIN_b3sum_1 = cmd/extra/b3sum
 
 BIN_make_tool_1 = cmd/posix/make/make
 
@@ -596,7 +598,12 @@ PSEUDO_BIN = \
 	$(BIN_whoami_$(BUILD_PSEUDO_WHOAMI)) \
 	$(BIN_xinstall_$(BUILD_PSEUDO_XINSTALL)) \
 	$(BIN_yes_$(BUILD_PSEUDO_YES)) \
-	$(BIN_base64_$(BUILD_PSEUDO_BASE64))
+	$(BIN_base64_$(BUILD_PSEUDO_BASE64)) \
+	$(BIN_b3sum_$(BUILD_PSEUDO_B3SUM)) \
+	$(BIN_ar_$(BUILD_DEV_AR)) \
+	$(BIN_as_$(BUILD_DEV_CC)) \
+	$(BIN_ld_$(BUILD_DEV_LD)) \
+	$(BIN_cc_$(BUILD_DEV_CC))
 
 MAKE_BIN = $(BIN_make_tool_$(BUILD_MAKE_MAKE))
 
@@ -647,7 +654,7 @@ box: $(LIB)
 	scripts/mkbox
 
 clean:
-	rm -f shared/libutf/*.o shared/libutil/*.o cmd/posix/make/*.o cmd/posix/awk/*.o cmd/posix/sh/*.o cmd/dev/ar/*.o cmd/dev/ld/*.o
+	rm -f shared/libutf/*.o shared/libutil/*.o cmd/posix/make/*.o cmd/posix/awk/*.o cmd/posix/sh/*.o cmd/extra/*.o
 	rm -f $(POSIX_BIN_ALL) $(LINUX_BIN_ALL) $(NET_BIN_ALL) $(XSI_BIN_ALL) $(PSEUDO_BIN_ALL) $(LIB)
 	rm -f cmd/posix/make/make cmd/posix/getconf.h cmd/posix/bc.c
 	rm -f cmd/posix/awk/awk cmd/posix/awk/maketab cmd/posix/awk/awkgram.tab.c cmd/posix/awk/awkgram.tab.h cmd/posix/awk/proctab.c
@@ -747,6 +754,3 @@ cmd/posix/sh/%.o: cmd/posix/sh/%.c
 
 cmd/posix/sh/sh: $(SHOBJ) $(LIB)
 	$(CC) $(LDFLAGS) -o $@ $(SHOBJ) $(LIB) $(LDLIBS)
-
-cmd/pseudo/base64: cmd/pseudo/base64.o $(LIB)
-	$(CC) $(LDFLAGS) -o $@ cmd/pseudo/base64.o $(LIB) $(LDLIBS)

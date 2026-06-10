@@ -169,6 +169,7 @@ static int is_eof(FILE *f);
 static void do_writes(void);
 static void write_file(char *path, FILE *out);
 static void check_puts(char *s, FILE *f);
+static void write_patt(char *s, FILE *f);
 static void update_ranges(Cmd *beg, Cmd *end);
 
 /* Sed functions */
@@ -216,6 +217,9 @@ static Vec wfiles; /* holds Wfile*. files for w and s///w commands */
 static Cmd   *prog, *pc; /* Program, program counter */
 static size_t pcap;
 static size_t lineno;
+#if FEATURE_SED_PRESERVE_NEWLINE
+static int hadnl = 1;
+#endif
 
 static regex_t *lastre; /* last used regex for empty regex search */
 static char   **files;  /* list of file names from argv */
@@ -479,6 +483,10 @@ read_line(FILE *f, String *s)
 			eprintf("getline:");
 		return EOF;
 	}
+#if FEATURE_SED_PRESERVE_NEWLINE
+	if (len > 0)
+		hadnl = (s->str[len - 1] == '\n');
+#endif
 	if (s->str[--len] == '\n')
 		s->str[len] = '\0';
 	return 0;
@@ -1227,6 +1235,21 @@ check_puts(char *s, FILE *f)
 		eprintf("fputs:");
 }
 
+static void
+write_patt(char *s, FILE *f)
+{
+#if FEATURE_SED_PRESERVE_NEWLINE
+	if (s && fputs(s, f) == EOF)
+		eprintf("fputs:");
+	if (hadnl) {
+		if (fputs("\n", f) == EOF)
+			eprintf("fputs:");
+	}
+#else
+	check_puts(s, f);
+#endif
+}
+
 /* iterate from beg to end updating ranges so we don't miss any commands
  * e.g. sed -n '1d;1,3p' should still print lines 2 and 3
  */
@@ -1391,7 +1414,7 @@ cmd_n(Cmd *c)
 		return;
 
 	if (!gflags.n)
-		check_puts(patt.str, stdout);
+		write_patt(patt.str, stdout);
 	do_writes();
 	new_line();
 }
@@ -1409,7 +1432,7 @@ static void
 cmd_p(Cmd *c)
 {
 	if (in_range(c))
-		check_puts(patt.str, stdout);
+		write_patt(patt.str, stdout);
 }
 
 static void
@@ -1423,7 +1446,7 @@ cmd_P(Cmd *c)
 	if ((p = strchr(patt.str, '\n')))
 		*p = '\0';
 
-	check_puts(patt.str, stdout);
+	write_patt(patt.str, stdout);
 
 	if (p)
 		*p = '\n';
@@ -1551,9 +1574,9 @@ cmd_s(Cmd *c)
 	genbuf = tmp;
 
 	if (c->u.s.p)
-		check_puts(patt.str, stdout);
+		write_patt(patt.str, stdout);
 	if (c->u.s.file)
-		check_puts(patt.str, c->u.s.file);
+		write_patt(patt.str, c->u.s.file);
 }
 
 static void
@@ -1572,7 +1595,7 @@ static void
 cmd_w(Cmd *c)
 {
 	if (in_range(c))
-		check_puts(patt.str, c->u.file);
+		write_patt(patt.str, c->u.file);
 }
 
 static void
@@ -1662,7 +1685,7 @@ cmd_last(Cmd *c)
 {
 	(void)c;
 	if (!gflags.n)
-		check_puts(patt.str, stdout);
+		write_patt(patt.str, stdout);
 	do_writes();
 	new_next();
 }

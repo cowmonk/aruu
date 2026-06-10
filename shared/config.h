@@ -81,3 +81,9 @@
 #ifndef FEATURE_OD_ENDIAN
 #define FEATURE_OD_ENDIAN       1
 #endif
+#ifndef FEATURE_SED_PRESERVE_NEWLINE
+#define FEATURE_SED_PRESERVE_NEWLINE 1
+#endif
+#ifndef FEATURE_LS_COLOR
+#define FEATURE_LS_COLOR             1
+#endif

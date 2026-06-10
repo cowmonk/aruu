@@ -58,7 +58,27 @@ static int first = 1;
 static char sort = 0;
 static int showdirs;
 
+static int Cflag   = 0;
+static int one_flag = 0;
+static int termwidth = 80;
+
+#if FEATURE_LS_COLOR
+#define COLOR_DIR	"\033[1;34m"
+#define COLOR_LNK	"\033[1;36m"
+#define COLOR_FIFO	"\033[33m"
+#define COLOR_SOCK	"\033[1;35m"
+#define COLOR_DEV	"\033[1;33m"
+#define COLOR_EXE	"\033[1;32m"
+#define COLOR_RST	"\033[0m"
+
+enum { COLOR_NEVER, COLOR_ALWAYS, COLOR_AUTO };
+static int color_mode = COLOR_NEVER;
+#endif
+
 static void ls(const char *, const struct entry *, int);
+static void printname_colored(const char *, mode_t);
+static void printcols(const struct entry *, size_t);
+static void output(const struct entry *);
 
 static void
 mkent(struct entry *ent, char *path, int dostat, int follow)
@@ -132,6 +152,155 @@ printname(const char *name)
 	}
 }
 
+#if FEATURE_LS_COLOR
+static int
+should_color(void)
+{
+	if (color_mode == COLOR_ALWAYS)
+		return 1;
+	if (color_mode == COLOR_AUTO)
+		return isatty(STDOUT_FILENO);
+	return 0;
+}
+#endif
+
+static void
+printname_colored(const char *name, mode_t mode)
+{
+#if FEATURE_LS_COLOR
+	int need_reset = 0;
+
+	if (should_color()) {
+		if (S_ISDIR(mode)) {
+			fputs(COLOR_DIR, stdout);
+			need_reset = 1;
+		} else if (S_ISLNK(mode)) {
+			fputs(COLOR_LNK, stdout);
+			need_reset = 1;
+		} else if (S_ISFIFO(mode)) {
+			fputs(COLOR_FIFO, stdout);
+			need_reset = 1;
+		} else if (S_ISSOCK(mode)) {
+			fputs(COLOR_SOCK, stdout);
+			need_reset = 1;
+		} else if (S_ISBLK(mode) || S_ISCHR(mode)) {
+			fputs(COLOR_DEV, stdout);
+			need_reset = 1;
+		} else if (S_ISREG(mode) && (mode & (S_IXUSR | S_IXGRP | S_IXOTH))) {
+			fputs(COLOR_EXE, stdout);
+			need_reset = 1;
+		}
+	}
+	printname(name);
+	if (need_reset)
+		fputs(COLOR_RST, stdout);
+#else
+	(void)mode;
+	printname(name);
+#endif
+}
+
+#include <sys/ioctl.h>
+
+static void
+gettermwidth(void)
+{
+	struct winsize ws;
+
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 0)
+		termwidth = ws.ws_col;
+	else
+		termwidth = 80;
+}
+
+static size_t
+entrywidth(const struct entry *ent)
+{
+	size_t w;
+	char buf[32];
+
+	w = utflen(ent->name);
+	if (iflag) {
+		snprintf(buf, sizeof(buf), "%lu ", (unsigned long)ent->ino);
+		w += strlen(buf);
+	}
+	w += strlen(indicator(ent->mode));
+	return w;
+}
+
+static void
+printcols(const struct entry *ents, size_t n)
+{
+	int i, r, c, ncols, nrows, total_width;
+	int *colwidths;
+	int maxcols;
+
+	if (n == 0)
+		return;
+
+	gettermwidth();
+
+	colwidths = ecalloc(n, sizeof(*colwidths));
+
+	maxcols = termwidth / 2;
+	if (maxcols > (int)n)
+		maxcols = n;
+
+	for (ncols = maxcols; ncols > 1; ncols--) {
+		nrows = (n + ncols - 1) / ncols;
+		total_width = 0;
+
+		for (c = 0; c < ncols; c++) {
+			int maxw = 0;
+			for (r = 0; r < nrows; r++) {
+				int idx = c * nrows + r;
+				if (idx < (int)n) {
+					int w = entrywidth(&ents[idx]);
+					if (w > maxw)
+						maxw = w;
+				}
+			}
+			colwidths[c] = maxw;
+			total_width += maxw;
+		}
+		total_width += 2 * (ncols - 1);
+
+		if (total_width < termwidth)
+			break;
+	}
+
+	if (ncols <= 1) {
+		for (i = 0; i < (int)n; i++) {
+			output(&ents[i]);
+		}
+		free(colwidths);
+		return;
+	}
+
+	nrows = (n + ncols - 1) / ncols;
+	for (r = 0; r < nrows; r++) {
+		for (c = 0; c < ncols; c++) {
+			int idx = c * nrows + r;
+			if (idx < (int)n) {
+				int w = entrywidth(&ents[idx]);
+				if (iflag)
+					printf("%lu ", (unsigned long)ents[idx].ino);
+				printname_colored(ents[idx].name, ents[idx].mode);
+				fputs(indicator(ents[idx].mode), stdout);
+				
+				if (c < ncols - 1 && (c + 1) * nrows + r < (int)n) {
+					int pad = colwidths[c] - w + 2;
+					while (pad-- > 0)
+						putchar(' ');
+				}
+			}
+		}
+		putchar('\n');
+	}
+
+	free(colwidths);
+}
+
 static void
 output(const struct entry *ent)
 {
@@ -145,7 +314,7 @@ output(const struct entry *ent)
 	if (iflag)
 		printf("%lu ", (unsigned long)ent->ino);
 	if (!lflag) {
-		printname(ent->name);
+		printname_colored(ent->name, ent->mode);
 		puts(indicator(ent->mode));
 		return;
 	}
@@ -208,13 +377,15 @@ output(const struct entry *ent)
 	else
 		printf("%10lu ", (unsigned long)ent->size);
 	printf("%s ", buf);
-	printname(ent->name);
+	printname_colored(ent->name, ent->mode);
 	fputs(indicator(ent->mode), stdout);
 	if (S_ISLNK(ent->mode)) {
 		if ((len = readlink(ent->name, buf, sizeof(buf) - 1)) < 0)
 			eprintf("readlink %s:", ent->name);
 		buf[len] = '\0';
-		printf(" -> %s%s", buf, indicator(ent->tmode));
+		printf(" -> ");
+		printname_colored(buf, ent->tmode);
+		fputs(indicator(ent->tmode), stdout);
 	}
 	putchar('\n');
 }
@@ -281,8 +452,12 @@ lsdir(const char *path, const struct entry *dir)
 		printname(dir->name);
 		puts(":");
 	}
-	for (i = 0; i < n; i++)
-		output(&ents[i]);
+	if (!lflag && Cflag) {
+		printcols(ents, n);
+	} else {
+		for (i = 0; i < n; i++)
+			output(&ents[i]);
+	}
 
 	if (Rflag) {
 		if (snprintf(prefix, PATH_MAX, "%s%s/", path, dir->name) >=
@@ -362,7 +537,7 @@ ls(const char *path, const struct entry *ent, int listdir)
 static void
 usage(void)
 {
-	eprintf("usage: %s [-1AacdFfHhiLlnpqRrtUu] [file ...]\n", argv0);
+	eprintf("usage: %s [-1ACacdFfHhiLlnpqRrtUu] [file ...]\n", argv0);
 }
 
 int
@@ -371,12 +546,18 @@ main(int argc, char *argv[])
 	struct entry ent, *dents, *fents;
 	size_t i, ds, fs;
 
+	if (isatty(STDOUT_FILENO))
+		Cflag = 1;
+	else
+		one_flag = 1;
+
 	tree = ereallocarray(NULL, PATH_MAX, sizeof(*tree));
 
 	ARGBEGIN {
 	case '1':
-		/* force output to 1 entry per line */
-		qflag = 1;
+		one_flag = 1;
+		Cflag = 0;
+		lflag = 0;
 		break;
 	case 'A':
 		Aflag = 1;
@@ -387,6 +568,11 @@ main(int argc, char *argv[])
 	case 'c':
 		cflag = 1;
 		uflag = 0;
+		break;
+	case 'C':
+		Cflag = 1;
+		one_flag = 0;
+		lflag = 0;
 		break;
 	case 'd':
 		dflag = 1;
@@ -413,10 +599,14 @@ main(int argc, char *argv[])
 		break;
 	case 'l':
 		lflag = 1;
+		Cflag = 0;
+		one_flag = 0;
 		break;
 	case 'n':
 		lflag = 1;
 		nflag = 1;
+		Cflag = 0;
+		one_flag = 0;
 		break;
 	case 'p':
 		pflag = 1;
@@ -442,6 +632,35 @@ main(int argc, char *argv[])
 	case 'u':
 		uflag = 1;
 		cflag = 0;
+		break;
+	case '-':
+#if FEATURE_LS_COLOR
+		if (strncmp(argv[0], "-color", 6) == 0) {
+			char *val = NULL;
+			if (argv[0][6] == '=') {
+				val = &argv[0][7];
+			} else if (argv[0][6] == '\0') {
+				val = "always";
+			}
+			if (val) {
+				if (strcmp(val, "always") == 0)
+					color_mode = COLOR_ALWAYS;
+				else if (strcmp(val, "never") == 0)
+					color_mode = COLOR_NEVER;
+				else if (strcmp(val, "auto") == 0)
+					color_mode = COLOR_AUTO;
+				else {
+					fprintf(stderr, "ls: invalid --color value: %s\n", val);
+					usage();
+				}
+			}
+			brk_ = 1;
+		} else {
+			usage();
+		}
+#else
+		usage();
+#endif
 		break;
 	default:
 		usage();
@@ -478,8 +697,12 @@ main(int argc, char *argv[])
 		qsort(fents, fs, sizeof(ent), entcmp);
 		qsort(dents, ds, sizeof(ent), entcmp);
 
-		for (i = 0; i < fs; ++i)
-			ls("", &fents[i], 0);
+		if (!lflag && Cflag && fs > 0) {
+			printcols(fents, fs);
+		} else {
+			for (i = 0; i < fs; ++i)
+				ls("", &fents[i], 0);
+		}
 		free(fents);
 		if (fs && ds)
 			putchar('\n');
