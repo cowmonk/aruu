@@ -101,7 +101,7 @@ linux:
 	vtallow
 
 net:
-	host, httpd, ifconfig, netcat, ping, tftp, tunctl, wget
+	host, httpd, ifconfig, netcat, ping, sdhcp, tftp, tunctl, wget
 
 pseudo:
 	base64, chroot, clear, cols, cron, flock, getty, halt, hostname,
@@ -116,7 +116,6 @@ xsi:
 TODOs / PENDING RELEASE
 =======================
 ip - new impl partially based on toybox's applet
-dhcpd - no idea where to start with this one
 init - situation/sctl rewrite
 troff - neatroff
 man - unsure

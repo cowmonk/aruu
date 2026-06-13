@@ -217,6 +217,7 @@ NET_BIN_ALL =\
 	cmd/net/tunctl\
 	cmd/net/wget\
 	cmd/net/ping\
+	cmd/net/sdhcp\
 	cmd/net/ifconfig\
 	cmd/net/host\
 	cmd/net/httpd
@@ -386,6 +387,7 @@ BIN_tftp_1 = cmd/net/tftp
 BIN_tunctl_1 = cmd/net/tunctl
 BIN_wget_1 = cmd/net/wget
 BIN_ping_1 = cmd/net/ping
+BIN_sdhcp_1 = cmd/net/sdhcp
 BIN_ifconfig_1 = cmd/net/ifconfig
 BIN_host_1 = cmd/net/host
 BIN_httpd_1 = cmd/net/httpd
@@ -551,6 +553,7 @@ NET_BIN = \
 	$(BIN_tunctl_$(BUILD_NET_TUNCTL)) \
 	$(BIN_wget_$(BUILD_NET_WGET)) \
 	$(BIN_ping_$(BUILD_NET_PING)) \
+	$(BIN_sdhcp_$(BUILD_NET_SDHCP)) \
 	$(BIN_ifconfig_$(BUILD_NET_IFCONFIG)) \
 	$(BIN_host_$(BUILD_NET_HOST)) \
 	$(BIN_httpd_$(BUILD_NET_HTTPD))
