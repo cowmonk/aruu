@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+truncate: set file size
+usage: truncate [-c] -s size file...
+
+shrink or extend a file to a specified size
+*/
+
 #include <sys/stat.h>
 
 #include <fcntl.h>
@@ -22,10 +29,12 @@ main(int argc, char *argv[])
 	long size = 0;
 
 	ARGBEGIN {
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		size = estrtol(EARGF(usage()), 10);
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		break;

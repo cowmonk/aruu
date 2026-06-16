@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+cols: format columns
+usage: cols [-c num] [file ...]
+
+format standard input into vertical columns
+*/
+
 #include <sys/ioctl.h>
 
 #include <limits.h>
@@ -28,6 +35,7 @@ main(int argc, char *argv[])
 	char *p;
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		chars = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));

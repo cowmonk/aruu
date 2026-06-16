@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+login: begin terminal session
+usage: login [-p] username
+
+authenticate and start a session on the system
+*/
+
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
@@ -78,6 +85,7 @@ main(int argc, char *argv[])
 	int pflag = 0;
 
 	ARGBEGIN {
+	// ?man -p: preserve file attributes
 	case 'p':
 		pflag = 1;
 		break;

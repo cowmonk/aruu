@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+nohup: run command immune to hangups
+usage: nohup cmd [arg ...]
+
+run a command that persists after logging out
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>

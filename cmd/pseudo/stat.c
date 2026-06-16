@@ -1,3 +1,10 @@
+/* ?man
+stat: display file status
+usage: stat [-L] [-t]
+
+display file or filesystem status information
+*/
+
 #include "config.h"
 #include "util.h"
 
@@ -56,10 +63,12 @@ print_custom(const char *file, struct stat *st, const char *fmt)
 			p++;
 			switch (*p) {
 			case 'n':  putchar('\n'); break;
-			case 't':  putchar('\t'); break;
+			// ?man -t: sort or specify timestamp
+	case 't':  putchar('\t'); break;
 			case 'r':  putchar('\r'); break;
 			case 'b':  putchar('\b'); break;
-			case 'f':  putchar('\f'); break;
+			// ?man -f: force the operation
+	case 'f':  putchar('\f'); break;
 			case '\\': putchar('\\'); break;
 			case '\0': return;
 			default:   putchar(*p);  break;
@@ -169,7 +178,8 @@ print_custom(const char *file, struct stat *st, const char *fmt)
 			fmt_spec[fmt_len] = '\0';
 			printf(fmt_spec, (long long)st->st_size);
 			break;
-		case 't':
+		// ?man -t: sort or specify timestamp
+	case 't':
 			fmt_spec[fmt_len++] = 'x';
 			fmt_spec[fmt_len] = '\0';
 			printf(fmt_spec, major(st->st_rdev));
@@ -273,10 +283,12 @@ print_fs_custom(const char *file, struct statfs *st, const char *fmt)
 			p++;
 			switch (*p) {
 			case 'n':  putchar('\n'); break;
-			case 't':  putchar('\t'); break;
+			// ?man -t: sort or specify timestamp
+	case 't':  putchar('\t'); break;
 			case 'r':  putchar('\r'); break;
 			case 'b':  putchar('\b'); break;
-			case 'f':  putchar('\f'); break;
+			// ?man -f: force the operation
+	case 'f':  putchar('\f'); break;
 			case '\\': putchar('\\'); break;
 			case '\0': return;
 			default:   putchar(*p);  break;
@@ -322,7 +334,8 @@ print_fs_custom(const char *file, struct statfs *st, const char *fmt)
 			fmt_spec[fmt_len] = '\0';
 			printf(fmt_spec, (long long)st->f_blocks);
 			break;
-		case 'c':
+		// ?man -c: print count or perform stdout action
+	case 'c':
 			fmt_spec[fmt_len++] = 'l';
 			fmt_spec[fmt_len++] = 'l';
 			fmt_spec[fmt_len++] = 'd';
@@ -336,7 +349,8 @@ print_fs_custom(const char *file, struct statfs *st, const char *fmt)
 			fmt_spec[fmt_len] = '\0';
 			printf(fmt_spec, (long long)st->f_ffree);
 			break;
-		case 'f':
+		// ?man -f: force the operation
+	case 'f':
 			fmt_spec[fmt_len++] = 'l';
 			fmt_spec[fmt_len++] = 'l';
 			fmt_spec[fmt_len++] = 'd';
@@ -373,7 +387,8 @@ print_fs_custom(const char *file, struct statfs *st, const char *fmt)
 			fmt_spec[fmt_len] = '\0';
 			printf(fmt_spec, (long)st->f_frsize ? (long)st->f_frsize : (long)st->f_bsize);
 			break;
-		case 't':
+		// ?man -t: sort or specify timestamp
+	case 't':
 			fmt_spec[fmt_len++] = 'l';
 			fmt_spec[fmt_len++] = 'x';
 			fmt_spec[fmt_len] = '\0';
@@ -463,19 +478,23 @@ main(int argc, char *argv[])
 	void (*showstat)(const char *, struct stat *) = show_stat;
 
 	ARGBEGIN {
+	// ?man -L: specify option flag
 	case 'L':
 		fn = stat;
 		fnname = "stat";
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		showstat = show_stat_terse;
 		break;
 #if FEATURE_STAT_FILESYSTEM
+	// ?man -f: force the operation
 	case 'f':
 		fflag = 1;
 		break;
 #endif
 #if FEATURE_STAT_FORMAT
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		format = EARGF(usage());
 		break;

@@ -1,4 +1,12 @@
-/* See LICENSE file for copyright and license details. */
+/* ?man
+rmmod: remove a module from the Linux kernel
+usage: rmmod [-fw] module...
+
+rmmod removes a kernel module from the running kernel
+
+// ?man -f: force removal of a module even if it is busy or in use
+// ?man -w: wait for the module to become unused before removing
+*/
 #include <sys/syscall.h>
 
 #include <fcntl.h>

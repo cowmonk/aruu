@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+host: dns lookup utility
+usage: host [-t type] name [server]
+
+look up hostnames and IP addresses using dns
+*/
+
 #include "util.h"
 #include "arg.h"
 
@@ -269,6 +276,7 @@ main(int argc, char *argv[])
 	int i, r;
 
 	ARGBEGIN {
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = EARGF(usage());
 		break;

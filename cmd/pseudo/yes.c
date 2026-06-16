@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+yes: output string repeatedly
+usage: yes [string]
+
+output a string repeatedly until terminated
+*/
+
 #include <stdio.h>
 
 #include "util.h"

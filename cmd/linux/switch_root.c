@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+switch_root: switch to another root filesystem
+usage: switch_root [-c console] [newroot] [init] (PID 1)
+
+switch to another filesystem as the root of the mount tree
+*/
+
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <sys/vfs.h>
@@ -73,6 +80,7 @@ main(int argc, char *argv[])
 	struct statfs stfs;
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		console = EARGF(usage());
 		break;

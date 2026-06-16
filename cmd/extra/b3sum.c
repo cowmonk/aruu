@@ -1,4 +1,10 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+b3sum: compute blake3 checksums
+usage: b3sum [-bct] [-l length] [file ...]
+
+compute and check blake3 message digests
+*/
 #include "util.h"
 #include "arg.h"
 
@@ -3972,17 +3978,21 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -b: read in binary mode
 	case 'b':
 		mode = "rb";
 		break;
+	// ?man -c: check blake3 sums from file
 	case 'c':
 		func = check;
 		break;
+	// ?man -l length: output digest length in bytes
 	case 'l':
 		outlen = strtoul(EARGF(usage()), &end, 10);
 		if (*end)
 			usage();
 		break;
+	// ?man -t: read in text mode
 	case 't':
 		mode = "r";
 		break;

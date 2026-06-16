@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+killall5: send signal to all processes
+usage: killall5 [-o pid1
+
+send a signal to all processes except kernel threads
+*/
+
 #include <dirent.h>
 #include <limits.h>
 #include <signal.h>
@@ -49,6 +56,7 @@ main(int argc, char *argv[])
 	size_t i;
 
 	ARGBEGIN {
+	// ?man -s: silent mode or print summary
 	case 's':
 		v = EARGF(usage());
 		sig = strtol(v, &end, 0);
@@ -63,6 +71,7 @@ main(int argc, char *argv[])
 		if (i == LEN(sigs))
 			eprintf("%s: unknown signal\n", v);
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		oflag = 1;
 		arg = EARGF(usage());

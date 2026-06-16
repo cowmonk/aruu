@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+ed: line editor
+usage: ed [-s] [-p] [file]
+
+simple text line editor
+*/
+
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <regex.h>
@@ -1332,6 +1339,7 @@ repeat:
 		goto print;
 	case 'l':
 	case 'n':
+	// ?man -p: preserve file attributes
 	case 'p':
 		back(cmd);
 		chkprint(1);
@@ -1390,6 +1398,7 @@ repeat:
 			error("nothing to undo");
 		undo();
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		deflines(curln, curln);
 		c = input();
@@ -1700,10 +1709,12 @@ int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
+	// ?man -p: preserve file attributes
 	case 'p':
 		prompt = EARGF(usage());
 		optprompt = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		optdiag = 0;
 		break;

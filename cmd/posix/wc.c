@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+wc: count lines, words, and bytes
+usage: wc [-c | -m] [-lw] [file ...]
+
+display the number of lines, words, and bytes in files
+*/
+
 #include <string.h>
 
 #include "utf.h"
@@ -74,15 +81,19 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cmode = 'c';
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		cmode = 'm';
 		break;
+	// ?man -l: list in long format
 	case 'l':
 		lflag = 1;
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		wflag = 1;
 		break;

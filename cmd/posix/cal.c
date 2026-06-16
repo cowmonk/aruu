@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+cal: display a calendar
+usage: cal [-1 | -3 | -y | -n num]
+
+print a formatted calendar of the specified month or year
+*/
+
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -175,9 +182,11 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 #ifdef FEATURE_CAL_EXT
+	// ?man -1: specify option flag
 	case '1':
 		nmons = 1;
 		break;
+	// ?man -3: specify option flag
 	case '3':
 		nmons = 3;
 		if (--month == 0) {
@@ -185,22 +194,28 @@ main(int argc, char *argv[])
 			year--;
 		}
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		ncols = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		fday = estrtonum(EARGF(usage()), 0, 6);
 		break;
+	// ?man -m: specify mode or limit
 	case 'm': /* Monday */
 		fday = 1;
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nmons = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
+	// ?man -s: silent mode or print summary
 	case 's': /* Sunday */
 		fday = 0;
 		break;
 #endif
+	// ?man -y: specify option flag
 	case 'y':
 		month = 1;
 		nmons = 12;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+cmp: compare two files
+usage: cmp [-l | -s] file1 file2
+
+compare two files byte by byte
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,9 +26,11 @@ main(int argc, char *argv[])
 	int ret = 0, lflag = 0, sflag = 0, same = 1, b[2];
 
 	ARGBEGIN {
+	// ?man -l: list in long format
 	case 'l':
 		lflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;

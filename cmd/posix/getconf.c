@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+getconf: query configuration variables
+usage: getconf [-v spec] var [path]
+
+query system configuration variables
+*/
+
 #include <errno.h>
 #include <unistd.h>
 #include <limits.h>
@@ -29,6 +36,7 @@ main(int argc, char *argv[])
 	char *str;
 
 	ARGBEGIN {
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		/* ignore */
 		EARGF(usage());

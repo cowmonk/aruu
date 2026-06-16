@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+umount: unmount filesystems
+usage: umount [-lfn] [-O options] target...
+
+unmount a filesystem from the directory tree
+*/
+
 #include <sys/mount.h>
 
 #include <mntent.h>
@@ -135,18 +142,23 @@ main(int argc, char *argv[])
 #endif
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		flags |= MNT_FORCE;
 		break;
+	// ?man -l: list in long format
 	case 'l':
 		flags |= MNT_DETACH;
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		break;
 #ifdef STD_NON_POSIX
+	// ?man -O: specify option flag
 	case 'O':
 		oflag = EARGF(usage());
 		break;

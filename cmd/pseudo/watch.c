@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+watch: execute periodically
+usage: watch [-t] [-n interval] command
+
+run a program periodically, showing output fullscreen
+*/
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,8 +29,10 @@ main(int argc, char *argv[])
 	int i;
 
 	ARGBEGIN {
+	// ?man -t: sort or specify timestamp
 	case 't':
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		period = strtof(EARGF(usage()), &end);
 		if (*end != '\0' || errno != 0)

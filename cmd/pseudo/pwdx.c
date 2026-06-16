@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+pwdx: print working directory of process
+usage: pwdx pid...
+
+display the current working directory of a process by pid
+*/
+
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>

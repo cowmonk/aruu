@@ -127,6 +127,9 @@ main(int argc __unused, char **argv __unused)
 	/* Generate the #define statements in the header file */
 	fputs("/* Syntax classes */\n", hfile);
 	for (i = 0 ; synclass[i].name ; i++) {
+		if (strcmp(synclass[i].name, "CEOF") == 0) {
+			fputs("#ifdef CEOF\n#undef CEOF\n#endif\n", hfile);
+		}
 		sprintf(buf, "#define %s %d", synclass[i].name, i);
 		fputs(buf, hfile);
 		for (pos = strlen(buf) ; pos < 32 ; pos = (pos + 8) & ~07)

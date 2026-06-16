@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+ctrlaltdel: set ctrl-alt-del function
+usage: ctrlaltdel -h | -s
+
+set the behavior of the ctrl-alt-del key combination
+*/
+
 #include <sys/syscall.h>
 
 #include <stdio.h>
@@ -19,9 +26,11 @@ main(int argc, char *argv[])
 	int hflag = 0, sflag = 0, cmd;
 
 	ARGBEGIN {
+	// ?man -h: suppress headers or print help
 	case 'h':
 		hflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;

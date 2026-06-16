@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mkswap: set up a swap area
+usage: mkswap device
+
+initialize a linux swap area on a device or file
+*/
+
 #include <sys/stat.h>
 
 #include <fcntl.h>

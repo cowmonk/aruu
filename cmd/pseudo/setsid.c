@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+setsid: run in new session
+usage: setsid [-f] cmd [arg ...]
+
+run a program in a new session
+*/
+
 #include <errno.h>
 #include <unistd.h>
 
@@ -18,6 +25,7 @@ main(int argc, char *argv[])
 	int savederrno;
 
 	ARGBEGIN {
+	// ?man -f: force the operation
 	case 'f':
 		fflag = 1;
 		break;

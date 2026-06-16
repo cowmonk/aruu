@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+pathchk: check pathnames
+usage: pathchk [-pP] filename...
+
+verify that pathnames are valid and portable
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -84,9 +91,11 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -p: preserve file attributes
 	case 'p':
 		most = 1;
 		break;
+	// ?man -P: specify option flag
 	case 'P':
 		extra = 1;
 		break;

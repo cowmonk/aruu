@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+sha512sum: compute sha512 checksums
+usage: sha512sum [-c] [file ...]
+
+compute and check sha512 message digests
+*/
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -27,10 +34,13 @@ main(int argc, char *argv[])
 	uint8_t md[SHA512_DIGEST_LENGTH];
 
 	ARGBEGIN {
+	// ?man -b: specify block size or base directory
 	case 'b':
+	// ?man -t: sort or specify timestamp
 	case 't':
 		/* ignore */
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cryptfunc = cryptcheck;
 		break;

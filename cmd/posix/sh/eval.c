@@ -63,7 +63,7 @@
 #include "show.h"
 #include "mystring.h"
 #ifndef NO_HISTORY
-#include "myhistedit.h"
+#include "lineedit.h"
 #endif
 
 

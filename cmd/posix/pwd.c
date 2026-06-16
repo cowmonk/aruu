@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+pwd: print working directory
+usage: pwd [-LP]
+
+display the pathname of the current working directory
+*/
+
 #include <sys/stat.h>
 
 #include <stdio.h>
@@ -34,7 +41,9 @@ main(int argc, char *argv[])
 	char mode = 'L';
 
 	ARGBEGIN {
+	// ?man -L: specify option flag
 	case 'L':
+	// ?man -P: specify option flag
 	case 'P':
 		mode = ARGC();
 		break;

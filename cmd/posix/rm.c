@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+rm: remove files
+usage: rm [-f] [-iRr] file ...
+
+remove files and directory hierarchies
+*/
+
 #include <fcntl.h>
 #include  <string.h>
 
@@ -51,13 +58,17 @@ main(int argc, char *argv[])
 	struct recursor r = { .fn = rm, .maxdepth = 1, .follow = 'P' };
 
 	ARGBEGIN {
+	// ?man -f: ignore nonexistent files and never prompt
 	case 'f':
 		r.flags |= SILENT | IGNORE;
 		break;
+	// ?man -i: prompt before every removal
 	case 'i':
 		r.flags |= CONFIRM;
 		break;
+	// ?man -R: remove directories and their contents recursively
 	case 'R':
+	// ?man -r: remove directories and their contents recursively
 	case 'r':
 		r.maxdepth = 0;
 		break;

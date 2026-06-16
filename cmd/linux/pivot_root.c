@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+pivot_root: change the root filesystem
+usage: pivot_root new-root put-old
+
+change the root filesystem of the current process
+*/
+
 #include <sys/syscall.h>
 
 #include <stdio.h>

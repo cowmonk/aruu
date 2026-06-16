@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+paste: merge lines of files
+usage: paste [-s] [-d list] file ...
+
+merge corresponding lines of files side by side
+*/
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -94,9 +101,11 @@ main(int argc, char *argv[])
 	char *delim = "\t";
 
 	ARGBEGIN {
+	// ?man -s: silent mode or print summary
 	case 's':
 		seq = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		delim = EARGF(usage());
 		delim_bytelen = unescape(delim);

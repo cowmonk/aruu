@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+last: show last logged in users
+usage: last [user]
+
+display a list of recent user logins
+*/
+
 #include <errno.h>
 #include <libgen.h>
 #include <paths.h>
@@ -25,6 +32,7 @@ main(int argc, char **argv)
 	FILE *fp;
 	struct utmp ut;
 	char *user, *file, *prog;
+	char ut_name_buf[UT_NAMESIZE + 1];
 	time_t t;
 
 	ARGBEGIN {
@@ -49,8 +57,10 @@ main(int argc, char **argv)
 		eprintf("fopen %s:", file);
 
 	while (fread(&ut, sizeof(ut), 1, fp) == 1) {
+		memcpy(ut_name_buf, ut.ut_name, UT_NAMESIZE);
+		ut_name_buf[UT_NAMESIZE] = '\0';
 		if (ut.ut_type != USER_PROCESS ||
-		    (user && strcmp(user, ut.ut_name))) {
+		    (user && strcmp(user, ut_name_buf))) {
 			continue;
 		}
 

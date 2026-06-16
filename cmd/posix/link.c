@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+link: create a link to a file
+usage: link target name
+
+create a hard link to an existing file
+*/
+
 #include <unistd.h>
 
 #include "util.h"

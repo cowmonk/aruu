@@ -63,7 +63,7 @@ size_t xstrlcpy(char *, const char *, size_t);
 #include "main.h"
 #include "jobs.h"
 #ifndef NO_HISTORY
-#include "myhistedit.h"
+#include "lineedit.h"
 #endif
 
 /*
@@ -1944,7 +1944,7 @@ setprompt(int which)
 		return;
 
 #ifndef NO_HISTORY
-	if (!el)
+	if (!sh_history_enabled)
 #endif
 	{
 		out2str(getprompt(NULL));
@@ -2045,7 +2045,9 @@ getprompt(void *unused __unused)
 		fmt = "";
 		break;
 	case 1:
-		fmt = ps1val();
+		fmt = expandstr(ps1val());
+		if (fmt == NULL)
+			fmt = ps1val();
 		break;
 	case 2:
 		fmt = ps2val();

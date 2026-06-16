@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+unshare: run program in new namespaces
+usage: unshare [-muinpU] cmd [args...]
+
+run a program with some namespaces unshared from the parent
+*/
+
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,21 +26,27 @@ main(int argc, char *argv[])
 	int flags = 0;
 
 	ARGBEGIN {
+	// ?man -m: specify mode or limit
 	case 'm':
 		flags |= CLONE_NEWNS;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		flags |= CLONE_NEWUTS;
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		flags |= CLONE_NEWIPC;
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		flags |= CLONE_NEWNET;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		flags |= CLONE_NEWPID;
 		break;
+	// ?man -U: specify option flag
 	case 'U':
 		flags |= CLONE_NEWUSER;
 		break;

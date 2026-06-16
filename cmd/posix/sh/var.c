@@ -48,7 +48,7 @@
 #include "parser.h"
 #include "builtins.h"
 #ifndef NO_HISTORY
-#include "myhistedit.h"
+#include "lineedit.h"
 #endif
 
 #include <langinfo.h>
@@ -123,7 +123,7 @@ static const struct varinit varinit[] = {
 	  NULL }
 };
 
-static struct var *vartab[VTABSIZE];
+struct var *vartab[VTABSIZE];
 
 static const char *const locale_names[7] = {
 	"LC_COLLATE", "LC_CTYPE", "LC_MONETARY",

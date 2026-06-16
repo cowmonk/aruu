@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+touch: change file timestamps
+usage: touch [-acm] [-d time | -r ref_file | -t time | -T time]
+
+update the access and modification times of files
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -112,20 +119,26 @@ main(int argc, char *argv[])
 	char *ref = NULL;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
+	// ?man -t: sort or specify timestamp
 	case 't':
 		times[0].tv_sec = parsetime(EARGF(usage()));
 		times[0].tv_nsec = 0;
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		mflag = 1;
 		break;
+	// ?man -r: operate recursively
 	case 'r':
 		ref = EARGF(usage());
 		if (stat(ref, &st) < 0)
@@ -133,6 +146,7 @@ main(int argc, char *argv[])
 		times[0] = st.st_atim;
 		times[1] = st.st_mtim;
 		break;
+	// ?man -T: specify option flag
 	case 'T':
 		times[0].tv_sec = estrtonum(EARGF(usage()), 0, LLONG_MAX);
 		times[0].tv_nsec = 0;

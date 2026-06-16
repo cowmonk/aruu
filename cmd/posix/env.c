@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+env: run command in modified environment
+usage: env [-i] [-u var] ... [var=value] ... [cmd [arg ...]]
+
+set environment variables and run a command
+*/
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,9 +28,11 @@ main(int argc, char *argv[])
 	int savederrno;
 
 	ARGBEGIN {
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		*environ = NULL;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		if (unsetenv(EARGF(usage())) < 0)
 			eprintf("unsetenv:");

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+dirname: strip non-directory suffix from filename
+usage: dirname path
+
+print the directory portion of a pathname
+*/
+
 #include <libgen.h>
 #include <stdio.h>
 

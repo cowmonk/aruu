@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+od: dump files in formats
+usage: od [-bdosvx] [-A addressformat]
+
+display file contents in octal, hex, or other formats
+*/
+
 #include "queue.h"
 #include "util.h"
 
@@ -59,6 +66,7 @@ printchunk(const unsigned char *s, unsigned char format, size_t len)
 	};
 
 	switch (format) {
+	// ?man -a: print or show all entries
 	case 'a':
 		c = *s & ~128; /* clear high bit as required by standard */
 		if (c < LEN(namedict) || c == 127) {
@@ -67,6 +75,7 @@ printchunk(const unsigned char *s, unsigned char format, size_t len)
 			printf(" %3c", c);
 		}
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		if (strchr("\a\b\t\n\v\f\r\0", *s)) {
 			printf(" %3s", escdict[*s]);
@@ -220,69 +229,89 @@ main(int argc, char *argv[])
 	big_endian = (*(uint16_t *)"\0\xff" == 0xff);
 
 	ARGBEGIN {
+	// ?man -A: specify option flag
 	case 'A':
 		s = EARGF(usage());
 		if (strlen(s) != 1 || !strchr("doxn", s[0]))
 			usage();
 		addr_format = s[0];
 		break;
+	// ?man -b: specify block size or base directory
 	case 'b':
 		addtype('o', 1);
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		addtype('u', 2);
 		break;
 #if FEATURE_OD_ENDIAN
+	// ?man -E: specify option flag
 	case 'E':
+	// ?man -e: specify expression or pattern
 	case 'e':
 		big_endian = (ARGC() == 'E');
 		break;
 #endif
+	// ?man -j: specify option flag
 	case 'j':
 		if ((skip = parseoffset(EARGF(usage()))) < 0)
 			usage();
 		break;
+	// ?man -N: specify option flag
 	case 'N':
 		if ((max = parseoffset(EARGF(usage()))) < 0)
 			usage();
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		addtype('o', 2);
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		addtype('d', 2);
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		s = EARGF(usage());
 		for (; *s; s++) {
 			switch (*s) {
-			case 'a':
-			case 'c':
+			// ?man -a: print or show all entries
+	case 'a':
+			// ?man -c: print count or perform stdout action
+	case 'c':
 				addtype(*s, 1);
 				break;
-			case 'd':
-			case 'o':
-			case 'u':
-			case 'x':
+			// ?man -d: specify directory
+	case 'd':
+			// ?man -o: specify output file
+	case 'o':
+			// ?man -u: unbuffered output
+	case 'u':
+			// ?man -x: hex format or match whole lines
+	case 'x':
 				fmt_char = *s;
 				if (isdigit((unsigned char)*(s + 1))) {
 					len = strtol(s + 1, &end, 10);
 					s = end - 1;
 				} else {
 					switch (*(s + 1)) {
-					case 'C':
+					// ?man -C: specify option flag
+	case 'C':
 						len = sizeof(char);
 						s++;
 						break;
-					case 'S':
+					// ?man -S: specify option flag
+	case 'S':
 						len = sizeof(short);
 						s++;
 						break;
-					case 'I':
+					// ?man -I: specify option flag
+	case 'I':
 						len = sizeof(int);
 						s++;
 						break;
-					case 'L':
+					// ?man -L: specify option flag
+	case 'L':
 						len = sizeof(long);
 						s++;
 						break;
@@ -297,9 +326,11 @@ main(int argc, char *argv[])
 			}
 		}
 		break;
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		/* always set, use uniq(1) to handle duplicate lines */
 		break;
+	// ?man -x: hex format or match whole lines
 	case 'x':
 		addtype('x', 2);
 		break;

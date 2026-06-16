@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+logger: log messages
+usage: logger [-is] [-p priority] [-t tag] [message ...]
+
+add messages to the system log
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,15 +58,19 @@ main(int argc, char *argv[])
 	char *buf = NULL, *tag = NULL;
 
 	ARGBEGIN {
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		logflags |= LOG_PID;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		priority = decodepri(EARGF(usage()));
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		logflags |= LOG_PERROR;
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tag = EARGF(usage());
 		break;

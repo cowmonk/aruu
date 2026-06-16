@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+fsfreeze: suspend access to a filesystem
+usage: fsfreeze (-f | -u) mountpoint
+
+freeze or unfreeze a filesystem to allow safe backups
+*/
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -28,9 +35,11 @@ main(int argc, char *argv[])
 	int fd;
 
 	ARGBEGIN {
+	// ?man -f: force the operation
 	case 'f':
 		fflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;

@@ -177,8 +177,8 @@ Copyright (c) 2016 Eivind Uggedal [eivind@uggedal.com](mailto:eivind@uggedal.com
 Copyright (c) 2016 Mattias Andrée [m@maandree.se](mailto:m@maandree.se)
 Copyright (c) 2026 xplshn [anto@xplshn.com.ar](mailto:anto@xplshn.com.ar) (https://github.com/xplshn)
 
-Portions of this software (specifically utils under net/) are partially
-based on code written by Rob Landley
+Portions of this software (specifically utils under net/) are partially based on code written by Rob Landley
+Our line editing library is partially based on work by Salvatore Sanfilippo (linenoise) and JC Wang (crossline)
 The rest are based on SBASE/UBASE source code
 
 =~= Argentino Roca Unix Utilities =~= https://github.com/xplshn/aruu =~=

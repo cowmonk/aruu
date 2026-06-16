@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+chgrp: change group ownership
+usage: chgrp [-h] [-R [-H | -L | -P]] group file ...
+
+change the group ownership of files and directories
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -43,14 +50,19 @@ main(int argc, char *argv[])
 	struct recursor r = { .fn = chgrp, .maxdepth = 1, .follow = 'P' };
 
 	ARGBEGIN {
+	// ?man -h: affect symbolic links instead of referenced files
 	case 'h':
 		hflag = 1;
 		break;
+	// ?man -R: change group ownership recursively
 	case 'R':
 		r.maxdepth = 0;
 		break;
+	// ?man -H: specify option flag
 	case 'H':
+	// ?man -L: specify option flag
 	case 'L':
+	// ?man -P: specify option flag
 	case 'P':
 		r.follow = ARGC();
 		break;

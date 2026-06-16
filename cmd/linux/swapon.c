@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+swapon: enable swap devices
+usage: swapon [-dp] -a | device
+
+enable paging and swapping on specified devices
+*/
+
 #include <sys/swap.h>
 
 #include <mntent.h>
@@ -25,12 +32,15 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		all = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		flags |= SWAP_FLAG_DISCARD;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		flags |= SWAP_FLAG_PREFER;
 		break;

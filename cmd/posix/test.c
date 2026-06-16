@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+test: evaluate condition
+usage: test
+
+check file types and compare values, returning 0 or 1
+*/
+
 #include <sys/stat.h>
 
 #include <ctype.h>

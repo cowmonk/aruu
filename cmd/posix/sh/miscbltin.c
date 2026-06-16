@@ -51,6 +51,7 @@
 #include <unistd.h>
 
 #include "shell.h"
+#include "redline.h"
 
 #ifndef timespeccmp
 #define timespeccmp(tvp, uvp, cmp) \
@@ -183,17 +184,39 @@ readcmd(int argc __unused, char **argv __unused)
 	ssize_t nread;
 	int sig;
 	struct fdctx fdctx;
+#if FEATURE_SH_HISTEDIT
+	int eflag;
+	char *rl_line;
+	char *rl_line_ptr;
+	size_t rl_idx;
+#endif
 
 	rflag = 0;
 	prompt = NULL;
 	timeout = -1;
-	while ((i = nextopt("erp:t:")) != '\0') {
+#if FEATURE_SH_HISTEDIT
+	eflag = 0;
+	rl_line = NULL;
+	rl_line_ptr = NULL;
+	rl_idx = 0;
+#endif
+
+	while ((i = nextopt(
+#if FEATURE_SH_HISTEDIT
+		"erp:t:"
+#else
+		"rp:t:"
+#endif
+	)) != '\0') {
 		switch(i) {
 		case 'p':
 			prompt = shoptarg;
 			break;
+#if FEATURE_SH_HISTEDIT
 		case 'e':
+			eflag = 1;
 			break;
+#endif
 		case 'r':
 			rflag = 1;
 			break;
@@ -224,6 +247,12 @@ readcmd(int argc __unused, char **argv __unused)
 			break;
 		}
 	}
+#if FEATURE_SH_HISTEDIT
+	if (eflag && isatty(STDIN_FILENO) && isatty(STDOUT_FILENO)) {
+		rl_line = redline(prompt ? prompt : "");
+		rl_line_ptr = rl_line;
+	} else
+#endif
 	if (prompt && isatty(0)) {
 		out2str(prompt);
 		flushall();
@@ -279,7 +308,22 @@ readcmd(int argc __unused, char **argv __unused)
 	fdctx_init(STDIN_FILENO, &fdctx);
 	for (;;) {
 		c = 0;
-		nread = fdgetc(&fdctx, &c);
+#if FEATURE_SH_HISTEDIT
+		if (rl_line_ptr) {
+			c = rl_line_ptr[rl_idx];
+			if (c == '\0') {
+				c = '\n';
+				nread = 1;
+				rl_line_ptr = NULL;
+			} else {
+				rl_idx++;
+				nread = 1;
+			}
+		} else
+#endif
+		{
+			nread = fdgetc(&fdctx, &c);
+		}
 		if (nread == -1) {
 			if (errno == EINTR) {
 				sig = pendingsig;
@@ -380,6 +424,9 @@ readcmd(int argc __unused, char **argv __unused)
 	/* Set any remaining args to "" */
 	while (*++ap != NULL)
 		setvar(*ap, "", 0);
+#if FEATURE_SH_HISTEDIT
+	free(rl_line);
+#endif
 	return status;
 }
 

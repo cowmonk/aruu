@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+uudecode: decode uuencoded file
+usage: uudecode [-m] [-o output] [file]
+
+decode a file created by uuencode
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -234,9 +241,11 @@ main(int argc, char *argv[])
 	void (*d) (FILE *, FILE *) = NULL;
 
 	ARGBEGIN {
+	// ?man -m: specify mode or limit
 	case 'm':
 		mflag = 1; /* accepted but unused (autodetect file type) */
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		oflag = 1;
 		ofname = EARGF(usage());

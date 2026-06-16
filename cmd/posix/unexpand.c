@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+unexpand: convert spaces to tabs
+usage: unexpand [-a] [-t tablist] [file ...]
+
+convert space characters to tab characters
+*/
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -136,11 +143,13 @@ main(int argc, char *argv[])
 	char *tl = "8";
 
 	ARGBEGIN {
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tl = EARGF(usage());
 		if (!*tl)
 			eprintf("tablist cannot be empty\n");
 		/* fallthrough */
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;

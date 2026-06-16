@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+chvt: change foreground virtual terminal
+usage: chvt num
+
+change the active virtual terminal
+*/
+
 #include <sys/ioctl.h>
 #include <sys/types.h>
 

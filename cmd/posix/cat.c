@@ -1,4 +1,13 @@
 /* See LICENSE file for copyright and license details. */
+
+/* ?man
+cat: concatenate files and print to standard output
+usage: cat [-u] [file ...]
+
+cat reads each file in sequence and writes it to standard output
+if no file is given, or a file is -, standard input is read
+*/
+
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
@@ -18,6 +27,7 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 	case 'u':
+		// ?man -u: ignored; accepted for posix compatibility; output is always unbuffered
 		break;
 	default:
 		usage();
@@ -47,6 +57,17 @@ main(int argc, char *argv[])
 				close(fd);
 		}
 	}
+
+	/* ?man
+	## Exit status
+
+	cat exits 0 on success, and >0 if an error occurs reading any file
+	or writing to standard output
+
+	## See also
+
+	cp(1), dd(1)
+	*/
 
 	return ret;
 }

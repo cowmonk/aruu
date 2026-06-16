@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+xinstall: copy files and set attributes
+usage: xinstall [-g group] [-o owner] [-m mode] (-d dir ... | [-D] (-t dest source ... | source ... dest))
+
+copy files and set their permissions and ownership
+*/
+
 #include <grp.h>
 #include <pwd.h>
 #include <errno.h>
@@ -96,27 +103,35 @@ main(int argc, char *argv[])
 	char *p;
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		/* no-op for compatibility */
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -D: specify option flag
 	case 'D':
 		Dflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		/* no-op for compatibility */
 		break;
+	// ?man -g: specify option flag
 	case 'g':
 		gflag = EARGF(usage());
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		oflag = EARGF(usage());
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		mflag = EARGF(usage());
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = EARGF(usage());
 		break;

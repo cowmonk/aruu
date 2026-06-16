@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+rmdir: remove empty directories
+usage: rmdir [-p] dir ...
+
+remove empty directories from the filesystem
+*/
+
 #include <libgen.h>
 #include <string.h>
 #include <unistd.h>
@@ -18,6 +25,7 @@ main(int argc, char *argv[])
 	char *d;
 
 	ARGBEGIN {
+	// ?man -p: remove parent directories if they are also empty
 	case 'p':
 		pflag = 1;
 		break;

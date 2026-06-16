@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+join: join lines on common field
+usage: join [-1 field] [-2 field] [-o list] [-e string]
+
+join lines of two sorted files on a common field
+*/
+
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -458,12 +465,15 @@ main(int argc, char *argv[])
 	char *fno;
 
 	ARGBEGIN {
+	// ?man -1: specify option flag
 	case '1':
 		jf[0] = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -2: specify option flag
 	case '2':
 		jf[1] = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -a: print or show all entries
 	case 'a':
 		fno = EARGF(usage());
 		if (strcmp(fno, "1") == 0)
@@ -473,17 +483,21 @@ main(int argc, char *argv[])
 		else
 			usage();
 		break;
+	// ?man -e: specify expression or pattern
 	case 'e':
 		replace = EARGF(usage());
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		oflag = 1;
 		initolist(&output);
 		makeolist(&output, EARGF(usage()));
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		sep = EARGF(usage());
 		break;
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		pairs = 0;
 		fno = EARGF(usage());

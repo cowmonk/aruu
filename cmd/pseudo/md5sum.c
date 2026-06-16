@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+md5sum: compute md5 checksums
+usage: md5sum [-c] [file ...]
+
+compute and check md5 message digests
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -28,10 +35,13 @@ main(int argc, char *argv[])
 	uint8_t md[MD5_DIGEST_LENGTH];
 
 	ARGBEGIN {
+	// ?man -b: specify block size or base directory
 	case 'b':
+	// ?man -t: sort or specify timestamp
 	case 't':
 		/* ignore */
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cryptfunc = cryptcheck;
 		break;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+readahead: read files into page cache
+usage: readahead file...
+
+preload file contents into the page cache
+*/
+
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>

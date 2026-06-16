@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+tr: translate characters
+usage: tr [-cCds] set1 [set2]
+
+translate, squeeze, or delete characters from standard input
+*/
+
 #include <stdlib.h>
 
 #include "utf.h"
@@ -195,13 +202,17 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
+	// ?man -C: specify option flag
 	case 'C':
 		cflag = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;

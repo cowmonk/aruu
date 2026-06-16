@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+df: report disk space usage
+usage: df [-a]
+
+display free and used disk space on filesystems
+*/
+
 #include <sys/statvfs.h>
 
 #include <mntent.h>
@@ -97,19 +104,24 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -h: suppress headers or print help
 	case 'h':
 		hflag = 1;
 		kflag = 0;
 		break;
+	// ?man -k: specify option flag
 	case 'k':
 		kflag = 1;
 		hflag = 0;
 		blksize = 1024;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		eprintf("not implemented\n");
 		break;

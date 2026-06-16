@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+su: run command with substitute user id
+usage: su [-lp] [username]
+
+run a shell or command with another user id
+*/
+
 #include <sys/types.h>
 
 #include <errno.h>
@@ -33,9 +40,11 @@ main(int argc, char *argv[])
 	uid_t uid;
 
 	ARGBEGIN {
+	// ?man -l: list in long format
 	case 'l':
 		lflag = 1;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		pflag = 1;
 		break;

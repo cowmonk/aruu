@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+getty: set terminal mode
+usage: getty [tty] [term] [cmd] [args...]
+
+set terminal line discipline, speed, and mode
+*/
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -29,6 +36,7 @@ main(int argc, char *argv[])
 {
 	char term[128], logname[LOGIN_NAME_MAX], c;
 	char hostname[HOST_NAME_MAX + 1];
+	char ut_line_buf[UT_LINESIZE + 1];
 	struct utmp usr;
 	struct sigaction sa;
 	FILE *fp;
@@ -97,7 +105,9 @@ main(int argc, char *argv[])
 				break;
 			if (usr.ut_line[0] == '\0')
 				continue;
-			if (strcmp(usr.ut_line, tty) != 0)
+			memcpy(ut_line_buf, usr.ut_line, UT_LINESIZE);
+			ut_line_buf[UT_LINESIZE] = '\0';
+			if (strcmp(ut_line_buf, tty) != 0)
 				continue;
 			memset(&usr, 0, sizeof(usr));
 			fseek(fp, pos, SEEK_SET);

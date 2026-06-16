@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+fold: wrap lines to fit width
+usage: fold [-bs] [-w num | -num] [FILE ...]
+
+wrap input lines to fit a specified width
+*/
+
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -89,12 +96,15 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -b: specify block size or base directory
 	case 'b':
 		bflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		width = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;

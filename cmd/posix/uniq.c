@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+uniq: report duplicate lines
+usage: uniq [-c] [-d | -u] [-f fields] [-s chars]
+
+filter out repeated lines from sorted files
+*/
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,18 +112,23 @@ main(int argc, char *argv[])
 	char *fname[2] = { "<stdin>", "<stdout>" };
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		countfmt = "%7ld ";
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		fskip = estrtonum(EARGF(usage()), 0, INT_MAX);
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sskip = estrtonum(EARGF(usage()), 0, INT_MAX);
 		break;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+logname: print login name
+usage: logname 
+
+display the user login name
+*/
+
 #include <stdio.h>
 #include <unistd.h>
 

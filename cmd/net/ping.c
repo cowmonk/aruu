@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+ping: send icmp echo requests
+usage: ping [-c count] [-i interval] [-s size] [-t ttl] [-w deadline] [-q] host
+
+send icmp echo requests to verify network connectivity
+*/
+
 #include "util.h"
 #include "arg.h"
 
@@ -136,21 +143,27 @@ main(int argc, char *argv[])
 	socklen_t fromlen;
 
 	ARGBEGIN {
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = EARGF(usage());
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		iflag = EARGF(usage());
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = EARGF(usage());
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = EARGF(usage());
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		wflag = EARGF(usage());
 		break;
+	// ?man -q: quiet mode; suppress output
 	case 'q':
 		qflag = 1;
 		break;

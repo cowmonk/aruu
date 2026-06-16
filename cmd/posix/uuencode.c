@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+uuencode: encode binary file
+usage: uuencode [-m] [file] name
+
+encode a binary file into ascii text
+*/
+
 #include <sys/stat.h>
 
 #include <stdio.h>
@@ -104,6 +111,7 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -m: specify mode or limit
 	case 'm':
 		uuencode_f = uuencodeb64;
 		break;

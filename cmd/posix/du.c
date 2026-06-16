@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+du: estimate file space usage
+usage: du [-a | -s] [-d depth] [-h] [-k] [-H | -L | -P] [-x] [file ...]
+
+display disk space used by files and directories
+*/
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -117,27 +124,36 @@ main(int argc, char *argv[])
 	char *bsize;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		maxdepth = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -h: suppress headers or print help
 	case 'h':
 		hflag = 1;
 		break;
+	// ?man -k: specify option flag
 	case 'k':
 		kflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;
+	// ?man -x: hex format or match whole lines
 	case 'x':
 		r.flags |= SAMEDEV;
 		break;
+	// ?man -H: specify option flag
 	case 'H':
+	// ?man -L: specify option flag
 	case 'L':
+	// ?man -P: specify option flag
 	case 'P':
 		r.follow = ARGC();
 		break;

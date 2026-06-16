@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+hostname: show or set hostname
+usage: hostname [name]
+
+display or configure the system hostname
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

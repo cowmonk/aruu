@@ -1,3 +1,10 @@
+/* ?man
+tar: tape archiver
+usage: tar [x | t | -x | -t] [-C dir] [-J | -Z | -a | -j | -z] [-m] [-p]
+
+manipulate tape archive files
+*/
+
 #include "config.h"
 #include "fs.h"
 #include "utf.h"
@@ -421,7 +428,7 @@ unarchive(char *fname, ssize_t l, char b[BLKSIZ])
 	if (fd != -1) {
 		for (; l > 0; l -= BLKSIZ)
 			if (eread(tarfd, b, BLKSIZ) > 0)
-				ewrite(fd, b, MIN(l, BLKSIZ));
+				ewrite(fd, b, MIN(l, (ssize_t)BLKSIZ));
 		close(fd);
 	}
 
@@ -670,38 +677,52 @@ main(int argc, char *argv[])
 		*(argv[1]+1) ? *argv[1] = '-' : (*++argv = argv0, --argc);
 
 	ARGBEGIN {
+	// ?man -x: extract files from an archive
 	case 'x':
 #if FEATURE_TAR_CREATE
+	// ?man -c: create a new archive
 	case 'c':
 #endif
+	// ?man -t: list the contents of an archive
 	case 't':
 		mode = ARGC();
 		break;
+	// ?man -C: specify option flag
 	case 'C':
 		dir = EARGF(usage());
 		break;
+	// ?man -f: specify archive file
 	case 'f':
 		file = EARGF(usage());
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		mflag = 1;
 		break;
+	// ?man -J: specify option flag
 	case 'J':
+	// ?man -Z: specify option flag
 	case 'Z':
+	// ?man -a: print or show all entries
 	case 'a':
+	// ?man -j: specify option flag
 	case 'j':
+	// ?man -z: specify option flag
 	case 'z':
 		filtermode = ARGC();
 		filtertool = filtertools[filtermode];
 		break;
+	// ?man -h: suppress headers or print help
 	case 'h':
 #if FEATURE_TAR_CREATE
 		r.follow = 'L';
 #endif
 		break;
+	// ?man -v: verbosely list files processed
 	case 'v':
 		vflag = 1;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		break;  /* do nothing as already default behaviour */
 #if FEATURE_TAR_EXCLUDE
@@ -724,6 +745,7 @@ main(int argc, char *argv[])
 
 	switch (mode) {
 #if FEATURE_TAR_CREATE
+	// ?man -c: create a new archive
 	case 'c':
 		if (!argc)
 			usage();
@@ -747,7 +769,9 @@ main(int argc, char *argv[])
 			recurse(AT_FDCWD, *argv, NULL, &r);
 		break;
 #endif
+	// ?man -t: list the contents of an archive
 	case 't':
+	// ?man -x: extract files from an archive
 	case 'x':
 		tarfd = 0;
 		if (file && *file != '-') {

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+comm: compare two sorted files
+usage: comm [-123] file1 file2
+
+compare two sorted files line by line
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,8 +46,11 @@ main(int argc, char *argv[])
 	int ret = 0, i, diff = 0, seenline = 0;
 
 	ARGBEGIN {
+	// ?man -1: specify option flag
 	case '1':
+	// ?man -2: specify option flag
 	case '2':
+	// ?man -3: specify option flag
 	case '3':
 		show &= 0x07 ^ (1 << (ARGC() - '1'));
 		break;

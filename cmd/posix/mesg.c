@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mesg: control write access
+usage: mesg [n|y]
+
+allow or disallow other users to write to the terminal
+*/
+
 #include <sys/stat.h>
 #include <sys/types.h>
 

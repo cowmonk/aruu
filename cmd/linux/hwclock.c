@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+hwclock: query or set the hardware clock
+usage: hwclock [-rsw] [-u] [dev]
+
+view or adjust the hardware real time clock
+*/
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -121,15 +128,19 @@ main(int argc, char *argv[])
 	int wflag = 0;
 
 	ARGBEGIN {
+	// ?man -r: operate recursively
 	case 'r':
 		rflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		wflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		break;
 	default:

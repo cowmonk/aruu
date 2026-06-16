@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+pidof: find process ids
+usage: pidof [-o pid1
+
+find the process identity numbers of running programs
+*/
+
 #include <sys/types.h>
 
 #include <dirent.h>
@@ -39,9 +46,11 @@ main(int argc, char *argv[])
 	struct pidentry *pe;
 
 	ARGBEGIN {
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		oflag = 1;
 		arg = EARGF(usage());

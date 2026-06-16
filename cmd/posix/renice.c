@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+renice: alter priority of processes
+usage: renice -n num [-g | -p | -u] id ...
+
+change the scheduling priority of running processes
+*/
+
 #include <sys/resource.h>
 
 #include <errno.h>
@@ -50,15 +57,19 @@ main(int argc, char *argv[])
 	int who;
 
 	ARGBEGIN {
+	// ?man -n: print line numbers or counts
 	case 'n':
 		adj = EARGF(usage());
 		break;
+	// ?man -g: specify option flag
 	case 'g':
 		which = PRIO_PGRP;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		which = PRIO_PROCESS;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		which = PRIO_USER;
 		break;

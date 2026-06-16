@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+id: print user and group ids
+usage: id [-n] [-g | -u | -G] [user | uid]
+
+display real and effective user and group identities
+*/
+
 #include <sys/types.h>
 
 #include <ctype.h>
@@ -137,15 +144,19 @@ int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
+	// ?man -g: specify option flag
 	case 'g':
 		gflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;
+	// ?man -G: specify option flag
 	case 'G':
 		Gflag = 1;
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		break;

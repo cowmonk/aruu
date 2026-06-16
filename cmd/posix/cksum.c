@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+cksum: checksum and count bytes
+usage: cksum [file ...]
+
+print crc checksum and byte counts for files
+*/
+
 #include <fcntl.h>
 #include <inttypes.h>
 #include <stdio.h>

@@ -65,7 +65,7 @@
 #include "redir.h"
 #include "builtins.h"
 #ifndef NO_HISTORY
-#include "myhistedit.h"
+#include "lineedit.h"
 #endif
 
 int rootpid;

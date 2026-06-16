@@ -189,7 +189,7 @@ compile_sh() {
 		die "mktokens failed"
 
 	for s in alias arith_yacc arith_yylex cd echo error eval exec \
-	          expand histedit input jobs kill mail main memalloc \
+	          expand lineedit input jobs kill mail main memalloc \
 	          miscbltin mystring options output parser printf redir \
 	          show test trap var builtins nodes syntax; do
 		out="${BDIR}/sh_${s}.o"

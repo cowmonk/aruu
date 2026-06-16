@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+sponge: soak up input
+usage: sponge file
+
+soak up standard input and write to a file
+*/
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>

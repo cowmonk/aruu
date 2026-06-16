@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mknod: create special files
+usage: mknod [-m mode] name b|c|u major minor
+
+create block or character special files
+*/
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifndef makedev
@@ -28,6 +35,7 @@ main(int argc, char *argv[])
 	dev_t dev;
 
 	ARGBEGIN {
+	// ?man -m: specify mode or limit
 	case 'm':
 		mode = parsemode(EARGF(usage()), mode, umask(0));
 		break;

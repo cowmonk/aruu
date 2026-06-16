@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+head: output first part of files
+usage: head [-num | -n num] [file ...]
+
+print the first lines or bytes of files
+*/
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +43,7 @@ main(int argc, char *argv[])
 	int ret = 0, newline = 0, many = 0;
 
 	ARGBEGIN {
+	// ?man -n: print line numbers or counts
 	case 'n':
 		n = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+sleep: delay for a duration
+usage: sleep num
+
+pause execution for a specified amount of time
+*/
+
 #include <unistd.h>
 
 #include "util.h"

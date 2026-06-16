@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+cron: cron daemon
+usage: cron [-f file] [-n]
+
+daemon to run scheduled background commands
+*/
+
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -498,9 +505,11 @@ main(int argc, char *argv[])
 	struct sigaction sa;
 
 	ARGBEGIN {
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		config = EARGF(usage());
 		break;

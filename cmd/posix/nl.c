@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+nl: number lines
+usage: nl [-p] [-b type] [-d delim] [-f type]
+
+number the lines of files
+*/
+
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -71,7 +78,8 @@ nl(const char *fname, FILE *fp)
 			if (line.data[0] != '\n')
 				donumber = 1;
 			break;
-		case 'p':
+		// ?man -p: preserve file attributes
+	case 'p':
 			if (!regexec(preg + section, line.data, 0, NULL, 0))
 				donumber = 1;
 			break;
@@ -124,6 +132,7 @@ main(int argc, char *argv[])
 	char *d, *formattype, *formatblit;
 
 	ARGBEGIN {
+	// ?man -d: specify directory
 	case 'd':
 		switch (utflen((d = EARGF(usage())))) {
 		case 0:
@@ -142,21 +151,27 @@ main(int argc, char *argv[])
 			break;
 		}
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		type[0] = getlinetype(EARGF(usage()), preg);
 		break;
+	// ?man -b: specify block size or base directory
 	case 'b':
 		type[1] = getlinetype(EARGF(usage()), preg + 1);
 		break;
+	// ?man -h: suppress headers or print help
 	case 'h':
 		type[2] = getlinetype(EARGF(usage()), preg + 2);
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		incr = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -l: list in long format
 	case 'l':
 		blines = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		formattype = EARGF(usage());
 		estrlcpy(format, "%", sizeof(format));
@@ -174,16 +189,20 @@ main(int argc, char *argv[])
 		estrlcat(format, formatblit, sizeof(format));
 		estrlcat(format, "*ld", sizeof(format));
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		pflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sep = EARGF(usage());
 		seplen = unescape(sep);
 		break;
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		startnum = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		width = estrtonum(EARGF(usage()), 1, INT_MAX);
 		break;

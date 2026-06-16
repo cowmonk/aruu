@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+ps: report process status
+usage: ps [-aAdef]
+
+display information about active system processes
+*/
+
 #include <sys/ioctl.h>
 #include <sys/sysinfo.h>
 
@@ -152,18 +159,23 @@ int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		flags |= PS_aflag;
 		break;
+	// ?man -A: specify option flag
 	case 'A':
 		flags |= PS_Aflag;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		flags |= PS_dflag;
 		break;
+	// ?man -e: specify expression or pattern
 	case 'e':
 		flags |= PS_Aflag;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		flags |= PS_fflag;
 		break;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+seq: print sequence of numbers
+usage: seq [-f fmt] [-s sep] [-w]
+
+print a sequence of numbers from start to end
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +16,7 @@ static int
 digitsleft(const char *d)
 {
 	int shift;
-	char *exp;
+	const char *exp;
 
 	if (*d == '+')
 		d++;
@@ -23,7 +30,7 @@ static int
 digitsright(const char *d)
 {
 	int shift, after;
-	char *exp;
+	const char *exp;
 
 	exp = strpbrk(d, "eE");
 	shift = exp ? estrtonum(&exp[1], INT_MIN, INT_MAX) : 0;
@@ -58,6 +65,7 @@ format:
 		fmt++;
 
 	switch (*fmt) {
+	// ?man -f: force the operation
 	case 'f': case 'F':
 	case 'g': case 'G':
 	case 'e': case 'E':
@@ -85,14 +93,17 @@ main(int argc, char *argv[])
 	const char *starts = "1", *steps = "1", *ends = "1", *sep = "\n";
 
 	ARGBEGIN {
+	// ?man -f: force the operation
 	case 'f':
 		if (!validfmt(tmp=EARGF(usage())))
 			eprintf("%s: invalid format\n", tmp);
 		fmt = tmp;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sep = EARGF(usage());
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		wflag = 1;
 		break;

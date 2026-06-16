@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mkfifo: make fifos
+usage: mkfifo [-m mode] name ...
+
+create named pipes at specified paths
+*/
+
 #include <sys/stat.h>
 
 #include <stdlib.h>
@@ -18,6 +25,7 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -m: specify mode or limit
 	case 'm':
 		mode = parsemode(EARGF(usage()), mode, umask(0));
 		break;

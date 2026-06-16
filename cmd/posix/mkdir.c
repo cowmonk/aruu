@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mkdir: create directories
+usage: mkdir [-p] [-m mode] name ...
+
+create directories at specified paths
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -22,9 +29,11 @@ main(int argc, char *argv[])
 	mode = 0777 & ~mask;
 
 	ARGBEGIN {
+	// ?man -p: create parent directories as needed
 	case 'p':
 		pflag = 1;
 		break;
+	// ?man -m: set file mode bits for created directories
 	case 'm':
 		mode = parsemode(EARGF(usage()), 0777, mask);
 		break;

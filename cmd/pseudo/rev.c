@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+rev: reverse lines
+usage: rev [file ...]
+
+reverse the order of characters in each line of input
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

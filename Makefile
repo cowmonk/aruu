@@ -25,7 +25,8 @@ HDR =\
 	shared/passwd.h\
 	shared/reboot.h\
 	shared/rtc.h\
-	shared/proc.h
+	shared/proc.h\
+	shared/tls.h
 
 LIBUTFOBJ =\
 	shared/libutf/fgetrune.o\
@@ -98,9 +99,15 @@ LIBUTILOBJ =\
 	shared/libutil/tty.o\
 	shared/libutil/fconcat.o\
 	shared/libutil/recurse_dir.o\
-	shared/libutil/sig.o
+	shared/libutil/sig.o\
+	shared/libutil/net.o\
+	shared/libutil/sysinfo.o\
+	shared/libutil/tls.o
 
-LIB = shared/libutf/libutf.a shared/libutil/libutil.a
+LIBREDLINEOBJ =\
+	shared/libredline/redline.o
+
+LIB = shared/libredline/libredline.a shared/libutil/libutil.a shared/libutf/libutf.a
 
 POSIX_BIN_ALL =\
 	cmd/posix/basename\
@@ -179,48 +186,46 @@ POSIX_BIN_ALL =\
 	cmd/posix/xargs\
 	cmd/posix/awk/awk\
 	cmd/posix/sh/sh\
-	cmd/posix/pax
+	cmd/posix/pax\
+	cmd/posix/make/make
 
 LINUX_BIN_ALL =\
 	cmd/linux/blkdiscard\
 	cmd/linux/chvt\
 	cmd/linux/ctrlaltdel\
-	cmd/linux/dmesg\
 	cmd/linux/eject\
-	cmd/linux/fallocate\
-	cmd/linux/free\
 	cmd/linux/freeramdisk\
 	cmd/linux/fsfreeze\
 	cmd/linux/hwclock\
 	cmd/linux/insmod\
 	cmd/linux/lsmod\
+	cmd/linux/modprobe\
+	cmd/linux/depmod\
 	cmd/linux/mkswap\
 	cmd/linux/mount\
 	cmd/linux/mountpoint\
-	cmd/linux/pidof\
 	cmd/linux/pivot_root\
-	cmd/linux/pwdx\
 	cmd/linux/readahead\
 	cmd/linux/rmmod\
 	cmd/linux/swaplabel\
 	cmd/linux/swapoff\
 	cmd/linux/swapon\
 	cmd/linux/switch_root\
+	cmd/linux/tunctl\
 	cmd/linux/umount\
 	cmd/linux/unshare\
-	cmd/linux/uptime\
 	cmd/linux/vtallow
 
 NET_BIN_ALL =\
 	cmd/net/netcat\
 	cmd/net/tftp\
-	cmd/net/tunctl\
 	cmd/net/wget\
 	cmd/net/ping\
 	cmd/net/sdhcp\
 	cmd/net/ifconfig\
 	cmd/net/host\
-	cmd/net/httpd
+	cmd/net/httpd\
+	cmd/net/ip
 
 XSI_BIN_ALL =\
 	cmd/xsi/mknod\
@@ -266,7 +271,17 @@ PSEUDO_BIN_ALL =\
 	cmd/pseudo/xinstall\
 	cmd/pseudo/yes\
 	cmd/pseudo/base64\
-	cmd/extra/b3sum
+	cmd/extra/b3sum\
+	cmd/dev/ar/ar\
+	cmd/dev/as/as\
+	cmd/dev/ld/ld\
+	cmd/dev/cc/cc\
+	cmd/pseudo/dmesg\
+	cmd/pseudo/fallocate\
+	cmd/pseudo/free\
+	cmd/pseudo/pidof\
+	cmd/pseudo/pwdx\
+	cmd/pseudo/uptime
 
 MAKEOBJ =\
 	cmd/posix/make/defaults.o\
@@ -352,45 +367,43 @@ BIN_xargs_1 = cmd/posix/xargs
 BIN_awk_1 = cmd/posix/awk/awk
 BIN_sh_1 = cmd/posix/sh/sh
 BIN_pax_1 = cmd/posix/pax
+BIN_make_1 = cmd/posix/make/make
 
 BIN_blkdiscard_1 = cmd/linux/blkdiscard
 BIN_chvt_1 = cmd/linux/chvt
 BIN_ctrlaltdel_1 = cmd/linux/ctrlaltdel
-BIN_dmesg_1 = cmd/linux/dmesg
 BIN_eject_1 = cmd/linux/eject
-BIN_fallocate_1 = cmd/linux/fallocate
-BIN_free_1 = cmd/linux/free
 BIN_freeramdisk_1 = cmd/linux/freeramdisk
 BIN_fsfreeze_1 = cmd/linux/fsfreeze
 BIN_hwclock_1 = cmd/linux/hwclock
 BIN_insmod_1 = cmd/linux/insmod
 BIN_lsmod_1 = cmd/linux/lsmod
+BIN_modprobe_1 = cmd/linux/modprobe
+BIN_depmod_1 = cmd/linux/depmod
 BIN_mkswap_1 = cmd/linux/mkswap
 BIN_mount_1 = cmd/linux/mount
 BIN_mountpoint_1 = cmd/linux/mountpoint
-BIN_pidof_1 = cmd/linux/pidof
 BIN_pivot_root_1 = cmd/linux/pivot_root
-BIN_pwdx_1 = cmd/linux/pwdx
 BIN_readahead_1 = cmd/linux/readahead
 BIN_rmmod_1 = cmd/linux/rmmod
 BIN_swaplabel_1 = cmd/linux/swaplabel
 BIN_swapoff_1 = cmd/linux/swapoff
 BIN_swapon_1 = cmd/linux/swapon
 BIN_switch_root_1 = cmd/linux/switch_root
+BIN_tunctl_1 = cmd/linux/tunctl
 BIN_umount_1 = cmd/linux/umount
 BIN_unshare_1 = cmd/linux/unshare
-BIN_uptime_1 = cmd/linux/uptime
 BIN_vtallow_1 = cmd/linux/vtallow
 
 BIN_netcat_1 = cmd/net/netcat
 BIN_tftp_1 = cmd/net/tftp
-BIN_tunctl_1 = cmd/net/tunctl
 BIN_wget_1 = cmd/net/wget
 BIN_ping_1 = cmd/net/ping
 BIN_sdhcp_1 = cmd/net/sdhcp
 BIN_ifconfig_1 = cmd/net/ifconfig
 BIN_host_1 = cmd/net/host
 BIN_httpd_1 = cmd/net/httpd
+BIN_ip_1 = cmd/net/ip
 
 BIN_mknod_1 = cmd/xsi/mknod
 BIN_passwd_1 = cmd/xsi/passwd
@@ -435,8 +448,16 @@ BIN_xinstall_1 = cmd/pseudo/xinstall
 BIN_yes_1 = cmd/pseudo/yes
 BIN_base64_1 = cmd/pseudo/base64
 BIN_b3sum_1 = cmd/extra/b3sum
-
-BIN_make_tool_1 = cmd/posix/make/make
+BIN_ar_1 = cmd/dev/ar/ar
+BIN_as_1 = cmd/dev/as/as
+BIN_ld_1 = cmd/dev/ld/ld
+BIN_cc_1 = cmd/dev/cc/cc
+BIN_dmesg_1 = cmd/pseudo/dmesg
+BIN_fallocate_1 = cmd/pseudo/fallocate
+BIN_free_1 = cmd/pseudo/free
+BIN_pidof_1 = cmd/pseudo/pidof
+BIN_pwdx_1 = cmd/pseudo/pwdx
+BIN_uptime_1 = cmd/pseudo/uptime
 
 POSIX_BIN = \
 	$(BIN_basename_$(BUILD_POSIX_BASENAME)) \
@@ -515,48 +536,46 @@ POSIX_BIN = \
 	$(BIN_xargs_$(BUILD_POSIX_XARGS)) \
 	$(BIN_awk_$(BUILD_POSIX_AWK)) \
 	$(BIN_sh_$(BUILD_POSIX_SH)) \
-	$(BIN_pax_$(BUILD_POSIX_PAX))
+	$(BIN_pax_$(BUILD_POSIX_PAX)) \
+	$(BIN_make_$(BUILD_POSIX_MAKE))
 
 LINUX_BIN = \
 	$(BIN_blkdiscard_$(BUILD_LINUX_BLKDISCARD)) \
 	$(BIN_chvt_$(BUILD_LINUX_CHVT)) \
 	$(BIN_ctrlaltdel_$(BUILD_LINUX_CTRLALTDEL)) \
-	$(BIN_dmesg_$(BUILD_LINUX_DMESG)) \
 	$(BIN_eject_$(BUILD_LINUX_EJECT)) \
-	$(BIN_fallocate_$(BUILD_LINUX_FALLOCATE)) \
-	$(BIN_free_$(BUILD_LINUX_FREE)) \
 	$(BIN_freeramdisk_$(BUILD_LINUX_FREERAMDISK)) \
 	$(BIN_fsfreeze_$(BUILD_LINUX_FSFREEZE)) \
 	$(BIN_hwclock_$(BUILD_LINUX_HWCLOCK)) \
 	$(BIN_insmod_$(BUILD_LINUX_INSMOD)) \
 	$(BIN_lsmod_$(BUILD_LINUX_LSMOD)) \
+	$(BIN_modprobe_$(BUILD_LINUX_MODPROBE)) \
+	$(BIN_depmod_$(BUILD_LINUX_DEPMOD)) \
 	$(BIN_mkswap_$(BUILD_LINUX_MKSWAP)) \
 	$(BIN_mount_$(BUILD_LINUX_MOUNT)) \
 	$(BIN_mountpoint_$(BUILD_LINUX_MOUNTPOINT)) \
-	$(BIN_pidof_$(BUILD_LINUX_PIDOF)) \
 	$(BIN_pivot_root_$(BUILD_LINUX_PIVOT_ROOT)) \
-	$(BIN_pwdx_$(BUILD_LINUX_PWDX)) \
 	$(BIN_readahead_$(BUILD_LINUX_READAHEAD)) \
 	$(BIN_rmmod_$(BUILD_LINUX_RMMOD)) \
 	$(BIN_swaplabel_$(BUILD_LINUX_SWAPLABEL)) \
 	$(BIN_swapoff_$(BUILD_LINUX_SWAPOFF)) \
 	$(BIN_swapon_$(BUILD_LINUX_SWAPON)) \
 	$(BIN_switch_root_$(BUILD_LINUX_SWITCH_ROOT)) \
+	$(BIN_tunctl_$(BUILD_LINUX_TUNCTL)) \
 	$(BIN_umount_$(BUILD_LINUX_UMOUNT)) \
 	$(BIN_unshare_$(BUILD_LINUX_UNSHARE)) \
-	$(BIN_uptime_$(BUILD_LINUX_UPTIME)) \
 	$(BIN_vtallow_$(BUILD_LINUX_VTALLOW))
 
 NET_BIN = \
 	$(BIN_netcat_$(BUILD_NET_NETCAT)) \
 	$(BIN_tftp_$(BUILD_NET_TFTP)) \
-	$(BIN_tunctl_$(BUILD_NET_TUNCTL)) \
 	$(BIN_wget_$(BUILD_NET_WGET)) \
 	$(BIN_ping_$(BUILD_NET_PING)) \
 	$(BIN_sdhcp_$(BUILD_NET_SDHCP)) \
 	$(BIN_ifconfig_$(BUILD_NET_IFCONFIG)) \
 	$(BIN_host_$(BUILD_NET_HOST)) \
-	$(BIN_httpd_$(BUILD_NET_HTTPD))
+	$(BIN_httpd_$(BUILD_NET_HTTPD)) \
+	$(BIN_ip_$(BUILD_NET_IP))
 
 XSI_BIN = \
 	$(BIN_mknod_$(BUILD_XSI_MKNOD)) \
@@ -606,13 +625,17 @@ PSEUDO_BIN = \
 	$(BIN_ar_$(BUILD_DEV_AR)) \
 	$(BIN_as_$(BUILD_DEV_CC)) \
 	$(BIN_ld_$(BUILD_DEV_LD)) \
-	$(BIN_cc_$(BUILD_DEV_CC))
-
-MAKE_BIN = $(BIN_make_tool_$(BUILD_MAKE_MAKE))
+	$(BIN_cc_$(BUILD_DEV_CC)) \
+	$(BIN_dmesg_$(BUILD_PSEUDO_DMESG)) \
+	$(BIN_fallocate_$(BUILD_PSEUDO_FALLOCATE)) \
+	$(BIN_free_$(BUILD_PSEUDO_FREE)) \
+	$(BIN_pidof_$(BUILD_PSEUDO_PIDOF)) \
+	$(BIN_pwdx_$(BUILD_PSEUDO_PWDX)) \
+	$(BIN_uptime_$(BUILD_PSEUDO_UPTIME))
 
 OBJ = $(LIBUTFOBJ) $(LIBUTILOBJ) $(MAKEOBJ)
 
-all: $(LIB) $(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN) $(MAKE_BIN)
+all: $(LIB) $(POSIX_BIN) $(LINUX_BIN) $(NET_BIN) $(XSI_BIN) $(PSEUDO_BIN)
 
 $(POSIX_BIN_ALL) $(LINUX_BIN_ALL) $(NET_BIN_ALL) $(XSI_BIN_ALL) $(PSEUDO_BIN_ALL): $(LIB)
 
@@ -642,6 +665,10 @@ shared/libutf/libutf.a: $(LIBUTFOBJ)
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
 
+shared/libredline/libredline.a: $(LIBREDLINEOBJ)
+	$(AR) $(ARFLAGS) $@ $?
+	$(RANLIB) $@
+
 shared/libutil/libutil.a: $(LIBUTILOBJ)
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
@@ -656,14 +683,39 @@ box: $(LIB)
 	LDFLAGS='$(LDFLAGS)' LDLIBS='$(LDLIBS)' OBJCOPY='$(OBJCOPY)' \
 	scripts/mkbox
 
+.PHONY: man clean
+
+scripts/mkman/mkman: scripts/mkman/main.go scripts/mkman/troff.go
+	cd scripts/mkman && go build -o mkman .
+
+man: scripts/mkman/mkman
+	@for src in $(POSIX_BIN_ALL:=.c) $(PSEUDO_BIN_ALL:=.c); do \
+		if [ -f "$$src" ] && grep -qE '!man|\?man' "$$src"; then \
+			base=$$(basename $$src .c); \
+			mkdir -p man/man1; \
+			scripts/mkman/mkman -config config.mk -section 1 "$$src" > "man/man1/$$base.1"; \
+		fi; \
+	done
+	@for src in $(LINUX_BIN_ALL:=.c) $(NET_BIN_ALL:=.c) $(XSI_BIN_ALL:=.c); do \
+		if [ -f "$$src" ] && grep -qE '!man|\?man' "$$src"; then \
+			base=$$(basename $$src .c); \
+			mkdir -p man/man8; \
+			scripts/mkman/mkman -config config.mk -section 8 "$$src" > "man/man8/$$base.8"; \
+		fi; \
+	done
+
 clean:
-	rm -f shared/libutf/*.o shared/libutil/*.o cmd/posix/make/*.o cmd/posix/awk/*.o cmd/posix/sh/*.o cmd/extra/*.o
+	rm -f shared/libutf/*.o shared/libutil/*.o shared/libredline/*.o
+	rm -f cmd/posix/*.o cmd/posix/make/*.o cmd/posix/awk/*.o cmd/posix/sh/*.o
+	rm -f cmd/linux/*.o cmd/net/*.o cmd/xsi/*.o cmd/pseudo/*.o
+	rm -f cmd/extra/*.o cmd/dev/ar/*.o cmd/dev/ld/*.o cmd/dev/cc/*.o cmd/dev/as/*.o
 	rm -f $(POSIX_BIN_ALL) $(LINUX_BIN_ALL) $(NET_BIN_ALL) $(XSI_BIN_ALL) $(PSEUDO_BIN_ALL) $(LIB)
 	rm -f cmd/posix/make/make cmd/posix/getconf.h cmd/posix/bc.c
 	rm -f cmd/posix/awk/awk cmd/posix/awk/maketab cmd/posix/awk/awkgram.tab.c cmd/posix/awk/awkgram.tab.h cmd/posix/awk/proctab.c
 	rm -f cmd/posix/sh/sh cmd/posix/sh/mknodes cmd/posix/sh/mksyntax
 	rm -f cmd/posix/sh/syntax.c cmd/posix/sh/syntax.h cmd/posix/sh/nodes.c cmd/posix/sh/nodes.h cmd/posix/sh/builtins.c cmd/posix/sh/builtins.h cmd/posix/sh/token.h
-	rm -rf aruu-box .box
+	rm -f cmd/dev/cc/cc1 cmd/dev/cc/cpp cmd/dev/as/as shared/libaruuelf.so
+	rm -rf aruu-box .box man/man1 man/man8 scripts/mkman/mkman
 
 AWKOBJ =\
 	cmd/posix/awk/b.o\
@@ -693,7 +745,7 @@ SHOBJ =\
 	cmd/posix/sh/eval.o\
 	cmd/posix/sh/exec.o\
 	cmd/posix/sh/expand.o\
-	cmd/posix/sh/histedit.o\
+	cmd/posix/sh/lineedit.o\
 	cmd/posix/sh/input.o\
 	cmd/posix/sh/jobs.o\
 	cmd/posix/sh/kill.o\
@@ -757,3 +809,93 @@ cmd/posix/sh/%.o: cmd/posix/sh/%.c
 
 cmd/posix/sh/sh: $(SHOBJ) $(LIB)
 	$(CC) $(LDFLAGS) -o $@ $(SHOBJ) $(LIB) $(LDLIBS)
+
+cmd/dev/ar/ar: cmd/dev/ar/ar.o $(LIB)
+	$(CC) $(LDFLAGS) -o $@ cmd/dev/ar/ar.o $(LIB) $(LDLIBS)
+
+cmd/dev/ar/%.o: cmd/dev/ar/%.c
+	$(CC) $(CPPFLAGS) -Icmd/dev/ar $(CFLAGS) -o $@ -c $<
+
+LD_OBJ =\
+	cmd/dev/ld/ld.o
+
+cmd/dev/ld/%.o: cmd/dev/ld/%.c
+	$(CC) $(CPPFLAGS) -DLD_TARGET_X86_64 -Icmd/dev/ld $(CFLAGS) -fPIC -o $@ -c $<
+
+shared/libaruuelf.so: cmd/dev/ld/elf.o cmd/dev/ld/x86_64.o cmd/dev/ld/ld_support.o
+	$(CC) $(LDFLAGS) -shared -o $@ cmd/dev/ld/elf.o cmd/dev/ld/x86_64.o cmd/dev/ld/ld_support.o
+
+cmd/dev/ld/ld: $(LD_OBJ) shared/libaruuelf.so $(LIB)
+	$(CC) $(LDFLAGS) -o $@ $(LD_OBJ) -Lshared -laruuelf $(LIB) $(LDLIBS) -Wl,-rpath,'$$ORIGIN/../../../shared'
+
+AS_OBJ =\
+	cmd/dev/as/as.o\
+	cmd/dev/as/asm_lex.o\
+	cmd/dev/as/asm_parse.o\
+	cmd/dev/as/asm_x86_64.o\
+	cmd/dev/as/asm_elf.o
+
+cmd/dev/as/%.o: cmd/dev/as/%.c
+	$(CC) $(CPPFLAGS) -Icmd/dev/as -Ishared $(CFLAGS) -o $@ -c $<
+
+cmd/dev/as/as: $(AS_OBJ) $(LIB)
+	$(CC) $(LDFLAGS) -o $@ $(AS_OBJ) $(LIB) $(LDLIBS)
+
+cmd/dev/cc/driver.o: cmd/dev/cc/driver.c
+	$(CC) -Icmd/dev/cc $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
+
+cmd/dev/cc/cc: cmd/dev/cc/driver.o cmd/dev/cc/util.o $(LIB) cmd/dev/cc/cc1 cmd/dev/cc/cpp cmd/dev/as/as
+	$(CC) $(LDFLAGS) -o $@ cmd/dev/cc/driver.o cmd/dev/cc/util.o $(LIB) $(LDLIBS)
+
+CC1_OBJ =\
+	cmd/dev/cc/attr.o\
+	cmd/dev/cc/decl.o\
+	cmd/dev/cc/eval.o\
+	cmd/dev/cc/expr.o\
+	cmd/dev/cc/init.o\
+	cmd/dev/cc/cc1.o\
+	cmd/dev/cc/map.o\
+	cmd/dev/cc/pp.o\
+	cmd/dev/cc/qbe.o\
+	cmd/dev/cc/scan.o\
+	cmd/dev/cc/scope.o\
+	cmd/dev/cc/stmt.o\
+	cmd/dev/cc/targ.o\
+	cmd/dev/cc/token.o\
+	cmd/dev/cc/tree.o\
+	cmd/dev/cc/type.o\
+	cmd/dev/cc/utf.o\
+	cmd/dev/cc/util.o
+
+CPP_OBJ =\
+	cmd/dev/cc/attr.o\
+	cmd/dev/cc/decl.o\
+	cmd/dev/cc/eval.o\
+	cmd/dev/cc/expr.o\
+	cmd/dev/cc/init.o\
+	cmd/dev/cc/map.o\
+	cmd/dev/cc/pp.o\
+	cmd/dev/cc/qbe.o\
+	cmd/dev/cc/scan.o\
+	cmd/dev/cc/scope.o\
+	cmd/dev/cc/stmt.o\
+	cmd/dev/cc/targ.o\
+	cmd/dev/cc/token.o\
+	cmd/dev/cc/tree.o\
+	cmd/dev/cc/type.o\
+	cmd/dev/cc/utf.o\
+	cmd/dev/cc/util.o
+
+cmd/dev/cc/%.o: cmd/dev/cc/%.c
+	$(CC) -Icmd/dev/cc $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
+
+cmd/dev/cc/cc1: $(CC1_OBJ) $(LIB)
+	$(CC) $(LDFLAGS) -o $@ $(CC1_OBJ) $(LIB) $(LDLIBS)
+
+cmd/dev/cc/cpp: cmd/dev/cc/cpp.o $(CPP_OBJ) $(LIB)
+	$(CC) $(LDFLAGS) -o $@ cmd/dev/cc/cpp.o $(CPP_OBJ) $(LIB) $(LDLIBS)
+
+
+
+
+

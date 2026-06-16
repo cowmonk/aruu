@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+split: split file into pieces
+usage: split [-a num] [-b num[k|m|g] | -l num] [-d]
+
+split a file into fixed-size pieces
+*/
+
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -53,9 +60,11 @@ main(int argc, char *argv[])
 	char name[NAME_MAX + 1], *prefix = "x", *file = NULL;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		slen = estrtonum(EARGF(usage()), 0, INT_MAX);
 		break;
+	// ?man -b: specify block size or base directory
 	case 'b':
 		always = 1;
 		if ((size = parseoffset(EARGF(usage()))) < 0)
@@ -63,10 +72,12 @@ main(int argc, char *argv[])
 		if (!size)
 			eprintf("size needs to be positive\n");
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		base = 10;
 		start = '0';
 		break;
+	// ?man -l: list in long format
 	case 'l':
 		always = 0;
 		size = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SSIZE_MAX));

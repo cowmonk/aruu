@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+clear: clear terminal screen
+usage: clear 
+
+clear the terminal screen and scrollback buffer
+*/
+
 #include <stdio.h>
 
 #include "util.h"

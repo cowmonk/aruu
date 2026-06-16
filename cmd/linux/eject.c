@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+eject: eject removable media
+usage: eject [-t] [device ...]
+
+eject optical discs or other removable storage media
+*/
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -50,6 +57,7 @@ int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = 1;
 		break;

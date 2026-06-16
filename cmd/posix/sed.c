@@ -1,3 +1,10 @@
+/* ?man
+sed: stream editor
+usage: sed [-nrE] script [file ...]
+
+stream editor for filtering and transforming text
+*/
+
 /* FIXME: summary
  * decide whether we enforce valid UTF-8, right now it's enforced in certain
  *     parts of the script, but not the input...
@@ -1754,24 +1761,30 @@ main(int argc, char *argv[])
 	int script = 0;
 
 	ARGBEGIN {
+	// ?man -n: print line numbers or counts
 	case 'n':
 		gflags.n = 1;
 		break;
+	// ?man -r: operate recursively
 	case 'r':
+	// ?man -E: specify option flag
 	case 'E':
 		gflags.E = 1;
 		break;
+	// ?man -e: specify expression or pattern
 	case 'e':
 		arg = EARGF(usage());
 		compile(arg, 0);
 		script = 1;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		arg = EARGF(usage());
 		compile(arg, 1);
 		script = 1;
 		break;
 #if FEATURE_SED_INPLACE
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		iflag = 1;
 		if (argv[0][1] != '\0') {

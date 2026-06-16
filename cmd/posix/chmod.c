@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+chmod: change file modes
+usage: chmod [-R] mode file ...
+
+change the file mode bits of files and directories
+*/
+
 #include <fcntl.h>
 #include <sys/stat.h>
 

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+chown: change ownership
+usage: chown [-h] [-R [-H | -L | -P]] owner[:[group]] file ...
+
+change the user and group ownership of files and directories
+*/
+
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
@@ -51,15 +58,21 @@ main(int argc, char *argv[])
 	char *owner, *group;
 
 	ARGBEGIN {
+	// ?man -h: affect symbolic links instead of referenced files
 	case 'h':
 		hflag = 1;
 		break;
+	// ?man -r: operate recursively
 	case 'r':
+	// ?man -R: change files and directories recursively
 	case 'R':
 		r.maxdepth = 0;
 		break;
+	// ?man -H: specify option flag
 	case 'H':
+	// ?man -L: specify option flag
 	case 'L':
+	// ?man -P: specify option flag
 	case 'P':
 		r.follow = ARGC();
 		break;

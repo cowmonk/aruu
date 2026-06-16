@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+readlink: print value of symlink
+usage: readlink [-fn] path
+
+display the target of a symbolic link
+*/
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,10 +37,12 @@ main(int argc, char *argv[])
 	ARGBEGIN
 	{
 #ifdef STD_NON_POSIX
+	// ?man -f: force the operation
 	case 'f':
 		fflag = 1;
 		break;
 #endif
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		break;

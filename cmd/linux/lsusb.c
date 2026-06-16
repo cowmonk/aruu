@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+lsusb: list usb devices
+usage: lsusb 
+
+display information about usb buses and connected devices
+*/
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>

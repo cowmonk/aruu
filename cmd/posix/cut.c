@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+cut: cut out fields from lines
+usage: cut -b list [-n] [file ...]
+
+print selected parts of lines from files
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -166,21 +173,27 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
+	// ?man -b: specify block size or base directory
 	case 'b':
+	// ?man -c: print count or perform stdout action
 	case 'c':
+	// ?man -f: force the operation
 	case 'f':
 		mode = ARGC();
 		parselist(EARGF(usage()));
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		delim = EARGF(usage());
 		if (!*delim)
 			eprintf("empty delimiter\n");
 		delimlen = unescape(delim);
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;

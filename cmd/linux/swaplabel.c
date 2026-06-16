@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+swaplabel: print or change swap label
+usage: swaplabel [-L label] device
+
+display or modify the label and uuid of a swap device
+*/
+
 #include <sys/types.h>
 
 #include <fcntl.h>
@@ -33,6 +40,7 @@ main(int argc, char *argv[])
 	int i;
 
 	ARGBEGIN {
+	// ?man -L: specify option flag
 	case 'L':
 		setlabel = 1;
 		label = EARGF(usage());

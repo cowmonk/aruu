@@ -1,4 +1,11 @@
-/* See LICENSE file for copyright and license details. */
+/* see license file for copyright and license details */
+/* ?man
+ls: list directory contents
+usage: ls [-1ACacdFfGghiLlnopqRrtUu] [--color[=always|never|auto]] [file ...]
+
+list information about files and directories
+*/
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifndef major
@@ -57,6 +64,9 @@ static int uflag = 0;
 static int first = 1;
 static char sort = 0;
 static int showdirs;
+
+static int gflag = 0;
+static int oflag = 0;
 
 static int Cflag   = 0;
 static int one_flag = 0;
@@ -152,17 +162,17 @@ printname(const char *name)
 	}
 }
 
-#if FEATURE_LS_COLOR
 static int
 should_color(void)
 {
+#if FEATURE_LS_COLOR
 	if (color_mode == COLOR_ALWAYS)
 		return 1;
 	if (color_mode == COLOR_AUTO)
 		return isatty(STDOUT_FILENO);
+#endif
 	return 0;
 }
-#endif
 
 static void
 printname_colored(const char *name, mode_t mode)
@@ -287,7 +297,7 @@ printcols(const struct entry *ents, size_t n)
 					printf("%lu ", (unsigned long)ents[idx].ino);
 				printname_colored(ents[idx].name, ents[idx].mode);
 				fputs(indicator(ents[idx].mode), stdout);
-				
+
 				if (c < ncols - 1 && (c + 1) * nrows + r < (int)n) {
 					int pad = colwidths[c] - w + 2;
 					while (pad-- > 0)
@@ -368,7 +378,11 @@ output(const struct entry *ent)
 		strftime(buf, sizeof(buf), fmt, tm);
 	else
 		snprintf(buf, sizeof(buf), "%lld", (long long)(ent->t.tv_sec));
-	printf("%s %4ld %-8.8s %-8.8s ", mode, (long)ent->nlink, pwname, grname);
+	printf("%s %4ld ", mode, (long)ent->nlink);
+	if (!gflag)
+		printf("%-8.8s ", pwname);
+	if (!oflag)
+		printf("%-8.8s ", grname);
 
 	if (S_ISBLK(ent->mode) || S_ISCHR(ent->mode))
 		printf("%4u, %4u ", major(ent->rdev), minor(ent->rdev));
@@ -397,9 +411,11 @@ entcmp(const void *va, const void *vb)
 	const struct entry *a = va, *b = vb;
 
 	switch (sort) {
+	// ?man -S: sort by file size
 	case 'S':
 		cmp = b->size - a->size;
 		break;
+	// ?man -t: sort by modification time
 	case 't':
 		if (!(cmp = b->t.tv_sec - a->t.tv_sec))
 			cmp = b->t.tv_nsec - a->t.tv_nsec;
@@ -439,7 +455,7 @@ lsdir(const char *path, const struct entry *dir)
 
 		ents = ereallocarray(ents, ++n, sizeof(*ents));
 		mkent(&ents[n - 1], estrdup(d->d_name), Fflag || iflag ||
-		    lflag || pflag || Rflag || sort, Lflag);
+		    lflag || pflag || Rflag || sort || should_color(), Lflag);
 	}
 
 	closedir(dp);
@@ -537,7 +553,7 @@ ls(const char *path, const struct entry *ent, int listdir)
 static void
 usage(void)
 {
-	eprintf("usage: %s [-1ACacdFfHhiLlnpqRrtUu] [file ...]\n", argv0);
+	eprintf("usage: %s [-1ACacdFfGghiLlnopqRrtUu] [--color[=always|never|auto]] [file ...]\n", argv0);
 }
 
 int
@@ -545,96 +561,156 @@ main(int argc, char *argv[])
 {
 	struct entry ent, *dents, *fents;
 	size_t i, ds, fs;
+#if FEATURE_LS_COLOR
+	char *val;
+#endif
 
 	if (isatty(STDOUT_FILENO))
 		Cflag = 1;
 	else
 		one_flag = 1;
 
+#if FEATURE_LS_COLOR
+	if ((val = getenv("CLICOLOR_FORCE"))) {
+		if (*val && strcmp(val, "0") != 0)
+			color_mode = COLOR_ALWAYS;
+		else
+			color_mode = COLOR_NEVER;
+	} else if ((val = getenv("CLICOLOR"))) {
+		if (*val && strcmp(val, "0") != 0)
+			color_mode = COLOR_AUTO;
+		else
+			color_mode = COLOR_NEVER;
+	}
+#endif
+
 	tree = ereallocarray(NULL, PATH_MAX, sizeof(*tree));
 
 	ARGBEGIN {
+	// ?man -1: list one file per line
 	case '1':
 		one_flag = 1;
 		Cflag = 0;
 		lflag = 0;
 		break;
+	// ?man -A: list all entries except dot and dot dot
 	case 'A':
 		Aflag = 1;
 		break;
+	// ?man -a: list all entries including those starting with a dot
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -c: sort by ctime or use ctime for long listing
 	case 'c':
 		cflag = 1;
 		uflag = 0;
 		break;
+	// ?man -C: list entries in columns sorted vertically
 	case 'C':
 		Cflag = 1;
 		one_flag = 0;
 		lflag = 0;
 		break;
+	// ?man -d: list directory entries instead of their contents
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -f: do not sort and enable a and U
 	case 'f':
 		aflag = 1;
 		fflag = 1;
 		Uflag = 1;
 		break;
+	// ?man -F: append type indicators
 	case 'F':
 		Fflag = 1;
 		break;
+#if FEATURE_LS_COLOR
+	// ?man -G: enable colored output
+	case 'G':
+		color_mode = COLOR_AUTO;
+		break;
+#endif
+	// ?man -g: list in long format without owner name
+	case 'g':
+		gflag = 1;
+		lflag = 1;
+		Cflag = 0;
+		one_flag = 0;
+		break;
+	// ?man -H: follow symlinks on the command line
 	case 'H':
 		Hflag = 1;
 		break;
+	// ?man -h: print human readable sizes
 	case 'h':
 		hflag = 1;
 		break;
+	// ?man -i: print inode number of each file
 	case 'i':
 		iflag = 1;
 		break;
+	// ?man -L: follow all symlinks
 	case 'L':
 		Lflag = 1;
 		break;
+	// ?man -l: use a long listing format
 	case 'l':
 		lflag = 1;
 		Cflag = 0;
 		one_flag = 0;
 		break;
+	// ?man -n: list numeric uids and gids
 	case 'n':
 		lflag = 1;
 		nflag = 1;
 		Cflag = 0;
 		one_flag = 0;
 		break;
+	// ?man -o: list in long format without group name
+	case 'o':
+		oflag = 1;
+		lflag = 1;
+		Cflag = 0;
+		one_flag = 0;
+		break;
+	// ?man -p: append slash indicator to directories
 	case 'p':
 		pflag = 1;
 		break;
+	// ?man -q: print non printable characters as question marks
 	case 'q':
 		qflag = 1;
 		break;
+	// ?man -R: list subdirectories recursively
 	case 'R':
 		Rflag = 1;
 		break;
+	// ?man -r: reverse sort order
 	case 'r':
 		rflag = 1;
 		break;
+	// ?man -S: sort by file size
 	case 'S':
 		sort = 'S';
 		break;
+	// ?man -t: sort by modification time
 	case 't':
 		sort = 't';
 		break;
+	// ?man -U: do not sort
 	case 'U':
 		Uflag = 1;
 		break;
+	// ?man -u: sort by atime or use atime for long listing
 	case 'u':
 		uflag = 1;
 		cflag = 0;
 		break;
 	case '-':
 #if FEATURE_LS_COLOR
+		// ?man --color [when]: control coloring
 		if (strncmp(argv[0], "-color", 6) == 0) {
 			char *val = NULL;
 			if (argv[0][6] == '=') {

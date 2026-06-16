@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+freeramdisk: free ramdisk memory
+usage: freeramdisk 
+
+free memory associated with a ramdisk device
+*/
+
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/types.h>

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+respawn: restart command on exit
+usage: respawn [-l fifo] [-d N] cmd [args...]
+
+run a command and restart it automatically when it exits
+*/
+
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -42,9 +49,11 @@ main(int argc, char *argv[])
 	int polln;
 
 	ARGBEGIN {
+	// ?man -d: specify directory
 	case 'd':
 		delay = estrtol(EARGF(usage()), 0);
 		break;
+	// ?man -l: list in long format
 	case 'l':
 		fifo = EARGF(usage());
 		break;

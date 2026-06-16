@@ -1,5 +1,10 @@
 /* See LICENSE file for copyright and license details. */
-#include <sys/klog.h>
+/* ?man
+dmesg: print kernel ring buffer
+usage: dmesg [-Ccr] [-n level]
+
+display or control the kernel ring buffer messages
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,12 +13,9 @@
 
 #include "util.h"
 
-enum {
-	SYSLOG_ACTION_READ_ALL = 3,
-	SYSLOG_ACTION_CLEAR = 5,
-	SYSLOG_ACTION_CONSOLE_LEVEL = 8,
-	SYSLOG_ACTION_SIZE_BUFFER = 10
-};
+ssize_t get_dmesg(char *, size_t);
+int clear_dmesg(void);
+int set_console_level(int);
 
 static void
 dmesg_show(const void *buf, size_t n)
@@ -37,45 +39,56 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	int n;
+	ssize_t n;
 	char *buf;
 	int cflag = 0;
 	long level;
 
 	ARGBEGIN {
+	// ?man -C: specify option flag
 	case 'C':
-		if (klogctl(SYSLOG_ACTION_CLEAR, NULL, 0) < 0)
-			eprintf("klogctl:");
+		if (clear_dmesg() < 0)
+			eprintf("clear_dmesg:");
 		return 0;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		break;
+	// ?man -r: operate recursively
 	case 'r':
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		level = estrtol(EARGF(usage()), 10);
-		if (klogctl(SYSLOG_ACTION_CONSOLE_LEVEL, NULL, level) < 0)
-			eprintf("klogctl:");
+		if (set_console_level(level) < 0)
+			eprintf("set_console_level:");
 		return 0;
 	default:
 		usage();
 	} ARGEND;
 
-	n = klogctl(SYSLOG_ACTION_SIZE_BUFFER, NULL, 0);
-	if (n < 0)
-		eprintf("klogctl:");
+	if (argc)
+		usage();
+
+	n = get_dmesg(NULL, 0);
+	if (n <= 0)
+		n = 16384;
 
 	buf = emalloc(n);
 
-	n = klogctl(SYSLOG_ACTION_READ_ALL, buf, n);
+	n = get_dmesg(buf, n);
 	if (n < 0)
-		eprintf("klogctl:");
+		eprintf("get_dmesg:");
 
 	dmesg_show(buf, n);
 
-	if (cflag && klogctl(SYSLOG_ACTION_CLEAR, NULL, 0) < 0)
-		eprintf("klogctl:");
+	if (cflag && clear_dmesg() < 0)
+		eprintf("clear_dmesg:");
 
 	free(buf);
+
+	if (fshut(stdin, "<stdin>") | fshut(stdout, "<stdout>"))
+		return 1;
+
 	return 0;
 }

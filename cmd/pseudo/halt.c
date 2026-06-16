@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+halt: halt or reboot
+usage: halt [-pr]
+
+halt, poweroff, or reboot the machine
+*/
+
 #include <sys/syscall.h>
 
 #include <stdio.h>
@@ -21,9 +28,11 @@ main(int argc, char *argv[])
 	int cmd = LINUX_REBOOT_CMD_HALT;
 
 	ARGBEGIN {
+	// ?man -p: preserve file attributes
 	case 'p':
 		pflag = 1;
 		break;
+	// ?man -r: operate recursively
 	case 'r':
 		rflag = 1;
 		break;

@@ -54,7 +54,7 @@
 #include "alias.h"
 #include "parser.h"
 #ifndef NO_HISTORY
-#include "myhistedit.h"
+#include "lineedit.h"
 #endif
 #include "trap.h"
 
@@ -132,30 +132,34 @@ preadfd(void)
 
 	retry:
 #ifndef NO_HISTORY
-	if (parsefile->fd == 0 && el) {
-		const char *line;
+	if (parsefile->fd == 0 && sh_history_enabled) {
+		char *line;
 
-		el_resize(el);
-		line = el_gets(el, &nr);
-		if (nr > 0 && parsefile->bufsize < (size_t)nr + 1) {
-			size_t bufsize;
+		line = redline(getprompt(NULL));
+		if (line != NULL) {
+			nr = strlen(line) + 1;
+			if (parsefile->bufsize < (size_t)nr + 1) {
+				size_t bufsize;
 
-			INTOFF;
-			if (parsefile->buf != basebuf) {
-				ckfree(parsefile->buf);
-				parsefile->buf = NULL;
-				parsefile->bufsize = 0;
+				INTOFF;
+				if (parsefile->buf != basebuf) {
+					ckfree(parsefile->buf);
+					parsefile->buf = NULL;
+					parsefile->bufsize = 0;
+				}
+				bufsize = (size_t)nr + BUFSIZ + 1;
+				bufsize -= bufsize % BUFSIZ;
+				parsefile->buf = ckmalloc(bufsize);
+				parsefile->bufsize = bufsize;
+				INTON;
 			}
-			bufsize = (size_t)nr + BUFSIZ + 1;
-			bufsize -= bufsize % BUFSIZ;
-			parsefile->buf = ckmalloc(bufsize);
-			parsefile->bufsize = bufsize;
-			INTON;
+			memcpy(parsefile->buf, line, nr - 1);
+			parsefile->buf[nr - 1] = '\n';
+			parsefile->buf[nr] = '\0';
+			free(line);
+		} else {
+			nr = 0;
 		}
-		if (nr > 0 && line != NULL)
-			memcpy(parsefile->buf, line, nr);
-		else
-			nr = nr ? -1 : 0;
 	} else
 #endif
 	nr = read(parsefile->fd, parsefile->buf, parsefile->bufsize - 1);
@@ -249,13 +253,18 @@ preadbuffer(void)
 	*q = '\0';
 
 #ifndef NO_HISTORY
-	if (parsefile->fd == 0 && hist &&
+	if (parsefile->fd == 0 && sh_history_enabled &&
 	    parsenextc[strspn(parsenextc, " \t\n")] != '\0') {
-		HistEvent he;
-		INTOFF;
-		history(hist, &he, whichprompt == 1 ? H_ENTER : H_ADD,
-		    parsenextc);
-		INTON;
+		char *histline = strdup(parsenextc);
+		if (histline) {
+			char *nl = strchr(histline, '\n');
+			if (nl)
+				*nl = '\0';
+			INTOFF;
+			redlineHistoryAdd(histline);
+			INTON;
+			free(histline);
+		}
 	}
 #endif
 

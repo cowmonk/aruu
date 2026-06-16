@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+find: search for files
+usage: find [-H | -L] path ... [expression ...]
+
+search for files in a directory hierarchy
+*/
+
 #include "config.h"
 #include "util.h"
 
@@ -1429,10 +1436,12 @@ main(int argc, char **argv)
 	gflags.mindepth = -1;
 
 	ARGBEGIN {
+	// ?man -H: specify option flag
 	case 'H':
 		gflags.h = 1;
 		gflags.l = 0;
 		break;
+	// ?man -L: specify option flag
 	case 'L':
 		gflags.l = 1;
 		gflags.h = 0;

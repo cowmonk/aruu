@@ -52,7 +52,7 @@
 #include "mystring.h"
 #include "builtins.h"
 #ifndef NO_HISTORY
-#include "myhistedit.h"
+#include "lineedit.h"
 #endif
 
 char *arg0;			/* value of $0 */

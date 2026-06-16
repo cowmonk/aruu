@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+tail: output last part of files
+usage: tail [-f] [-c num | -m num | -n num | -num] [file ...]
+
+print the last lines or bytes of files
+*/
+
 #include <sys/stat.h>
 
 #include <fcntl.h>
@@ -27,13 +34,15 @@ dropinit(int fd, const char *fname, size_t count)
 	count--;  /* numbering starts at 1 */
 	while (count && (n = read(fd, buf, sizeof(buf))) > 0) {
 		switch (mode) {
-		case 'n':  /* lines */
+		// ?man -n: print line numbers or counts
+	case 'n':  /* lines */
 			for (p = buf; count && n > 0; p++, n--) {
 				if (*p == '\n')
 					count--;
 			}
 			break;
-		case 'c':  /* bytes */
+		// ?man -c: print count or perform stdout action
+	case 'c':  /* bytes */
 			if (count > (size_t)n) {
 				count -= n;
 			} else {
@@ -42,7 +51,8 @@ dropinit(int fd, const char *fname, size_t count)
 				count = 0;
 			}
 			break;
-		case 'm':  /* runes */
+		// ?man -m: specify mode or limit
+	case 'm':  /* runes */
 			for (p = buf; count && n > 0; p += nr, n -= nr, count--) {
 				nr = charntorune(&r, p, n);
 				if (!nr) {
@@ -103,7 +113,8 @@ taketail(int fd, const char *fname, size_t count)
 			break;
 		len += n;
 		switch (mode) {
-		case 'n':  /* lines */
+		// ?man -n: print line numbers or counts
+	case 'n':  /* lines */
 			/* ignore the last character; if it is a newline, it
 			 * ends the last line */
 			for (p = buf + len - 2, left = count; p >= buf; p--) {
@@ -116,10 +127,12 @@ taketail(int fd, const char *fname, size_t count)
 				}
 			}
 			break;
-		case 'c':  /* bytes */
+		// ?man -c: print count or perform stdout action
+	case 'c':  /* bytes */
 			p = count < len ? buf + len - count : buf;
 			break;
-		case 'm':  /* runes */
+		// ?man -m: specify mode or limit
+	case 'm':  /* runes */
 			for (p = buf + len - 1, left = count; p >= buf; p--) {
 				/* skip utf-8 continuation bytes */
 				if (UTF8_POINT(*p))
@@ -157,11 +170,15 @@ main(int argc, char *argv[])
 	int (*tail)(int, const char *, size_t) = taketail;
 
 	ARGBEGIN {
+	// ?man -f: force the operation
 	case 'f':
 		fflag = 1;
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
+	// ?man -m: specify mode or limit
 	case 'm':
+	// ?man -n: print line numbers or counts
 	case 'n':
 		mode = ARGC();
 		numstr = EARGF(usage());

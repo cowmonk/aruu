@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mount: mount a filesystem
+usage: mount [-BMRan] [-t fstype] [-o options] [source] [target]
+
+mount a filesystem to the directory tree
+*/
+
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -200,25 +207,32 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	ARGBEGIN {
+	// ?man -B: specify option flag
 	case 'B':
 		argflags |= MS_BIND;
 		break;
+	// ?man -M: specify option flag
 	case 'M':
 		argflags |= MS_MOVE;
 		break;
+	// ?man -R: operate recursively on directories
 	case 'R':
 		argflags |= MS_REC;
 		break;
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		estrlcat(fsopts, EARGF(usage()), sizeof(fsopts));
 		parseopts(fsopts, &flags, data, sizeof(data));
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		types = EARGF(usage());
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		break;
 	default:

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+basename: strip directory and suffix from filenames
+usage: basename path [suffix]
+
+print filename with leading directories and optional suffix removed
+*/
+
 #include <libgen.h>
 #include <stdio.h>
 #include <string.h>

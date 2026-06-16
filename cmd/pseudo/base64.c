@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+base64: encode or decode base64
+usage: base64 [-d] [-i] [-w cols] [file]
+
+encode or decode data in base64 format
+*/
+
 #include "util.h"
 #include "arg.h"
 
@@ -142,12 +149,15 @@ main(int argc, char *argv[])
 	fp = stdin;
 
 	ARGBEGIN {
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		iflag = 1;
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		wrap = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SSIZE_MAX));
 		break;

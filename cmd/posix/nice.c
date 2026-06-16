@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+nice: run command with modified priority
+usage: nice [-n inc] cmd [arg ...]
+
+run a command with modified scheduling priority
+*/
+
 #include <sys/resource.h>
 
 #include <errno.h>
@@ -27,6 +34,7 @@ main(int argc, char *argv[])
 	int val = 10, r, savederrno;
 
 	ARGBEGIN {
+	// ?man -n: print line numbers or counts
 	case 'n':
 		val = estrtonum(EARGF(usage()), PRIO_MIN, PRIO_MAX);
 		break;

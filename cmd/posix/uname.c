@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+uname: print system info
+usage: uname [-amnrsv]
+
+display system hostname, kernel name, release, and architecture
+*/
+
 #include <sys/utsname.h>
 
 #include <stdio.h>
@@ -18,21 +25,27 @@ main(int argc, char *argv[])
 	int mflag = 0, nflag = 0, rflag = 0, sflag = 0, vflag = 0;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		mflag = nflag = rflag = sflag = vflag = 1;
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		mflag = 1;
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		break;
+	// ?man -r: operate recursively
 	case 'r':
 		rflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		vflag = 1;
 		break;

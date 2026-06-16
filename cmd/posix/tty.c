@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+tty: print terminal filename
+usage: tty 
+
+display the filename of the terminal connected to stdin
+*/
+
 #include <stdio.h>
 #include <unistd.h>
 

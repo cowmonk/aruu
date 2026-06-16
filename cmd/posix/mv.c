@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mv: move or rename files
+usage: mv [-f] source ... dest
+
+move or rename files and directories
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -47,6 +54,7 @@ main(int argc, char *argv[])
 	struct stat st;
 
 	ARGBEGIN {
+	// ?man -f: do not prompt before overwriting
 	case 'f':
 		break;
 	default:

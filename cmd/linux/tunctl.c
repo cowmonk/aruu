@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+tunctl: configure tun/tap interfaces
+usage: tunctl [-dtT] [-u owner] [device]
+
+create or destroy tun/tap network interfaces
+*/
+
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -38,17 +45,21 @@ main(int argc, char *argv[])
 
 	ARGBEGIN
 	{
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		tflag = 0;
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = 1;
 		dflag = 0;
 		break;
+	// ?man -T: specify option flag
 	case 'T':
 		Tflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		owner = EARGF(usage());
 		break;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+ln: make links between files
+usage: ln [-f] [-L | -P | -s] target [name]
+
+create hard or symbolic links between files
+*/
+
 #include <sys/stat.h>
 
 #include <errno.h>
@@ -25,15 +32,19 @@ main(int argc, char *argv[])
 	struct stat st, tst;
 
 	ARGBEGIN {
+	// ?man -f: force creation of links by removing existing destination files
 	case 'f':
 		fflag = 1;
 		break;
+	// ?man -L: specify option flag
 	case 'L':
 		flags |= AT_SYMLINK_FOLLOW;
 		break;
+	// ?man -P: specify option flag
 	case 'P':
 		flags &= ~AT_SYMLINK_FOLLOW;
 		break;
+	// ?man -s: make symbolic links instead of hard links
 	case 's':
 		sflag = 1;
 		break;

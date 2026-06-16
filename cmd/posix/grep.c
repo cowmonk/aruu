@@ -1,3 +1,11 @@
+/* ?man
+grep: search files for a pattern
+usage: grep [-EFHchilnqsvwx] [-e pattern] [-f file] [pattern] [file ...]
+
+grep searches the named input files for lines matching the given pattern
+if no files are named, or a file is -, standard input is searched
+by default, matching lines are written to standard output
+*/
 #include "config.h"
 #include "queue.h"
 #include "util.h"
@@ -255,12 +263,15 @@ main(int argc, char *argv[])
 	ARGBEGIN {
 #if FEATURE_GREP_CONTEXT
 	case 'A':
+		// ?man -A num: print num lines of trailing context after each match
 		Aflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
 	case 'B':
+		// ?man -B num: print num lines of leading context before each match
 		Bflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
 	case 'C':
+		// ?man -C num: print num lines of context before and after each match; equivalent to -A num -B num
 		Aflag = Bflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
 	ARGNUM:
@@ -269,24 +280,29 @@ main(int argc, char *argv[])
 #endif
 #if FEATURE_GREP_MAX_COUNT
 	case 'm':
+		// ?man -m num: stop reading a file after num matching lines
 		mval = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
 #endif
 	case 'E':
+		// ?man -E: interpret pattern as an extended regular expression
 		Eflag = 1;
 		Fflag = 0;
 		flags |= REG_EXTENDED;
 		break;
 	case 'F':
+		// ?man -F: interpret pattern as a list of fixed strings separated by newlines
 		Fflag = 1;
 		Eflag = 0;
 		flags &= ~REG_EXTENDED;
 		break;
 	case 'H':
+		// ?man -H: always print the file name with matching lines
 		Hflag = 1;
 		hflag = 0;
 		break;
 	case 'e':
+		// ?man -e pattern: specify a pattern to match; may be given multiple times
 		arg = EARGF(usage());
 		if (!(fp = fmemopen(arg, strlen(arg) + 1, "r")))
 			eprintf("fmemopen:");
@@ -295,6 +311,7 @@ main(int argc, char *argv[])
 		eflag = 1;
 		break;
 	case 'f':
+		// ?man -f file: read patterns from file, one per line
 		arg = EARGF(usage());
 		fp = fopen(arg, "r");
 		if (!fp)
@@ -304,29 +321,42 @@ main(int argc, char *argv[])
 		fflag = 1;
 		break;
 	case 'h':
+		// ?man -h: never print file names with matching lines
 		hflag = 1;
 		Hflag = 0;
 		break;
 	case 'c':
+		// ?man -c: print only a count of matching lines per file
+		/* FALLTHROUGH */
 	case 'l':
+		// ?man -l: print only the names of files with at least one matching line
+		/* FALLTHROUGH */
 	case 'n':
+		// ?man -n: prefix each matching line with its line number within its file
+		/* FALLTHROUGH */
 	case 'q':
+		// ?man -q: quiet mode; exit immediately with status 0 on first match and write nothing
 		mode = ARGC();
 		break;
 	case 'i':
+		// ?man -i: perform case-insensitive matching
 		flags |= REG_ICASE;
 		iflag = 1;
 		break;
 	case 's':
+		// ?man -s: suppress error messages about nonexistent or unreadable files
 		sflag = 1;
 		break;
 	case 'v':
+		// ?man -v: invert the sense of matching to select non-matching lines
 		vflag = 1;
 		break;
 	case 'w':
+		// ?man -w: match only whole words
 		wflag = 1;
 		break;
 	case 'x':
+		// ?man -x: match only whole lines
 		xflag = 1;
 		break;
 	default:
@@ -374,6 +404,23 @@ main(int argc, char *argv[])
 
 	if (fshut(stdin, "<stdin>") | fshut(stdout, "<stdout>"))
 		match = Error;
+
+	/* ?man
+	## Exit status
+
+	0
+	: one or more lines matched in at least one file
+
+	1
+	: no lines matched in any file
+
+	2
+	: an error occurred
+
+	## See also
+
+	sed(1), awk(1)
+	*/
 
 	return match;
 }

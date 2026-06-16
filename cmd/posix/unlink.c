@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+unlink: remove a file
+usage: unlink file
+
+call the unlink system call to remove a file
+*/
+
 #include <unistd.h>
 
 #include "util.h"

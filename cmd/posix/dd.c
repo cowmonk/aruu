@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+dd: convert and copy a file
+usage: dd [operand...]
+
+copy a file while performing conversions
+*/
+
 #include <ctype.h>
 #include <fcntl.h>
 #include <inttypes.h>

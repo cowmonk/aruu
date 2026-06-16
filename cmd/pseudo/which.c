@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+which: locate a command
+usage: which [-a] name ...
+
+find the path of executable files in PATH
+*/
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -75,6 +82,7 @@ main(int argc, char *argv[])
 	int found = 0, foundall = 1;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;

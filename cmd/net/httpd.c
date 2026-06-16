@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+httpd: simple http daemon
+usage: httpd [-e string] [-d string] [-v] [dir]
+
+serve static files over http
+*/
+
 #include "util.h"
 #include "arg.h"
 
@@ -257,12 +264,15 @@ main(int argc, char *argv[])
 	char *enc;
 
 	ARGBEGIN {
+	// ?man -e: specify expression or pattern
 	case 'e':
 		eflag = EARGF(usage());
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		dflag = EARGF(usage());
 		break;
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		break;
 	default:

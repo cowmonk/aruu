@@ -1,4 +1,9 @@
-/* See LICENSE file for copyright and license details. */
+/* ?man
+lsmod: show the status of modules in the Linux kernel
+usage: lsmod
+
+lsmod formats and displays /proc/modules, showing currently loaded modules
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

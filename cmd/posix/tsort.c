@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+tsort: topological sort
+usage: tsort [file]
+
+perform a topological sort on input pairs
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

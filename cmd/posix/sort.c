@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+sort: sort lines
+usage: sort [-Cbcdfimnru
+
+sort or merge lines of text files
+*/
+
 #include "queue.h"
 #include "text.h"
 #include "utf.h"
@@ -303,22 +310,28 @@ parse_flags(char **s, int *flags, int bflag)
 {
 	while (isalpha((int)**s)) {
 		switch (*((*s)++)) {
-		case 'b':
+		// ?man -b: specify block size or base directory
+	case 'b':
 			*flags |= bflag;
 			break;
-		case 'd':
+		// ?man -d: specify directory
+	case 'd':
 			*flags |= MOD_D;
 			break;
-		case 'f':
+		// ?man -f: force the operation
+	case 'f':
 			*flags |= MOD_F;
 			break;
-		case 'i':
+		// ?man -i: interactive mode or prompt for confirmation
+	case 'i':
 			*flags |= MOD_I;
 			break;
-		case 'n':
+		// ?man -n: print line numbers or counts
+	case 'n':
 			*flags |= MOD_N;
 			break;
-		case 'r':
+		// ?man -r: operate recursively
+	case 'r':
 			*flags |= MOD_R;
 			break;
 		default:
@@ -397,27 +410,35 @@ main(int argc, char *argv[])
 	char *outfile = NULL;
 
 	ARGBEGIN {
+	// ?man -C: specify option flag
 	case 'C':
 		Cflag = 1;
 		break;
+	// ?man -b: specify block size or base directory
 	case 'b':
 		global_flags |= MOD_STARTB | MOD_ENDB;
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		global_flags |= MOD_D;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		global_flags |= MOD_F;
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		global_flags |= MOD_I;
 		break;
+	// ?man -k: specify option flag
 	case 'k':
 		addkeydef(EARGF(usage()), global_flags);
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		/* more or less for free, but for performance-reasons,
 		 * we should keep this flag in mind and maybe some later
@@ -425,30 +446,37 @@ main(int argc, char *argv[])
 		 * while merging large sorted files.
 		 */
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		global_flags |= MOD_N;
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		outfile = EARGF(usage());
 		break;
+	// ?man -r: operate recursively
 	case 'r':
 		global_flags |= MOD_R;
 		break;
 #if FEATURE_SORT_STABLE
+	// ?man -s: silent mode or print summary
 	case 's':
 		sflag = 1;
 		break;
 #endif
+	// ?man -t: sort or specify timestamp
 	case 't':
 		fieldsep = EARGF(usage());
 		if (!*fieldsep)
 			eprintf("empty delimiter\n");
 		fieldseplen = unescape(fieldsep);
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;
 #if FEATURE_SORT_BIG
+	// ?man -z: specify option flag
 	case 'z':
 		zflag = 1;
 		break;

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+passwd: change user password
+usage: passwd [username]
+
+update a user authentication password
+*/
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>

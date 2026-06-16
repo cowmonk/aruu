@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mktemp: create temporary file
+usage: mktemp [-dqtu] [-p directory] [template]
+
+create a temporary file or directory safely
+*/
+
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,19 +29,24 @@ main(int argc, char *argv[])
 	size_t len;
 
 	ARGBEGIN {
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		pflag = 1;
 		pdir = EARGF(usage());
 		break;
+	// ?man -q: quiet mode; suppress output
 	case 'q':
 		qflag = 1;
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;

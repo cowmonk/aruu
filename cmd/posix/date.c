@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+date: print or set system date and time
+usage: date [-u] [-d time] [+format | mmddHHMM[[CC]yy]]
+
+display or configure the system date and time
+*/
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,9 +80,11 @@ main(int argc, char *argv[])
 		eprintf("time:");
 
 	ARGBEGIN {
+	// ?man -d: specify directory
 	case 'd':
 		t = estrtonum(EARGF(usage()), 0, LLONG_MAX);
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		if (setenv("TZ", "UTC0", 1) < 0)
 			eprintf("setenv:");

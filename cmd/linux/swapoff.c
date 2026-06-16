@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+swapoff: disable swap devices
+usage: swapoff -a | device
+
+disable paging and swapping on specified devices
+*/
+
 #include <sys/swap.h>
 
 #include <mntent.h>
@@ -24,6 +31,7 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		all = 1;
 		break;

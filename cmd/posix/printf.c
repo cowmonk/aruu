@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+printf: format and print data
+usage: printf format [arg ...]
+
+format and print arguments to standard output
+*/
+
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>

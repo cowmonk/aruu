@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+time: time command execution
+usage: time [-p] cmd [arg ...]
+
+run a command and report its execution duration
+*/
+
 #include <sys/times.h>
 #include <sys/wait.h>
 
@@ -24,6 +31,7 @@ main(int argc, char *argv[])
 	int status, savederrno, ret = 0;
 
 	ARGBEGIN {
+	// ?man -p: preserve file attributes
 	case 'p':
 		break;
 	default:

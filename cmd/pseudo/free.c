@@ -1,10 +1,17 @@
 /* See LICENSE file for copyright and license details. */
-#include <sys/sysinfo.h>
+/* ?man
+free: display memory usage
+usage: free [-bkmg]
+
+display the amount of free and used memory in the system
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "util.h"
+
+int get_meminfo(struct MemInfo *);
 
 static unsigned int mem_unit = 1;
 static unsigned int unit_shift;
@@ -24,28 +31,34 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	struct sysinfo info;
-
-	if (sysinfo(&info) < 0)
-		eprintf("sysinfo:");
-	mem_unit = info.mem_unit ? info.mem_unit : 1;
+	struct MemInfo mi;
 
 	ARGBEGIN {
+	// ?man -b: specify block size or base directory
 	case 'b':
 		unit_shift = 0;
 		break;
+	// ?man -k: specify option flag
 	case 'k':
 		unit_shift = 10;
 		break;
+	// ?man -m: specify mode or limit
 	case 'm':
 		unit_shift = 20;
 		break;
+	// ?man -g: specify option flag
 	case 'g':
 		unit_shift = 30;
 		break;
 	default:
 		usage();
 	} ARGEND;
+
+	if (argc)
+		usage();
+
+	if (get_meminfo(&mi) < 0)
+		eprintf("get_meminfo:");
 
 	printf("     %13s%13s%13s%13s%13s\n",
 	       "total",
@@ -54,19 +67,23 @@ main(int argc, char *argv[])
 	       "shared", "buffers");
 	printf("Mem: ");
 	printf("%13llu%13llu%13llu%13llu%13llu\n",
-	       scale(info.totalram),
-	       scale(info.totalram - info.freeram),
-	       scale(info.freeram),
-	       scale(info.sharedram),
-	       scale(info.bufferram));
+	       scale(mi.total),
+	       scale(mi.total - mi.free),
+	       scale(mi.free),
+	       scale(mi.shared),
+	       scale(mi.buffers));
 	printf("-/+ buffers/cache:");
 	printf("%13llu%13llu\n",
-	       scale(info.totalram - info.freeram - info.bufferram),
-	       scale(info.freeram + info.bufferram));
+	       scale(mi.total - mi.free - mi.buffers),
+	       scale(mi.free + mi.buffers));
 	printf("Swap:");
 	printf("%13llu%13llu%13llu\n",
-	       scale(info.totalswap),
-	       scale(info.totalswap - info.freeswap),
-	       scale(info.freeswap));
+	       scale(mi.totalswap),
+	       scale(mi.totalswap - mi.freeswap),
+	       scale(mi.freeswap));
+
+	if (fshut(stdin, "<stdin>") | fshut(stdout, "<stdout>"))
+		return 1;
+
 	return 0;
 }

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+flock: manage locks
+usage: flock [-nosux] file cmd [arg ...]
+
+acquire or release locks from shell scripts
+*/
+
 #include <sys/file.h>
 #include <sys/wait.h>
 
@@ -22,18 +29,23 @@ main(int argc, char *argv[])
 	pid_t pid;
 
 	ARGBEGIN {
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nonblk = LOCK_NB;
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		oflag = 1;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		flags = LOCK_SH;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		flags = LOCK_UN;
 		break;
+	// ?man -x: hex format or match whole lines
 	case 'x':
 		flags = LOCK_EX;
 		break;

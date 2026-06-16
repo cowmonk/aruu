@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+netcat: read and write data across network connections
+usage: netcat [-lu] [-p localport] [host] [port]
+
+arbitrary data transmission over tcp or udp
+*/
+
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -65,12 +72,15 @@ main(int argc, char *argv[])
 
 	ARGBEGIN
 	{
+	// ?man -l: list in long format
 	case 'l':
 		lflag = 1;
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		local_port = EARGF(usage());
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;

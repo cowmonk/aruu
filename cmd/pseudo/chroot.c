@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+chroot: run command in new root
+usage: chroot dir [cmd [arg ...]]
+
+run a command or shell with a substitute root directory
+*/
+
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+mountpoint: check if a directory is a mountpoint
+usage: mountpoint [-dqx] target
+
+determine if a directory is a mountpoint
+*/
+
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #include <sys/types.h>
@@ -27,12 +34,15 @@ main(int argc, char *argv[])
 	struct stat st1, st2;
 
 	ARGBEGIN {
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -q: quiet mode; suppress output
 	case 'q':
 		qflag = 1;
 		break;
+	// ?man -x: hex format or match whole lines
 	case 'x':
 		xflag = 1;
 		break;

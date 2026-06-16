@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+pagesize: print system page size
+usage: pagesize 
+
+display the size of a page in memory
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+blkdiscard: discard sectors on a device
+usage: blkdiscard device
+
+discard sectors on a block device
+*/
+
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/stat.h>

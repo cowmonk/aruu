@@ -1,3 +1,10 @@
+/* ?man
+pax: portable archive interchange
+usage: pax 
+
+read, write, and list member files of archive files
+*/
+
 /* taken from: https://github.com/michaelforney/pax */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE  /* needed for major/minor (non-posix) */
@@ -844,10 +851,12 @@ readpax(struct bufio *f, struct header *h)
 		case 'g':
 			readexthdr(f, &globexthdr, h->size);
 			break;
-		case 'x':
+		// ?man -x: hex format or match whole lines
+	case 'x':
 			readexthdr(f, &exthdr, h->size);
 			break;
-		case 'L':
+		// ?man -L: specify option flag
+	case 'L':
 			if ((exthdr.delete | opt.delete) & PATH)
 				break;
 			readgnuhdr(f, &exthdr.pathbuf, h->size);
@@ -2080,8 +2089,10 @@ parsereplstr(char *str)
 	for (;;) {
 		switch (*++str) {
 		case 'g': r->global = 1; break;
-		case 'p': r->print = 1; break;
-		case 's': r->symlink = 0; break;
+		// ?man -p: preserve file attributes
+	case 'p': r->print = 1; break;
+		// ?man -s: silent mode or print summary
+	case 's': r->symlink = 0; break;
 		case 'S': r->symlink = 1; break;
 		case 0: goto done;
 		}
@@ -2341,84 +2352,113 @@ main(int argc, char *argv[])
 	size_t l;
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = 1;
 		break;
+	// ?man -b: specify block size or base directory
 	case 'b':
 		EARGF(usage());
 		break;
+	// ?man -c: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		break;
+	// ?man -d: specify directory
 	case 'd':
 		dflag = 1;
 		break;
+	// ?man -f: force the operation
 	case 'f':
 		name = EARGF(usage());
 		break;
+	// ?man -H: specify option flag
 	case 'H':
 		follow = 'H';
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		iflag = 1;
 		break;
+	// ?man -j: specify option flag
 	case 'j':
 		algo = "bzip2";
 		break;
+	// ?man -J: specify option flag
 	case 'J':
 		algo = "xz";
 		break;
+	// ?man -k: specify option flag
 	case 'k':
 		kflag = 1;
 		break;
+	// ?man -l: list in long format
 	case 'l':
 		lflag = 1;
 		break;
+	// ?man -L: specify option flag
 	case 'L':
 		follow = 'L';
 		break;
+	// ?man -n: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		parseopts(EARGF(usage()));
 		break;
+	// ?man -p: preserve file attributes
 	case 'p':
 		for (arg = EARGF(usage()); *arg; ++arg) {
 			switch (*arg) {
-			case 'a': preserve &= ~ATIME; break;
-			case 'e': preserve = ~0; break;
-			case 'm': preserve &= ~MTIME; break;
-			case 'o': preserve |= UID | GID; break;
-			case 'p': preserve |= MODE; break;
+			// ?man -a: print or show all entries
+	case 'a': preserve &= ~ATIME; break;
+			// ?man -e: specify expression or pattern
+	case 'e': preserve = ~0; break;
+			// ?man -m: specify mode or limit
+	case 'm': preserve &= ~MTIME; break;
+			// ?man -o: specify output file
+	case 'o': preserve |= UID | GID; break;
+			// ?man -p: preserve file attributes
+	case 'p': preserve |= MODE; break;
 			default: fatal("unknown -p option");
 			}
 		}
 		break;
+	// ?man -r: operate recursively
 	case 'r':
 		mode |= READ;
 		break;
+	// ?man -s: silent mode or print summary
 	case 's':
 		parsereplstr(EARGF(usage()));
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tflag = 1;
 		break;
+	// ?man -u: unbuffered output
 	case 'u':
 		uflag = 1;
 		break;
+	// ?man -v: verbose mode; show progress
 	case 'v':
 		vflag = 1;
 		break;
+	// ?man -w: wait for completion
 	case 'w':
 		mode |= WRITE;
 		break;
+	// ?man -x: hex format or match whole lines
 	case 'x':
 		format = EARGF(usage());
 		break;
+	// ?man -X: specify option flag
 	case 'X':
 		Xflag = 1;
 		break;
+	// ?man -z: specify option flag
 	case 'z':
 		algo = "gzip";
 		break;

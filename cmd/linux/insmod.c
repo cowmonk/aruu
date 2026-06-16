@@ -1,4 +1,9 @@
-/* See LICENSE file for copyright and license details. */
+/* ?man
+insmod: insert a module into the Linux kernel
+usage: insmod filename [args...]
+
+insmod inserts a kernel module from filename into the running kernel
+*/
 #include <sys/stat.h>
 #include <sys/syscall.h>
 

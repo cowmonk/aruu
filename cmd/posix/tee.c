@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+tee: duplicate input
+usage: tee [-ai] [file ...]
+
+read from standard input and write to standard output and files
+*/
+
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
@@ -21,9 +28,11 @@ main(int argc, char *argv[])
 	char buf[BUFSIZ];
 
 	ARGBEGIN {
+	// ?man -a: print or show all entries
 	case 'a':
 		aflag = O_APPEND;
 		break;
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		iflag = 1;
 		break;

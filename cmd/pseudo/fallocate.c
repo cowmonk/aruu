@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+fallocate: preallocate file space
+usage: fallocate [-o num] -l num file ...
+
+preallocate or deallocate space to a file
+*/
+
 #include <sys/stat.h>
 
 #include <fcntl.h>
@@ -23,9 +30,11 @@ main(int argc, char *argv[])
 	off_t size = 0, offset = 0;
 
 	ARGBEGIN {
+	// ?man -l: list in long format
 	case 'l':
 		size = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man -o: specify output file
 	case 'o':
 		offset = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;

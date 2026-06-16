@@ -1,4 +1,11 @@
 /* See LICENSE file for copyright and license details. */
+/* ?man
+expand: convert tabs to spaces
+usage: expand [-i] [-t tablist] [file ...]
+
+convert tab characters to space characters
+*/
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -93,9 +100,11 @@ main(int argc, char *argv[])
 	char *tl = "8";
 
 	ARGBEGIN {
+	// ?man -i: interactive mode or prompt for confirmation
 	case 'i':
 		iflag = 1;
 		break;
+	// ?man -t: sort or specify timestamp
 	case 't':
 		tl = EARGF(usage());
 		if (!*tl)
