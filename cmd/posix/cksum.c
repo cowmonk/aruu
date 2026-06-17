@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cksum: checksum and count bytes
-usage: cksum [file ...]
 
-print crc checksum and byte counts for files
-*/
 
 #include <fcntl.h>
 #include <inttypes.h>
@@ -105,6 +100,9 @@ usage(void)
 	eprintf("usage: %s [file ...]\n", argv0);
 }
 
+// ?man cksum: checksum and count bytes
+// ?man arguments: file ...
+// ?man print crc checksum and byte counts for files
 int
 main(int argc, char *argv[])
 {

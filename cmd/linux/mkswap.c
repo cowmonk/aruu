@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mkswap: set up a swap area
-usage: mkswap device
 
-initialize a linux swap area on a device or file
-*/
 
 #include <sys/stat.h>
 
@@ -37,6 +32,9 @@ usage(void)
 	eprintf("usage: %s device\n", argv0);
 }
 
+// ?man mkswap: set up a swap area
+// ?man arguments: device
+// ?man initialize a linux swap area on a device or file
 int
 main(int argc, char *argv[])
 {

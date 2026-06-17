@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-readlink: print value of symlink
-usage: readlink [-fn] path
 
-display the target of a symbolic link
-*/
 
 #include <limits.h>
 #include <stdio.h>
@@ -24,6 +19,9 @@ usage(void)
 #endif
 }
 
+// ?man readlink: print value of symlink
+// ?man arguments: path
+// ?man display the target of a symbolic link
 int
 main(int argc, char *argv[])
 {

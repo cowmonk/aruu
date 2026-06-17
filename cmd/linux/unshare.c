@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-unshare: run program in new namespaces
-usage: unshare [-muinpU] cmd [args...]
 
-run a program with some namespaces unshared from the parent
-*/
 
 #include <sched.h>
 #include <stdio.h>
@@ -20,6 +15,9 @@ usage(void)
 	eprintf("usage: %s [-muinpU] cmd [args...]\n", argv0);
 }
 
+// ?man unshare: run program in new namespaces
+// ?man arguments: cmd [args...
+// ?man run a program with some namespaces unshared from the parent
 int
 main(int argc, char *argv[])
 {

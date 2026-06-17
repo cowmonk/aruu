@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-ed: line editor
-usage: ed [-s] [-p] [file]
 
-simple text line editor
-*/
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -1705,11 +1700,14 @@ init(char *fname)
 	clearundo();
 }
 
+// ?man ed: line editor
+// ?man arguments: file
+// ?man simple text line editor
 int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
-	// ?man -p: preserve file attributes
+	// ?man -p:str: preserve file attributes
 	case 'p':
 		prompt = EARGF(usage());
 		optprompt = 1;

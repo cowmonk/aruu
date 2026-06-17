@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cal: display a calendar
-usage: cal [-1 | -3 | -y | -n num]
 
-print a formatted calendar of the specified month or year
-*/
 
 #include <limits.h>
 #include <stdint.h>
@@ -156,6 +151,8 @@ usage(void)
 #endif
 }
 
+// ?man cal: display a calendar
+// ?man print a formatted calendar of the specified month or year
 int
 main(int argc, char *argv[])
 {
@@ -194,11 +191,11 @@ main(int argc, char *argv[])
 			year--;
 		}
 		break;
-	// ?man -c: print count or perform stdout action
+	// ?man -c:num: print count or perform stdout action
 	case 'c':
 		ncols = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -f: force the operation
+	// ?man -f:num: force the operation
 	case 'f':
 		fday = estrtonum(EARGF(usage()), 0, 6);
 		break;
@@ -206,7 +203,7 @@ main(int argc, char *argv[])
 	case 'm': /* Monday */
 		fday = 1;
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n:num: print line numbers or counts
 	case 'n':
 		nmons = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;

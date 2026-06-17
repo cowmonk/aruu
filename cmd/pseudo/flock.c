@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-flock: manage locks
-usage: flock [-nosux] file cmd [arg ...]
 
-acquire or release locks from shell scripts
-*/
 
 #include <sys/file.h>
 #include <sys/wait.h>
@@ -22,6 +17,9 @@ usage(void)
 	eprintf("usage: %s [-nosux] file cmd [arg ...]\n", argv0);
 }
 
+// ?man flock: manage locks
+// ?man arguments: file cmd [arg ...
+// ?man acquire or release locks from shell scripts
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-vtallow: allow non-root vt access
-usage: vtallow n | y
 
-allow non-root users to access virtual terminal devices
-*/
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -28,6 +23,9 @@ usage(void)
 	eprintf("usage: %s n | y\n", argv0);
 }
 
+// ?man vtallow: allow non-root vt access
+// ?man arguments: n | y
+// ?man allow non-root users to access virtual terminal devices
 int
 main(int argc, char *argv[])
 {

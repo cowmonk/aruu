@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-readahead: read files into page cache
-usage: readahead file...
 
-preload file contents into the page cache
-*/
 
 #include <fcntl.h>
 #include <limits.h>
@@ -19,6 +14,9 @@ usage(void)
 	eprintf("usage: %s file...\n", argv0);
 }
 
+// ?man readahead: read files into page cache
+// ?man arguments: file...
+// ?man preload file contents into the page cache
 int
 main(int argc, char *argv[])
 {

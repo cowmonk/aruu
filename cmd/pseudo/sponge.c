@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-sponge: soak up input
-usage: sponge file
 
-soak up standard input and write to a file
-*/
 
 #include <fcntl.h>
 #include <stdlib.h>
@@ -18,6 +13,9 @@ usage(void)
 	eprintf("usage: %s file\n", argv0);
 }
 
+// ?man sponge: soak up input
+// ?man arguments: file
+// ?man soak up standard input and write to a file
 int
 main(int argc, char *argv[])
 {

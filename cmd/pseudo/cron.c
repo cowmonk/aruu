@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cron: cron daemon
-usage: cron [-f file] [-n]
 
-daemon to run scheduled background commands
-*/
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -495,6 +490,8 @@ usage(void)
 	eprintf("usage: %s [-f file] [-n]\n", argv0);
 }
 
+// ?man cron: cron daemon
+// ?man daemon to run scheduled background commands
 int
 main(int argc, char *argv[])
 {
@@ -509,7 +506,7 @@ main(int argc, char *argv[])
 	case 'n':
 		nflag = 1;
 		break;
-	// ?man -f: force the operation
+	// ?man -f:str: force the operation
 	case 'f':
 		config = EARGF(usage());
 		break;

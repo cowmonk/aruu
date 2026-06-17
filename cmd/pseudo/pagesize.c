@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-pagesize: print system page size
-usage: pagesize 
 
-display the size of a page in memory
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +13,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man pagesize: print system page size
+// ?man display the size of a page in memory
 int
 main(int argc, char *argv[])
 {

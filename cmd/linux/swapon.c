@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-swapon: enable swap devices
-usage: swapon [-dp] -a | device
 
-enable paging and swapping on specified devices
-*/
 
 #include <sys/swap.h>
 
@@ -21,6 +16,9 @@ usage(void)
 	eprintf("usage: %s [-dp] -a | device\n", argv0);
 }
 
+// ?man swapon: enable swap devices
+// ?man arguments: -a | device
+// ?man enable paging and swapping on specified devices
 int
 main(int argc, char *argv[])
 {

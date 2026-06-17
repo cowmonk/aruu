@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-unexpand: convert spaces to tabs
-usage: unexpand [-a] [-t tablist] [file ...]
 
-convert space characters to tab characters
-*/
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -135,6 +130,9 @@ usage(void)
 	eprintf("usage: %s [-a] [-t tablist] [file ...]\n", argv0);
 }
 
+// ?man unexpand: convert spaces to tabs
+// ?man arguments: file ...
+// ?man convert space characters to tab characters
 int
 main(int argc, char *argv[])
 {
@@ -143,7 +141,7 @@ main(int argc, char *argv[])
 	char *tl = "8";
 
 	ARGBEGIN {
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		tl = EARGF(usage());
 		if (!*tl)

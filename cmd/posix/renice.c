@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-renice: alter priority of processes
-usage: renice -n num [-g | -p | -u] id ...
 
-change the scheduling priority of running processes
-*/
 
 #include <sys/resource.h>
 
@@ -47,6 +42,9 @@ usage(void)
 	eprintf("usage: %s -n num [-g | -p | -u] id ...\n", argv0);
 }
 
+// ?man renice: alter priority of processes
+// ?man arguments: -n num id ...
+// ?man change the scheduling priority of running processes
 int
 main(int argc, char *argv[])
 {
@@ -57,7 +55,7 @@ main(int argc, char *argv[])
 	int who;
 
 	ARGBEGIN {
-	// ?man -n: print line numbers or counts
+	// ?man -n:str: print line numbers or counts
 	case 'n':
 		adj = EARGF(usage());
 		break;

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-rm: remove files
-usage: rm [-f] [-iRr] file ...
 
-remove files and directory hierarchies
-*/
 
 #include <fcntl.h>
 #include  <string.h>
@@ -51,6 +46,9 @@ forbidden(char *path, struct stat *root)
 	return 0;
 }
 
+// ?man rm: remove files
+// ?man arguments: file ...
+// ?man remove files and directory hierarchies
 int
 main(int argc, char *argv[])
 {

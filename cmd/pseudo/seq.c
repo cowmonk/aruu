@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-seq: print sequence of numbers
-usage: seq [-f fmt] [-s sep] [-w]
 
-print a sequence of numbers from start to end
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,6 +79,8 @@ usage(void)
 	        "[startnum [step]] endnum\n", argv0);
 }
 
+// ?man seq: print sequence of numbers
+// ?man print a sequence of numbers from start to end
 int
 main(int argc, char *argv[])
 {
@@ -93,13 +90,13 @@ main(int argc, char *argv[])
 	const char *starts = "1", *steps = "1", *ends = "1", *sep = "\n";
 
 	ARGBEGIN {
-	// ?man -f: force the operation
+	// ?man -f:str: force the operation
 	case 'f':
 		if (!validfmt(tmp=EARGF(usage())))
 			eprintf("%s: invalid format\n", tmp);
 		fmt = tmp;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s:str: silent mode or print summary
 	case 's':
 		sep = EARGF(usage());
 		break;

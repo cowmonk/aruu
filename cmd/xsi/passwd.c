@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-passwd: change user password
-usage: passwd [username]
 
-update a user authentication password
-*/
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -163,6 +158,9 @@ usage(void)
 	eprintf("usage: %s [username]\n", argv0);
 }
 
+// ?man passwd: change user password
+// ?man arguments: username
+// ?man update a user authentication password
 int
 main(int argc, char *argv[])
 {

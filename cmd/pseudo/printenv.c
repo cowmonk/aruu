@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-printenv: print environment variables
-usage: printenv [var ...]
 
-display all or part of the current environment
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +14,9 @@ usage(void)
 	eprintf("usage: %s [var ...]\n", argv0);
 }
 
+// ?man printenv: print environment variables
+// ?man arguments: var ...
+// ?man display all or part of the current environment
 int
 main(int argc, char *argv[])
 {

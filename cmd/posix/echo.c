@@ -1,15 +1,12 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-echo: write arguments to stdout
-usage: echo
 
-print the specified arguments to standard output
-*/
 
 #include <stdio.h>
 #include <string.h>
 #include "util.h"
 
+// ?man echo: write arguments to stdout
+// ?man print the specified arguments to standard output
 int
 main(int argc, char *argv[])
 {

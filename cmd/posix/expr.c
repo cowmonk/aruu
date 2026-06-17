@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-expr: evaluate expression
-usage: expr
 
-evaluate a command line expression and print the result
-*/
 
 #include <limits.h>
 #include <stdio.h>
@@ -239,6 +234,8 @@ parse(char *expr[], int numexpr)
 	return (valp->str && *valp->str) || valp->num;
 }
 
+// ?man expr: evaluate expression
+// ?man evaluate a command line expression and print the result
 int
 main(int argc, char *argv[])
 {

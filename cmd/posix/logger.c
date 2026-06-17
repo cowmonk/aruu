@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-logger: log messages
-usage: logger [-is] [-p priority] [-t tag] [message ...]
 
-add messages to the system log
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,6 +45,9 @@ usage(void)
 	eprintf("usage: %s [-is] [-p priority] [-t tag] [message ...]\n", argv0);
 }
 
+// ?man logger: log messages
+// ?man arguments: message ...
+// ?man add messages to the system log
 int
 main(int argc, char *argv[])
 {
@@ -62,7 +60,7 @@ main(int argc, char *argv[])
 	case 'i':
 		logflags |= LOG_PID;
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p:str: preserve file attributes
 	case 'p':
 		priority = decodepri(EARGF(usage()));
 		break;
@@ -70,7 +68,7 @@ main(int argc, char *argv[])
 	case 's':
 		logflags |= LOG_PERROR;
 		break;
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		tag = EARGF(usage());
 		break;

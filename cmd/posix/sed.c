@@ -1,9 +1,4 @@
-/* ?man
-sed: stream editor
-usage: sed [-nrE] script [file ...]
 
-stream editor for filtering and transforming text
-*/
 
 /* FIXME: summary
  * decide whether we enforce valid UTF-8, right now it's enforced in certain
@@ -1754,6 +1749,9 @@ old_next(void)
 	pc = prog - 1;
 }
 
+// ?man sed: stream editor
+// ?man arguments: script [file ...
+// ?man stream editor for filtering and transforming text
 int
 main(int argc, char *argv[])
 {
@@ -1771,13 +1769,13 @@ main(int argc, char *argv[])
 	case 'E':
 		gflags.E = 1;
 		break;
-	// ?man -e: specify expression or pattern
+	// ?man -e:str: specify expression or pattern
 	case 'e':
 		arg = EARGF(usage());
 		compile(arg, 0);
 		script = 1;
 		break;
-	// ?man -f: force the operation
+	// ?man -f:str: force the operation
 	case 'f':
 		arg = EARGF(usage());
 		compile(arg, 1);

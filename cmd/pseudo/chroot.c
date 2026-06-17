@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-chroot: run command in new root
-usage: chroot dir [cmd [arg ...]]
 
-run a command or shell with a substitute root directory
-*/
 
 #include <errno.h>
 #include <stdlib.h>
@@ -18,6 +13,9 @@ usage(void)
 	eprintf("usage: %s dir [cmd [arg ...]]\n", argv0);
 }
 
+// ?man chroot: run command in new root
+// ?man arguments: dir [cmd [arg ...
+// ?man run a command or shell with a substitute root directory
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* see license file for copyright and license details */
-/* ?man
-wget: retrieve files from the web
-usage: wget [-cqS] [-O file] [-P dir] [-T timeout] [-U user_agent] [-post-data data] [-post-file file] [-header header] [-no-check-certificate] [-spider] url
 
-download files over http or https
-*/
 
 #include "util.h"
 #include "arg.h"
@@ -298,6 +293,9 @@ req_printf(struct TlsSocket *ts, const char *fmt, ...)
 		tls_write(ts, buf, len);
 }
 
+// ?man wget: retrieve files from the web
+// ?man arguments: url
+// ?man download files over http or https
 int
 main(int argc, char *argv[])
 {
@@ -329,19 +327,19 @@ main(int argc, char *argv[])
 	size_t i;
 
 	ARGBEGIN {
-	// ?man -O: specify output file path
+	// ?man -O:str: specify output file path
 	case 'O':
 		Oflag = EARGF(usage());
 		break;
-	// ?man -P: specify output directory prefix
+	// ?man -P:str: specify output directory prefix
 	case 'P':
 		Pflag = EARGF(usage());
 		break;
-	// ?man -T: set network read and connect timeout
+	// ?man -T:num: set network read and connect timeout
 	case 'T':
 		timeout_sec = estrtonum(EARGF(usage()), 0, 100000);
 		break;
-	// ?man -U: set User-Agent header
+	// ?man -U:str: set User-Agent header
 	case 'U':
 		user_agent = EARGF(usage());
 		break;
@@ -357,6 +355,7 @@ main(int argc, char *argv[])
 	case 'S':
 		Sflag = 1;
 		break;
+	// ?man --: specify - option
 	case '-':
 		if (strcmp(argv[0], "-no-check-certificate") == 0) {
 			no_check_certificate = 1;

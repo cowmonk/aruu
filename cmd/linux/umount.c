@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-umount: unmount filesystems
-usage: umount [-lfn] [-O options] target...
 
-unmount a filesystem from the directory tree
-*/
 
 #include <sys/mount.h>
 
@@ -130,6 +125,9 @@ usage(void)
 	exit(1);
 }
 
+// ?man umount: unmount filesystems
+// ?man arguments: target...
+// ?man unmount a filesystem from the directory tree
 int
 main(int argc, char *argv[])
 {
@@ -158,7 +156,7 @@ main(int argc, char *argv[])
 	case 'n':
 		break;
 #if FEATURE_UMOUNT_OPTIONS
-	// ?man -O: specify option flag
+	// ?man -O:str: specify option flag
 	case 'O':
 		oflag = EARGF(usage());
 		break;

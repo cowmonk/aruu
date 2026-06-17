@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-su: run command with substitute user id
-usage: su [-lp] [username]
 
-run a shell or command with another user id
-*/
 
 #include <sys/types.h>
 
@@ -30,6 +25,9 @@ usage(void)
 	eprintf("usage: %s [-lp] [username]\n", argv0);
 }
 
+// ?man su: run command with substitute user id
+// ?man arguments: username
+// ?man run a shell or command with another user id
 int
 main(int argc, char *argv[])
 {

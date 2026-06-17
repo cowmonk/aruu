@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-uname: print system info
-usage: uname [-amnrsv]
 
-display system hostname, kernel name, release, and architecture
-*/
 
 #include <sys/utsname.h>
 
@@ -18,6 +13,8 @@ usage(void)
 	eprintf("usage: %s [-amnrsv]\n", argv0);
 }
 
+// ?man uname: print system info
+// ?man display system hostname, kernel name, release, and architecture
 int
 main(int argc, char *argv[])
 {

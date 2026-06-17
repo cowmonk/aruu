@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-md5sum: compute md5 checksums
-usage: md5sum [-c] [file ...]
 
-compute and check md5 message digests
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +23,9 @@ usage(void)
 	eprintf("usage: %s [-c] [file ...]\n", argv0);
 }
 
+// ?man md5sum: compute md5 checksums
+// ?man arguments: file ...
+// ?man compute and check md5 message digests
 int
 main(int argc, char *argv[])
 {

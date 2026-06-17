@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mesg: control write access
-usage: mesg [n|y]
 
-allow or disallow other users to write to the terminal
-*/
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -21,6 +16,9 @@ usage(void)
 	eprintf("usage: %s [n|y]\n", argv0);
 }
 
+// ?man mesg: control write access
+// ?man arguments: n|y
+// ?man allow or disallow other users to write to the terminal
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mknod: create special files
-usage: mknod [-m mode] name b|c|u major minor
 
-create block or character special files
-*/
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -28,6 +23,9 @@ usage(void)
 	        argv0, argv0);
 }
 
+// ?man mknod: create special files
+// ?man arguments: name b|c|u major minor
+// ?man create block or character special files
 int
 main(int argc, char *argv[])
 {
@@ -35,8 +33,8 @@ main(int argc, char *argv[])
 	dev_t dev;
 
 	ARGBEGIN {
-	// ?man -m: specify mode or limit
-	case 'm':
+// ?man -m:mode: specify mode or limit
+case 'm':
 		mode = parsemode(EARGF(usage()), mode, umask(0));
 		break;
 	default:

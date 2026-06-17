@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-ctrlaltdel: set ctrl-alt-del function
-usage: ctrlaltdel -h | -s
 
-set the behavior of the ctrl-alt-del key combination
-*/
 
 #include <sys/syscall.h>
 
@@ -20,6 +15,9 @@ usage(void)
 	eprintf("usage: %s -h | -s\n", argv0);
 }
 
+// ?man ctrlaltdel: set ctrl-alt-del function
+// ?man arguments: -h | -s
+// ?man set the behavior of the ctrl-alt-del key combination
 int
 main(int argc, char *argv[])
 {

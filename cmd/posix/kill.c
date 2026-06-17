@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-kill: send signal to process
-usage: kill [-s signame | -num | -signame] pid ...
 
-send a specified signal to processes by pid
-*/
 
 #include "sig.h"
 #include "util.h"
@@ -49,6 +44,9 @@ usage(void)
 	        "       %s -l [num]\n", argv0, argv0);
 }
 
+// ?man kill: send signal to process
+// ?man arguments: pid ...
+// ?man send a specified signal to processes by pid
 int
 main(int argc, char *argv[])
 {

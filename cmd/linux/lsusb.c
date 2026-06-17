@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-lsusb: list usb devices
-usage: lsusb 
 
-display information about usb buses and connected devices
-*/
 
 #include <limits.h>
 #include <stdio.h>
@@ -52,6 +47,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man lsusb: list usb devices
+// ?man display information about usb buses and connected devices
 int
 main(int argc, char *argv[])
 {

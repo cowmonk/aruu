@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-logname: print login name
-usage: logname 
 
-display the user login name
-*/
 
 #include <stdio.h>
 #include <unistd.h>
@@ -17,6 +12,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man logname: print login name
+// ?man display the user login name
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-halt: halt or reboot
-usage: halt [-pr]
 
-halt, poweroff, or reboot the machine
-*/
 
 #include <sys/syscall.h>
 
@@ -21,6 +16,8 @@ usage(void)
 	eprintf("usage: %s [-pr]\n", argv0);
 }
 
+// ?man halt: halt or reboot
+// ?man halt, poweroff, or reboot the machine
 int
 main(int argc, char *argv[])
 {

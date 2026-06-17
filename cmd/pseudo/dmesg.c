@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-dmesg: print kernel ring buffer
-usage: dmesg [-Ccr] [-n level]
 
-display or control the kernel ring buffer messages
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +31,8 @@ usage(void)
 	eprintf("usage: %s [-Ccr] [-n level]\n", argv0);
 }
 
+// ?man dmesg: print kernel ring buffer
+// ?man display or control the kernel ring buffer messages
 int
 main(int argc, char *argv[])
 {
@@ -57,7 +54,7 @@ main(int argc, char *argv[])
 	// ?man -r: operate recursively
 	case 'r':
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n:num: print line numbers or counts
 	case 'n':
 		level = estrtol(EARGF(usage()), 10);
 		if (set_console_level(level) < 0)

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-sort: sort lines
-usage: sort [-Cbcdfimnru
 
-sort or merge lines of text files
-*/
 
 #include "queue.h"
 #include "text.h"
@@ -400,6 +395,9 @@ usage(void)
 	         "] [-o outfile] [-t delim] [-k def]... [file ...]\n", argv0);
 }
 
+// ?man sort: sort lines
+// ?man arguments: -Cbcdfimnru
+// ?man sort or merge lines of text files
 int
 main(int argc, char *argv[])
 {
@@ -434,7 +432,7 @@ main(int argc, char *argv[])
 	case 'i':
 		global_flags |= MOD_I;
 		break;
-	// ?man -k: specify option flag
+	// ?man -k:str: specify option flag
 	case 'k':
 		addkeydef(EARGF(usage()), global_flags);
 		break;
@@ -450,7 +448,7 @@ main(int argc, char *argv[])
 	case 'n':
 		global_flags |= MOD_N;
 		break;
-	// ?man -o: specify output file
+	// ?man -o:file: specify output file
 	case 'o':
 		outfile = EARGF(usage());
 		break;
@@ -464,7 +462,7 @@ main(int argc, char *argv[])
 		sflag = 1;
 		break;
 #endif
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		fieldsep = EARGF(usage());
 		if (!*fieldsep)

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-rev: reverse lines
-usage: rev [file ...]
 
-reverse the order of characters in each line of input
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -46,6 +41,9 @@ rev(FILE *fp)
 	}
 }
 
+// ?man rev: reverse lines
+// ?man arguments: file ...
+// ?man reverse the order of characters in each line of input
 int
 main(int argc, char *argv[])
 {

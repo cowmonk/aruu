@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tail: output last part of files
-usage: tail [-f] [-c num | -m num | -n num | -num] [file ...]
 
-print the last lines or bytes of files
-*/
 
 #include <sys/stat.h>
 
@@ -159,6 +154,9 @@ usage(void)
 	eprintf("usage: %s [-f] [-c num | -m num | -n num | -num] [file ...]\n", argv0);
 }
 
+// ?man tail: output last part of files
+// ?man arguments: file ...
+// ?man print the last lines or bytes of files
 int
 main(int argc, char *argv[])
 {
@@ -178,7 +176,7 @@ main(int argc, char *argv[])
 	case 'c':
 	// ?man -m: specify mode or limit
 	case 'm':
-	// ?man -n: print line numbers or counts
+	// ?man -n:num: print line numbers or counts
 	case 'n':
 		mode = ARGC();
 		numstr = EARGF(usage());
@@ -187,6 +185,7 @@ main(int argc, char *argv[])
 		if (strchr(numstr, '+'))
 			tail = dropinit;
 		break;
+	// ?man ARGNUM: specify RGNUM option
 	ARGNUM:
 		n = ARGNUMF();
 		break;

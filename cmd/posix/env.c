@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-env: run command in modified environment
-usage: env [-i] [-u var] ... [var=value] ... [cmd [arg ...]]
 
-set environment variables and run a command
-*/
 
 #include <errno.h>
 #include <stdio.h>
@@ -22,6 +17,9 @@ usage(void)
 	eprintf("usage: %s [-i] [-u var] ... [var=value] ... [cmd [arg ...]]\n", argv0);
 }
 
+// ?man env: run command in modified environment
+// ?man arguments: ... [var=value] ... [cmd [arg ...
+// ?man set environment variables and run a command
 int
 main(int argc, char *argv[])
 {
@@ -32,7 +30,7 @@ main(int argc, char *argv[])
 	case 'i':
 		*environ = NULL;
 		break;
-	// ?man -u: unbuffered output
+	// ?man -u:str: unbuffered output
 	case 'u':
 		if (unsetenv(EARGF(usage())) < 0)
 			eprintf("unsetenv:");

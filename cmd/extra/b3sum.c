@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-b3sum: compute blake3 checksums
-usage: b3sum [-bct] [-l length] [file ...]
 
-compute and check blake3 message digests
-*/
 #include "util.h"
 #include "arg.h"
 
@@ -3968,6 +3963,9 @@ check(const char *name, FILE *file)
 	return ret;
 }
 
+// ?man b3sum: compute blake3 checksums
+// ?man arguments: file ...
+// ?man compute and check blake3 message digests
 int
 main(int argc, char *argv[])
 {
@@ -3986,7 +3984,7 @@ main(int argc, char *argv[])
 	case 'c':
 		func = check;
 		break;
-	// ?man -l length: output digest length in bytes
+	// ?man -l:str: -l length: output digest length in bytes
 	case 'l':
 		outlen = strtoul(EARGF(usage()), &end, 10);
 		if (*end)

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-paste: merge lines of files
-usage: paste [-s] [-d list] file ...
 
-merge corresponding lines of files side by side
-*/
 
 #include <stdlib.h>
 #include <string.h>
@@ -91,6 +86,9 @@ usage(void)
 	eprintf("usage: %s [-s] [-d list] file ...\n", argv0);
 }
 
+// ?man paste: merge lines of files
+// ?man arguments: file ...
+// ?man merge corresponding lines of files side by side
 int
 main(int argc, char *argv[])
 {
@@ -105,7 +103,7 @@ main(int argc, char *argv[])
 	case 's':
 		seq = 1;
 		break;
-	// ?man -d: specify directory
+	// ?man -d:str: specify directory
 	case 'd':
 		delim = EARGF(usage());
 		delim_bytelen = unescape(delim);

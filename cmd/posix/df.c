@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-df: report disk space usage
-usage: df [-a]
 
-display free and used disk space on filesystems
-*/
 
 #include <sys/statvfs.h>
 
@@ -96,6 +91,8 @@ usage(void)
 	eprintf("usage: %s [-a]\n", argv0);
 }
 
+// ?man df: report disk space usage
+// ?man display free and used disk space on filesystems
 int
 main(int argc, char *argv[])
 {

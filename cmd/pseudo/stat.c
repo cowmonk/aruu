@@ -1,9 +1,4 @@
-/* ?man
-stat: display file status
-usage: stat [-L] [-t]
 
-display file or filesystem status information
-*/
 
 #include "config.h"
 #include "util.h"
@@ -461,6 +456,8 @@ usage(void)
 	        " [file...]\n", argv0);
 }
 
+// ?man stat: display file status
+// ?man display file or filesystem status information
 int
 main(int argc, char *argv[])
 {
@@ -494,7 +491,7 @@ main(int argc, char *argv[])
 		break;
 #endif
 #if FEATURE_STAT_FORMAT
-	// ?man -c: print count or perform stdout action
+	// ?man -c:str: print count or perform stdout action
 	case 'c':
 		format = EARGF(usage());
 		break;

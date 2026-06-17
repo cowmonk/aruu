@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-free: display memory usage
-usage: free [-bkmg]
 
-display the amount of free and used memory in the system
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +23,8 @@ usage(void)
 	eprintf("usage: %s [-bkmg]\n", argv0);
 }
 
+// ?man free: display memory usage
+// ?man display the amount of free and used memory in the system
 int
 main(int argc, char *argv[])
 {

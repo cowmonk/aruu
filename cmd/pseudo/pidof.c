@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-pidof: find process ids
-usage: pidof [-o pid1
 
-find the process identity numbers of running programs
-*/
 
 #include <sys/types.h>
 
@@ -33,6 +28,9 @@ usage(void)
 	eprintf("usage: %s [-o pid1,pid2,...pidN] [-s] [program...]\n", argv0);
 }
 
+// ?man pidof: find process ids
+// ?man arguments: -o pid1
+// ?man find the process identity numbers of running programs
 int
 main(int argc, char *argv[])
 {
@@ -50,7 +48,7 @@ main(int argc, char *argv[])
 	case 's':
 		sflag = 1;
 		break;
-	// ?man -o: specify output file
+	// ?man -o:str: specify output file
 	case 'o':
 		oflag = 1;
 		arg = EARGF(usage());

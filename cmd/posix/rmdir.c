@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-rmdir: remove empty directories
-usage: rmdir [-p] dir ...
 
-remove empty directories from the filesystem
-*/
 
 #include <libgen.h>
 #include <string.h>
@@ -18,6 +13,9 @@ usage(void)
 	eprintf("usage: %s [-p] dir ...\n", argv0);
 }
 
+// ?man rmdir: remove empty directories
+// ?man arguments: dir ...
+// ?man remove empty directories from the filesystem
 int
 main(int argc, char *argv[])
 {

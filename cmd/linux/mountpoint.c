@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mountpoint: check if a directory is a mountpoint
-usage: mountpoint [-dqx] target
 
-determine if a directory is a mountpoint
-*/
 
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
@@ -24,6 +19,9 @@ usage(void)
 	eprintf("usage: %s [-dqx] target\n", argv0);
 }
 
+// ?man mountpoint: check if a directory is a mountpoint
+// ?man arguments: target
+// ?man determine if a directory is a mountpoint
 int
 main(int argc, char *argv[])
 {

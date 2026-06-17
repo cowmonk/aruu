@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-sysctl: configure kernel parameters
-usage: sysctl [-p file] variable[=value]...
 
-view and modify kernel parameters at runtime
-*/
 
 #include <fcntl.h>
 #include <limits.h>
@@ -165,6 +160,9 @@ usage(void)
 	eprintf("usage: %s [-p file] variable[=value]...\n", argv0);
 }
 
+// ?man sysctl: configure kernel parameters
+// ?man arguments: variable[=value]...
+// ?man view and modify kernel parameters at runtime
 int
 main(int argc, char *argv[])
 {
@@ -176,7 +174,7 @@ main(int argc, char *argv[])
 	int r = 0;
 
 	ARGBEGIN {
-	// ?man -p: preserve file attributes
+	// ?man -p:file: preserve file attributes
 	case 'p':
 		file = EARGF(usage());
 		break;

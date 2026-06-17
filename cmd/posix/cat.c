@@ -1,12 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
-/* ?man
-cat: concatenate files and print to standard output
-usage: cat [-u] [file ...]
 
-cat reads each file in sequence and writes it to standard output
-if no file is given, or a file is -, standard input is read
-*/
 
 #include <fcntl.h>
 #include <string.h>
@@ -20,12 +14,17 @@ usage(void)
 	eprintf("usage: %s [-u] [file ...]\n", argv0);
 }
 
+// ?man cat: concatenate files and print to standard output
+// ?man arguments: file ...
+// ?man cat reads each file in sequence and writes it to standard output
+// ?man if no file is given, or a file is -, standard input is read
 int
 main(int argc, char *argv[])
 {
 	int fd, ret = 0;
 
 	ARGBEGIN {
+	// ?man -u: specify u option
 	case 'u':
 		// ?man -u: ignored; accepted for posix compatibility; output is always unbuffered
 		break;
@@ -58,16 +57,16 @@ main(int argc, char *argv[])
 		}
 	}
 
-	/* ?man
-	## Exit status
-
-	cat exits 0 on success, and >0 if an error occurs reading any file
-	or writing to standard output
-
-	## See also
-
-	cp(1), dd(1)
-	*/
+	// ?man
+	// ?man ## Exit status
+	// ?man
+	// ?man cat exits 0 on success, and >0 if an error occurs reading any file
+	// ?man or writing to standard output
+	// ?man
+	// ?man ## See also
+	// ?man
+	// ?man cp(1), dd(1)
+	// ?man
 
 	return ret;
 }

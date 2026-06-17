@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-hostname: show or set hostname
-usage: hostname [name]
 
-display or configure the system hostname
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -18,6 +13,9 @@ usage(void)
 	eprintf("usage: %s [name]\n", argv0);
 }
 
+// ?man hostname: show or set hostname
+// ?man arguments: name
+// ?man display or configure the system hostname
 int
 main(int argc, char *argv[])
 {

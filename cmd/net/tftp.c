@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tftp: tftp client
-usage: tftp -h host [-p port] [-x | -c] file
 
-transfer files to and from a remote tftp server
-*/
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -253,6 +248,9 @@ usage(void)
 	eprintf("usage: %s -h host [-p port] [-x | -c] file\n", argv0);
 }
 
+// ?man tftp: tftp client
+// ?man arguments: -h host file
+// ?man transfer files to and from a remote tftp server
 int
 main(int argc, char *argv[])
 {
@@ -263,11 +261,11 @@ main(int argc, char *argv[])
 	int ret;
 
 	ARGBEGIN {
-	// ?man -h: suppress headers or print help
+	// ?man -h:str: suppress headers or print help
 	case 'h':
 		host = EARGF(usage());
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p:str: preserve file attributes
 	case 'p':
 		port = EARGF(usage());
 		break;

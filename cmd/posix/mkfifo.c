@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mkfifo: make fifos
-usage: mkfifo [-m mode] name ...
 
-create named pipes at specified paths
-*/
 
 #include <sys/stat.h>
 
@@ -18,6 +13,9 @@ usage(void)
 	eprintf("usage: %s [-m mode] name ...\n", argv0);
 }
 
+// ?man mkfifo: make fifos
+// ?man arguments: name ...
+// ?man create named pipes at specified paths
 int
 main(int argc, char *argv[])
 {
@@ -25,7 +23,7 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
-	// ?man -m: specify mode or limit
+	// ?man -m:mode: specify mode or limit
 	case 'm':
 		mode = parsemode(EARGF(usage()), mode, umask(0));
 		break;

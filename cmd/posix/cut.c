@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cut: cut out fields from lines
-usage: cut -b list [-n] [file ...]
 
-print selected parts of lines from files
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -166,6 +161,9 @@ usage(void)
 		argv0, argv0, argv0);
 }
 
+// ?man cut: cut out fields from lines
+// ?man arguments: -b list [file ...
+// ?man print selected parts of lines from files
 int
 main(int argc, char *argv[])
 {
@@ -177,12 +175,12 @@ main(int argc, char *argv[])
 	case 'b':
 	// ?man -c: print count or perform stdout action
 	case 'c':
-	// ?man -f: force the operation
+	// ?man -f:mode: force the operation
 	case 'f':
 		mode = ARGC();
 		parselist(EARGF(usage()));
 		break;
-	// ?man -d: specify directory
+	// ?man -d:str: specify directory
 	case 'd':
 		delim = EARGF(usage());
 		if (!*delim)

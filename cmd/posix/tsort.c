@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tsort: topological sort
-usage: tsort [file]
 
-perform a topological sort on input pairs
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -185,6 +180,9 @@ usage(void)
 	enprintf(2, "usage: %s [file]\n", argv0);
 }
 
+// ?man tsort: topological sort
+// ?man arguments: file
+// ?man perform a topological sort on input pairs
 int
 main(int argc, char *argv[])
 {

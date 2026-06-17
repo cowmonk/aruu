@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-printf: format and print data
-usage: printf format [arg ...]
 
-format and print arguments to standard output
-*/
 
 #include <ctype.h>
 #include <errno.h>
@@ -79,6 +74,9 @@ usage(void)
 	eprintf("usage: %s format [arg ...]\n", argv0);
 }
 
+// ?man printf: format and print data
+// ?man arguments: format [arg ...
+// ?man format and print arguments to standard output
 int
 main(int argc, char *argv[])
 {

@@ -1,9 +1,4 @@
-/* ?man
-pax: portable archive interchange
-usage: pax 
 
-read, write, and list member files of archive files
-*/
 
 /* taken from: https://github.com/michaelforney/pax */
 #ifndef _GNU_SOURCE
@@ -2337,6 +2332,8 @@ handle_append(const char *filename, const char *algo, const char *format)
 	}
 }
 
+// ?man pax: portable archive interchange
+// ?man read, write, and list member files of archive files
 int
 main(int argc, char *argv[])
 {
@@ -2356,7 +2353,7 @@ main(int argc, char *argv[])
 	case 'a':
 		aflag = 1;
 		break;
-	// ?man -b: specify block size or base directory
+	// ?man -b:str: specify block size or base directory
 	case 'b':
 		EARGF(usage());
 		break;
@@ -2368,7 +2365,7 @@ main(int argc, char *argv[])
 	case 'd':
 		dflag = 1;
 		break;
-	// ?man -f: force the operation
+	// ?man -f:str: force the operation
 	case 'f':
 		name = EARGF(usage());
 		break;
@@ -2404,23 +2401,23 @@ main(int argc, char *argv[])
 	case 'n':
 		nflag = 1;
 		break;
-	// ?man -o: specify output file
+	// ?man -o:str: specify output file
 	case 'o':
 		parseopts(EARGF(usage()));
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p:str: preserve file attributes
 	case 'p':
 		for (arg = EARGF(usage()); *arg; ++arg) {
 			switch (*arg) {
-			// ?man -a: print or show all entries
+	// ?man -a: print or show all entries
 	case 'a': preserve &= ~ATIME; break;
-			// ?man -e: specify expression or pattern
+	// ?man -e: specify expression or pattern
 	case 'e': preserve = ~0; break;
-			// ?man -m: specify mode or limit
+	// ?man -m: specify mode or limit
 	case 'm': preserve &= ~MTIME; break;
-			// ?man -o: specify output file
+	// ?man -o: specify output file
 	case 'o': preserve |= UID | GID; break;
-			// ?man -p: preserve file attributes
+	// ?man -p: preserve file attributes
 	case 'p': preserve |= MODE; break;
 			default: fatal("unknown -p option");
 			}
@@ -2430,7 +2427,7 @@ main(int argc, char *argv[])
 	case 'r':
 		mode |= READ;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s:str: silent mode or print summary
 	case 's':
 		parsereplstr(EARGF(usage()));
 		break;
@@ -2450,7 +2447,7 @@ main(int argc, char *argv[])
 	case 'w':
 		mode |= WRITE;
 		break;
-	// ?man -x: hex format or match whole lines
+	// ?man -x:str: hex format or match whole lines
 	case 'x':
 		format = EARGF(usage());
 		break;

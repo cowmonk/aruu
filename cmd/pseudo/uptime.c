@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-uptime: show system uptime
-usage: uptime 
 
-display how long the system has been running and load averages
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,6 +19,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man uptime: show system uptime
+// ?man display how long the system has been running and load averages
 int
 main(int argc, char *argv[])
 {

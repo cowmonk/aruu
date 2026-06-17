@@ -1,9 +1,4 @@
-/* ?man
-lsmod: show the status of modules in the Linux kernel
-usage: lsmod
 
-lsmod formats and displays /proc/modules, showing currently loaded modules
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +15,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man lsmod: show the status of modules in the Linux kernel
+// ?man lsmod formats and displays /proc/modules, showing currently loaded modules
 int
 main(int argc, char *argv[])
 {

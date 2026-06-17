@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mount: mount a filesystem
-usage: mount [-BMRan] [-t fstype] [-o options] [source] [target]
 
-mount a filesystem to the directory tree
-*/
 
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -195,6 +190,9 @@ usage(void)
 	        argv0);
 }
 
+// ?man mount: mount a filesystem
+// ?man arguments: source] [target
+// ?man mount a filesystem to the directory tree
 int
 main(int argc, char *argv[])
 {
@@ -223,12 +221,12 @@ main(int argc, char *argv[])
 	case 'a':
 		aflag = 1;
 		break;
-	// ?man -o: specify output file
+	// ?man -o:str: specify output file
 	case 'o':
 		estrlcat(fsopts, EARGF(usage()), sizeof(fsopts));
 		parseopts(fsopts, &flags, data, sizeof(data));
 		break;
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		types = EARGF(usage());
 		break;

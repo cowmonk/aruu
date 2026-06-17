@@ -1,39 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-ip: show or configure routing and devices
-usage: ip [addr | link | route] [args...]
 
-configure and view network devices, routing, and tunnels
-
-## COMMANDS
-
-### addr [show | list [dev <device>]]
-show interface addresses
-
-### addr add <ip>/<prefix> dev <device>
-add address to interface
-
-### addr del <ip>/<prefix> dev <device>
-delete address from interface
-
-### addr flush dev <device>
-flush all addresses from interface
-
-### link [show | list [dev <device>]]
-show interface link states
-
-### link set <interface> [up | down | mtu <mtu> | address <mac> | arp on|off | multicast on|off | allmulticast on|off | promisc on|off | name <newname> | txqueuelen <qlen>]
-configure interface settings
-
-### route [show | list]
-show routing table
-
-### route add <prefix> [via <gateway>] [dev <device>] [metric <metric>]
-add route to routing table
-
-### route del <prefix> [via <gateway>] [dev <device>] [metric <metric>]
-delete route from routing table
-*/
 
 #include <arpa/inet.h>
 #include <ctype.h>
@@ -379,6 +345,28 @@ do_route(int argc, char *argv[])
 	return 1;
 }
 
+// ?man ip: show or configure routing and devices
+// ?man arguments: addr | link | route] [args...
+// ?man configure and view network devices, routing, and tunnels
+// ?man ## COMMANDS
+// ?man ### addr [show | list [dev <device>]]
+// ?man show interface addresses
+// ?man ### addr add <ip>/<prefix> dev <device>
+// ?man add address to interface
+// ?man ### addr del <ip>/<prefix> dev <device>
+// ?man delete address from interface
+// ?man ### addr flush dev <device>
+// ?man flush all addresses from interface
+// ?man ### link [show | list [dev <device>]]
+// ?man show interface link states
+// ?man ### link set <interface> [up | down | mtu <mtu> | address <mac> | arp on|off | multicast on|off | allmulticast on|off | promisc on|off | name <newname> | txqueuelen <qlen>]
+// ?man configure interface settings
+// ?man ### route [show | list]
+// ?man show routing table
+// ?man ### route add <prefix> [via <gateway>] [dev <device>] [metric <metric>]
+// ?man add route to routing table
+// ?man ### route del <prefix> [via <gateway>] [dev <device>] [metric <metric>]
+// ?man delete route from routing table
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tee: duplicate input
-usage: tee [-ai] [file ...]
 
-read from standard input and write to standard output and files
-*/
 
 #include <fcntl.h>
 #include <signal.h>
@@ -18,6 +13,9 @@ usage(void)
 	eprintf("usage: %s [-ai] [file ...]\n", argv0);
 }
 
+// ?man tee: duplicate input
+// ?man arguments: file ...
+// ?man read from standard input and write to standard output and files
 int
 main(int argc, char *argv[])
 {

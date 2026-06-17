@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-respawn: restart command on exit
-usage: respawn [-l fifo] [-d N] cmd [args...]
 
-run a command and restart it automatically when it exits
-*/
 
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -36,6 +31,9 @@ usage(void)
 	eprintf("usage: %s [-l fifo] [-d N] cmd [args...]\n", argv0);
 }
 
+// ?man respawn: restart command on exit
+// ?man arguments: cmd [args...
+// ?man run a command and restart it automatically when it exits
 int
 main(int argc, char *argv[])
 {
@@ -49,11 +47,11 @@ main(int argc, char *argv[])
 	int polln;
 
 	ARGBEGIN {
-	// ?man -d: specify directory
+	// ?man -d:num: specify directory
 	case 'd':
 		delay = estrtol(EARGF(usage()), 0);
 		break;
-	// ?man -l: list in long format
+	// ?man -l:str: list in long format
 	case 'l':
 		fifo = EARGF(usage());
 		break;

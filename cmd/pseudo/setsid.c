@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-setsid: run in new session
-usage: setsid [-f] cmd [arg ...]
 
-run a program in a new session
-*/
 
 #include <errno.h>
 #include <unistd.h>
@@ -19,6 +14,9 @@ usage(void)
 	eprintf("usage: %s [-f] cmd [arg ...]\n", argv0);
 }
 
+// ?man setsid: run in new session
+// ?man arguments: cmd [arg ...
+// ?man run a program in a new session
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-chown: change ownership
-usage: chown [-h] [-R [-H | -L | -P]] owner[:[group]] file ...
 
-change the user and group ownership of files and directories
-*/
 
 #include <errno.h>
 #include <fcntl.h>
@@ -49,6 +44,9 @@ usage(void)
 	        argv0, argv0);
 }
 
+// ?man chown: change ownership
+// ?man arguments: owner[:[group]] file ...
+// ?man change the user and group ownership of files and directories
 int
 main(int argc, char *argv[])
 {

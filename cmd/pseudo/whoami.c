@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-whoami: print effective user name
-usage: whoami 
 
-display the effective user name of the current process
-*/
 
 #include <errno.h>
 #include <stdio.h>
@@ -19,6 +14,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man whoami: print effective user name
+// ?man display the effective user name of the current process
 int
 main(int argc, char *argv[])
 {

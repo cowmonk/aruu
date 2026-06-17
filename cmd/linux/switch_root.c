@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-switch_root: switch to another root filesystem
-usage: switch_root [-c console] [newroot] [init] (PID 1)
 
-switch to another filesystem as the root of the mount tree
-*/
 
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -71,6 +66,9 @@ usage(void)
 	eprintf("usage: %s [-c console] [newroot] [init] (PID 1)\n", argv0);
 }
 
+// ?man switch_root: switch to another root filesystem
+// ?man arguments: newroot] [init] (PID 1)
+// ?man switch to another filesystem as the root of the mount tree
 int
 main(int argc, char *argv[])
 {
@@ -80,7 +78,7 @@ main(int argc, char *argv[])
 	struct statfs stfs;
 
 	ARGBEGIN {
-	// ?man -c: print count or perform stdout action
+	// ?man -c:str: print count or perform stdout action
 	case 'c':
 		console = EARGF(usage());
 		break;

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-clear: clear terminal screen
-usage: clear 
 
-clear the terminal screen and scrollback buffer
-*/
 
 #include <stdio.h>
 
@@ -16,6 +11,8 @@ usage(void)
 	eprintf("usage: %s\n", argv0);
 }
 
+// ?man clear: clear terminal screen
+// ?man clear the terminal screen and scrollback buffer
 int
 main(int argc, char *argv[])
 {

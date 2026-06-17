@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-sleep: delay for a duration
-usage: sleep num
 
-pause execution for a specified amount of time
-*/
 
 #include <unistd.h>
 
@@ -16,6 +11,9 @@ usage(void)
 	eprintf("usage: %s num\n", argv0);
 }
 
+// ?man sleep: delay for a duration
+// ?man arguments: num
+// ?man pause execution for a specified amount of time
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-uuencode: encode binary file
-usage: uuencode [-m] [file] name
 
-encode a binary file into ascii text
-*/
 
 #include <sys/stat.h>
 
@@ -103,6 +98,9 @@ usage(void)
 	eprintf("usage: %s [-m] [file] name\n", argv0);
 }
 
+// ?man uuencode: encode binary file
+// ?man arguments: file] name
+// ?man encode a binary file into ascii text
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-chgrp: change group ownership
-usage: chgrp [-h] [-R [-H | -L | -P]] group file ...
 
-change the group ownership of files and directories
-*/
 
 #include <sys/stat.h>
 
@@ -43,6 +38,9 @@ usage(void)
 	eprintf("usage: %s [-h] [-R [-H | -L | -P]] group file ...\n", argv0);
 }
 
+// ?man chgrp: change group ownership
+// ?man arguments: group file ...
+// ?man change the group ownership of files and directories
 int
 main(int argc, char *argv[])
 {

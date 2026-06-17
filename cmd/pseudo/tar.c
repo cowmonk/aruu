@@ -1,10 +1,4 @@
-/* ?man
-tar: tape archiver
-usage: tar [x | t | -x | -t] [-C dir] [-J | -Z | -a | -j | -z] [-m] [-p] [-O] [-k] [-T file] [-X file] [--strip-components num] [-f file] [file ...]
-       tar [c | -c] [-C dir] [-J | -Z | -a | -j | -z] [-h] [-T file] [-X file] path ... [-f file]
 
-manipulate tape archive files
-*/
 
 #include "config.h"
 #include "fs.h"
@@ -806,6 +800,10 @@ usage(void)
 #endif
 }
 
+// ?man tar: tape archiver
+// ?man arguments: x | t | -x | -t] [file ...
+// ?man tar [c | -c] [-C dir] [-J | -Z | -a | -j | -z] [-h] [-T file] [-X file] path ... [-f file]
+// ?man manipulate tape archive files
 int
 main(int argc, char *argv[])
 {
@@ -836,11 +834,11 @@ main(int argc, char *argv[])
 	case 't':
 		mode = ARGC();
 		break;
-	// ?man -C: specify option flag
+	// ?man -C:dir: specify option flag
 	case 'C':
 		dir = EARGF(usage());
 		break;
-	// ?man -f: specify archive file
+	// ?man -f:file: specify archive file
 	case 'f':
 		file = EARGF(usage());
 		break;
@@ -887,19 +885,19 @@ main(int argc, char *argv[])
 		break;
 #endif
 #if FEATURE_TAR_FILES_FROM
-	// ?man -T file: read filenames from file
+	// ?man -T:file: -T file: read filenames from file
 	case 'T':
 		load_files_from_file(EARGF(usage()));
 		break;
 #endif
 #if FEATURE_TAR_EXCLUDE_FROM
-	// ?man -X file: exclude patterns in file
+	// ?man -X:file: -X file: exclude patterns in file
 	case 'X':
 		load_excludes_from_file(EARGF(usage()));
 		break;
 #endif
 #if FEATURE_TAR_STRIP_COMPONENTS
-	// ?man -strip-components num: strip num components
+	// ?man -s:num: -strip-components num: strip num components
 	case 's':
 		if (strcmp(argv[0], "strip-components") == 0) {
 			argv[0] = "s";
@@ -913,6 +911,7 @@ main(int argc, char *argv[])
 		}
 		break;
 #endif
+	// ?man --:num: specify - option
 	case '-':
 #if FEATURE_TAR_EXCLUDE
 		if (strncmp(argv[0], "-exclude=", 9) == 0) {

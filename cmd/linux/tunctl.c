@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tunctl: configure tun/tap interfaces
-usage: tunctl [-dtT] [-u owner] [device]
 
-create or destroy tun/tap network interfaces
-*/
 
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -35,6 +30,9 @@ usage(void)
 	eprintf("usage: %s [-dtT] [-u owner] [device]\n", argv0);
 }
 
+// ?man tunctl: configure tun/tap interfaces
+// ?man arguments: device
+// ?man create or destroy tun/tap network interfaces
 int
 main(int argc, char *argv[])
 {
@@ -59,7 +57,7 @@ main(int argc, char *argv[])
 	case 'T':
 		Tflag = 1;
 		break;
-	// ?man -u: unbuffered output
+	// ?man -u:str: unbuffered output
 	case 'u':
 		owner = EARGF(usage());
 		break;

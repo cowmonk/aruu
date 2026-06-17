@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-unlink: remove a file
-usage: unlink file
 
-call the unlink system call to remove a file
-*/
 
 #include <unistd.h>
 
@@ -16,6 +11,9 @@ usage(void)
 	eprintf("usage: %s file\n", argv0);
 }
 
+// ?man unlink: remove a file
+// ?man arguments: file
+// ?man call the unlink system call to remove a file
 int
 main(int argc, char *argv[])
 {

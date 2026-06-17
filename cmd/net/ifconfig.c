@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-ifconfig: configure network interfaces
-usage: ifconfig [-a] [interface [action ...]]
 
-configure network interface parameters and view stats
-*/
 
 #include <arpa/inet.h>
 #include <ctype.h>
@@ -102,6 +97,9 @@ list_interfaces(int all)
 	free(ifaces);
 }
 
+// ?man ifconfig: configure network interfaces
+// ?man arguments: interface [action ...
+// ?man configure network interface parameters and view stats
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-watch: execute periodically
-usage: watch [-t] [-n interval] command
 
-run a program periodically, showing output fullscreen
-*/
 
 #include <errno.h>
 #include <stdio.h>
@@ -19,6 +14,9 @@ usage(void)
 	eprintf("usage: %s [-t] [-n interval] command\n", argv0);
 }
 
+// ?man watch: execute periodically
+// ?man arguments: command
+// ?man run a program periodically, showing output fullscreen
 int
 main(int argc, char *argv[])
 {
@@ -32,7 +30,7 @@ main(int argc, char *argv[])
 	// ?man -t: sort or specify timestamp
 	case 't':
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n:str: print line numbers or counts
 	case 'n':
 		period = strtof(EARGF(usage()), &end);
 		if (*end != '\0' || errno != 0)

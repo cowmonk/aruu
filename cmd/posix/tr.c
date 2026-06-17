@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tr: translate characters
-usage: tr [-cCds] set1 [set2]
 
-translate, squeeze, or delete characters from standard input
-*/
 
 #include <stdlib.h>
 
@@ -194,6 +189,9 @@ usage(void)
 	eprintf("usage: %s [-cCds] set1 [set2]\n", argv0);
 }
 
+// ?man tr: translate characters
+// ?man arguments: set1 [set2
+// ?man translate, squeeze, or delete characters from standard input
 int
 main(int argc, char *argv[])
 {

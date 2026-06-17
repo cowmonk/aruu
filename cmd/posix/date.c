@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-date: print or set system date and time
-usage: date [-u] [-d time] [+format | mmddHHMM[[CC]yy]]
 
-display or configure the system date and time
-*/
 
 #include <ctype.h>
 #include <stdio.h>
@@ -68,6 +63,9 @@ setdate(const char *s, struct tm *now)
 		eprintf("clock_settime:");
 }
 
+// ?man date: print or set system date and time
+// ?man arguments: +format | mmddHHMM[[CC]yy
+// ?man display or configure the system date and time
 int
 main(int argc, char *argv[])
 {
@@ -80,7 +78,7 @@ main(int argc, char *argv[])
 		eprintf("time:");
 
 	ARGBEGIN {
-	// ?man -d: specify directory
+	// ?man -d:num: specify directory
 	case 'd':
 		t = estrtonum(EARGF(usage()), 0, LLONG_MAX);
 		break;

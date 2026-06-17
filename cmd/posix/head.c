@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-head: output first part of files
-usage: head [-num | -n num] [file ...]
 
-print the first lines or bytes of files
-*/
 
 #include <stdint.h>
 #include <stdio.h>
@@ -35,6 +30,9 @@ usage(void)
 	eprintf("usage: %s [-num | -n num] [file ...]\n", argv0);
 }
 
+// ?man head: output first part of files
+// ?man arguments: file ...
+// ?man print the first lines or bytes of files
 int
 main(int argc, char *argv[])
 {
@@ -43,10 +41,11 @@ main(int argc, char *argv[])
 	int ret = 0, newline = 0, many = 0;
 
 	ARGBEGIN {
-	// ?man -n: print line numbers or counts
+	// ?man -n:num: print line numbers or counts
 	case 'n':
 		n = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man ARGNUM: specify RGNUM option
 	ARGNUM:
 		n = ARGNUMF();
 		break;

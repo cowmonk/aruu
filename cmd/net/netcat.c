@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-netcat: read and write data across network connections
-usage: netcat [-lu] [-p localport] [host] [port]
 
-arbitrary data transmission over tcp or udp
-*/
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -53,6 +48,9 @@ resolve(const char *host, const char *port, int family, int socktype,
 	return 0;
 }
 
+// ?man netcat: read and write data across network connections
+// ?man arguments: host] [port
+// ?man arbitrary data transmission over tcp or udp
 int
 main(int argc, char *argv[])
 {
@@ -76,7 +74,7 @@ main(int argc, char *argv[])
 	case 'l':
 		lflag = 1;
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p:str: preserve file attributes
 	case 'p':
 		local_port = EARGF(usage());
 		break;

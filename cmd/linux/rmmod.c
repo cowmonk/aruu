@@ -1,12 +1,4 @@
-/* ?man
-rmmod: remove a module from the Linux kernel
-usage: rmmod [-fw] module...
 
-rmmod removes a kernel module from the running kernel
-
-// ?man -f: force removal of a module even if it is busy or in use
-// ?man -w: wait for the module to become unused before removing
-*/
 #include <sys/syscall.h>
 
 #include <fcntl.h>
@@ -24,6 +16,11 @@ usage(void)
 	eprintf("usage: %s [-fw] module...\n", argv0);
 }
 
+// ?man rmmod: remove a module from the Linux kernel
+// ?man arguments: module...
+// ?man rmmod removes a kernel module from the running kernel
+// ?man // ?man -f: force removal of a module even if it is busy or in use
+// ?man // ?man -w: wait for the module to become unused before removing
 int
 main(int argc, char *argv[])
 {
@@ -32,9 +29,11 @@ main(int argc, char *argv[])
 	int flags = O_NONBLOCK;
 
 	ARGBEGIN {
+	// ?man -f: specify f option
 	case 'f':
 		flags |= O_TRUNC;
 		break;
+	// ?man -w: specify w option
 	case 'w':
 		flags &= ~O_NONBLOCK;
 		break;

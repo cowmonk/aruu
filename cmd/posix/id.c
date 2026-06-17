@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-id: print user and group ids
-usage: id [-n] [-g | -u | -G] [user | uid]
 
-display real and effective user and group identities
-*/
 
 #include <sys/types.h>
 
@@ -140,6 +135,9 @@ usage(void)
 	eprintf("usage: %s [-n] [-g | -u | -G] [user | uid]\n", argv0);
 }
 
+// ?man id: print user and group ids
+// ?man arguments: user | uid
+// ?man display real and effective user and group identities
 int
 main(int argc, char *argv[])
 {

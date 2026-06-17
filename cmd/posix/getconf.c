@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-getconf: query configuration variables
-usage: getconf [-v spec] var [path]
 
-query system configuration variables
-*/
 
 #include <errno.h>
 #include <unistd.h>
@@ -27,6 +22,9 @@ usage(void)
 	eprintf("usage: %s [-v spec] var [path]\n", argv0);
 }
 
+// ?man getconf: query configuration variables
+// ?man arguments: var [path
+// ?man query system configuration variables
 int
 main(int argc, char *argv[])
 {
@@ -36,7 +34,7 @@ main(int argc, char *argv[])
 	char *str;
 
 	ARGBEGIN {
-	// ?man -v: verbose mode; show progress
+	// ?man -v:str: verbose mode; show progress
 	case 'v':
 		/* ignore */
 		EARGF(usage());

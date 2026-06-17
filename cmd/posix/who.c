@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-who: show logged in users
-usage: who [-ml]
 
-display a list of users currently logged into the system
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +17,8 @@ usage(void)
 	eprintf("usage: %s [-ml]\n", argv0);
 }
 
+// ?man who: show logged in users
+// ?man display a list of users currently logged into the system
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-lastlog: report recent logins
-usage: lastlog
 
-display the most recent login times of users
-*/
 
 #include <errno.h>
 #include <paths.h>
@@ -51,6 +46,8 @@ lastlog(char *user)
 	       user, ll.ll_line, ll.ll_host, ctime(&lltime));
 }
 
+// ?man lastlog: report recent logins
+// ?man display the most recent login times of users
 int
 main(int argc, char **argv)
 {

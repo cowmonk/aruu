@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-last: show last logged in users
-usage: last [user]
 
-display a list of recent user logins
-*/
 
 #include <errno.h>
 #include <libgen.h>
@@ -26,6 +21,9 @@ usage(void)
 	eprintf("usage: %s [user]\n", argv0);
 }
 
+// ?man last: show last logged in users
+// ?man arguments: user
+// ?man display a list of recent user logins
 int
 main(int argc, char **argv)
 {

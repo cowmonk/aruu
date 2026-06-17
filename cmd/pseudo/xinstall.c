@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-xinstall: copy files and set attributes
-usage: xinstall [-g group] [-o owner] [-m mode] (-d dir ... | [-D] (-t dest source ... | source ... dest))
 
-copy files and set their permissions and ownership
-*/
 
 #include <grp.h>
 #include <pwd.h>
@@ -89,6 +84,9 @@ usage(void)
 	eprintf("usage: %s [-g group] [-o owner] [-m mode] (-d dir ... | [-D] (-t dest source ... | source ... dest))\n", argv0);
 }
 
+// ?man xinstall: copy files and set attributes
+// ?man arguments: (-d dir ... | (-t dest source ... | source ... dest))
+// ?man copy files and set their permissions and ownership
 int
 main(int argc, char *argv[])
 {
@@ -119,19 +117,19 @@ main(int argc, char *argv[])
 	case 's':
 		/* no-op for compatibility */
 		break;
-	// ?man -g: specify option flag
+	// ?man -g:str: specify option flag
 	case 'g':
 		gflag = EARGF(usage());
 		break;
-	// ?man -o: specify output file
+	// ?man -o:str: specify output file
 	case 'o':
 		oflag = EARGF(usage());
 		break;
-	// ?man -m: specify mode or limit
+	// ?man -m:str: specify mode or limit
 	case 'm':
 		mflag = EARGF(usage());
 		break;
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		tflag = EARGF(usage());
 		break;

@@ -1,10 +1,5 @@
 /* see license file for copyright and license details */
-/* ?man
-ls: list directory contents
-usage: ls [-1ACacdFfGghiLlnopqRrtUu] [--color[=always|never|auto]] [file ...]
 
-list information about files and directories
-*/
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -556,6 +551,9 @@ usage(void)
 	eprintf("usage: %s [-1ACacdFfGghiLlnopqRrtUu] [--color[=always|never|auto]] [file ...]\n", argv0);
 }
 
+// ?man ls: list directory contents
+// ?man arguments: [file ...
+// ?man list information about files and directories
 int
 main(int argc, char *argv[])
 {
@@ -708,6 +706,7 @@ main(int argc, char *argv[])
 		uflag = 1;
 		cflag = 0;
 		break;
+	// ?man --: specify - option
 	case '-':
 #if FEATURE_LS_COLOR
 		// ?man --color [when]: control coloring

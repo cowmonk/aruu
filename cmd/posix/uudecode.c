@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-uudecode: decode uuencoded file
-usage: uudecode [-m] [-o output] [file]
 
-decode a file created by uuencode
-*/
 
 #include <sys/stat.h>
 
@@ -231,6 +226,9 @@ usage(void)
 	eprintf("usage: %s [-m] [-o output] [file]\n", argv0);
 }
 
+// ?man uudecode: decode uuencoded file
+// ?man arguments: file
+// ?man decode a file created by uuencode
 int
 main(int argc, char *argv[])
 {
@@ -245,7 +243,7 @@ main(int argc, char *argv[])
 	case 'm':
 		mflag = 1; /* accepted but unused (autodetect file type) */
 		break;
-	// ?man -o: specify output file
+	// ?man -o:str: specify output file
 	case 'o':
 		oflag = 1;
 		ofname = EARGF(usage());

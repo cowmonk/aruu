@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mv: move or rename files
-usage: mv [-f] source ... dest
 
-move or rename files and directories
-*/
 
 #include <sys/stat.h>
 
@@ -48,6 +43,9 @@ usage(void)
 	eprintf("usage: %s [-f] source ... dest\n", argv0);
 }
 
+// ?man mv: move or rename files
+// ?man arguments: source ... dest
+// ?man move or rename files and directories
 int
 main(int argc, char *argv[])
 {

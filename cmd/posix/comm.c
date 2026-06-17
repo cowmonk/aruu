@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-comm: compare two sorted files
-usage: comm [-123] file1 file2
 
-compare two sorted files line by line
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +31,9 @@ usage(void)
 	eprintf("usage: %s [-123] file1 file2\n", argv0);
 }
 
+// ?man comm: compare two sorted files
+// ?man arguments: file1 file2
+// ?man compare two sorted files line by line
 int
 main(int argc, char *argv[])
 {

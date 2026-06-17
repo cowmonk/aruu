@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-od: dump files in formats
-usage: od [-bdosvx] [-A addressformat]
 
-display file contents in octal, hex, or other formats
-*/
 
 #include "queue.h"
 #include "util.h"
@@ -219,6 +214,8 @@ usage(void)
 	        "[-j skip] [-t outputformat] [file ...]\n", argv0);
 }
 
+// ?man od: dump files in formats
+// ?man display file contents in octal, hex, or other formats
 int
 main(int argc, char *argv[])
 {
@@ -229,7 +226,7 @@ main(int argc, char *argv[])
 	big_endian = (*(uint16_t *)"\0\xff" == 0xff);
 
 	ARGBEGIN {
-	// ?man -A: specify option flag
+	// ?man -A:str: specify option flag
 	case 'A':
 		s = EARGF(usage());
 		if (strlen(s) != 1 || !strchr("doxn", s[0]))
@@ -252,12 +249,12 @@ main(int argc, char *argv[])
 		big_endian = (ARGC() == 'E');
 		break;
 #endif
-	// ?man -j: specify option flag
+	// ?man -j:str: specify option flag
 	case 'j':
 		if ((skip = parseoffset(EARGF(usage()))) < 0)
 			usage();
 		break;
-	// ?man -N: specify option flag
+	// ?man -N:str: specify option flag
 	case 'N':
 		if ((max = parseoffset(EARGF(usage()))) < 0)
 			usage();
@@ -270,24 +267,24 @@ main(int argc, char *argv[])
 	case 's':
 		addtype('d', 2);
 		break;
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		s = EARGF(usage());
 		for (; *s; s++) {
 			switch (*s) {
-			// ?man -a: print or show all entries
+	// ?man -a: print or show all entries
 	case 'a':
-			// ?man -c: print count or perform stdout action
+	// ?man -c: print count or perform stdout action
 	case 'c':
 				addtype(*s, 1);
 				break;
-			// ?man -d: specify directory
+	// ?man -d: specify directory
 	case 'd':
-			// ?man -o: specify output file
+	// ?man -o: specify output file
 	case 'o':
-			// ?man -u: unbuffered output
+	// ?man -u: unbuffered output
 	case 'u':
-			// ?man -x: hex format or match whole lines
+	// ?man -x: hex format or match whole lines
 	case 'x':
 				fmt_char = *s;
 				if (isdigit((unsigned char)*(s + 1))) {
@@ -295,22 +292,22 @@ main(int argc, char *argv[])
 					s = end - 1;
 				} else {
 					switch (*(s + 1)) {
-					// ?man -C: specify option flag
+	// ?man -C: specify option flag
 	case 'C':
 						len = sizeof(char);
 						s++;
 						break;
-					// ?man -S: specify option flag
+	// ?man -S: specify option flag
 	case 'S':
 						len = sizeof(short);
 						s++;
 						break;
-					// ?man -I: specify option flag
+	// ?man -I: specify option flag
 	case 'I':
 						len = sizeof(int);
 						s++;
 						break;
-					// ?man -L: specify option flag
+	// ?man -L: specify option flag
 	case 'L':
 						len = sizeof(long);
 						s++;

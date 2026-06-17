@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-du: estimate file space usage
-usage: du [-a | -s] [-d depth] [-h] [-k] [-H | -L | -P] [-x] [file ...]
 
-display disk space used by files and directories
-*/
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -115,6 +110,9 @@ usage(void)
 	eprintf("usage: %s [-a | -s] [-d depth] [-h] [-k] [-H | -L | -P] [-x] [file ...]\n", argv0);
 }
 
+// ?man du: estimate file space usage
+// ?man arguments: file ...
+// ?man display disk space used by files and directories
 int
 main(int argc, char *argv[])
 {
@@ -128,7 +126,7 @@ main(int argc, char *argv[])
 	case 'a':
 		aflag = 1;
 		break;
-	// ?man -d: specify directory
+	// ?man -d:num: specify directory
 	case 'd':
 		dflag = 1;
 		maxdepth = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));

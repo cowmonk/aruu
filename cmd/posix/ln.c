@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-ln: make links between files
-usage: ln [-f] [-L | -P | -s] target [name]
 
-create hard or symbolic links between files
-*/
 
 #include <sys/stat.h>
 
@@ -23,6 +18,9 @@ usage(void)
 	        "       %s [-f] [-L | -P | -s] target ... dir\n", argv0, argv0);
 }
 
+// ?man ln: make links between files
+// ?man arguments: target [name
+// ?man create hard or symbolic links between files
 int
 main(int argc, char *argv[])
 {

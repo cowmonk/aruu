@@ -1,9 +1,4 @@
-/* ?man
-insmod: insert a module into the Linux kernel
-usage: insmod filename [args...]
 
-insmod inserts a kernel module from filename into the running kernel
-*/
 #include <sys/stat.h>
 #include <sys/syscall.h>
 
@@ -21,6 +16,9 @@ usage(void)
 	eprintf("usage: %s filename [args...]\n", argv0);
 }
 
+// ?man insmod: insert a module into the Linux kernel
+// ?man arguments: filename [args...
+// ?man insmod inserts a kernel module from filename into the running kernel
 int
 main(int argc, char *argv[])
 {

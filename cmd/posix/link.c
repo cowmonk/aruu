@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-link: create a link to a file
-usage: link target name
 
-create a hard link to an existing file
-*/
 
 #include <unistd.h>
 
@@ -16,6 +11,9 @@ usage(void)
 	eprintf("usage: %s target name\n", argv0);
 }
 
+// ?man link: create a link to a file
+// ?man arguments: target name
+// ?man create a hard link to an existing file
 int
 main(int argc, char *argv[])
 {

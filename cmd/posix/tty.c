@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-tty: print terminal filename
-usage: tty 
 
-display the filename of the terminal connected to stdin
-*/
 
 #include <stdio.h>
 #include <unistd.h>
@@ -17,6 +12,8 @@ usage(void)
 	enprintf(2, "usage: %s\n", argv0);
 }
 
+// ?man tty: print terminal filename
+// ?man display the filename of the terminal connected to stdin
 int
 main(int argc, char *argv[])
 {

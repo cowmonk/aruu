@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-sha384sum: compute sha384 checksums
-usage: sha384sum [-c] [file ...]
 
-compute and check sha384 message digests
-*/
 
 #include <stdint.h>
 #include <stdio.h>
@@ -27,6 +22,9 @@ usage(void)
 	eprintf("usage: %s [-c] [file ...]\n", argv0);
 }
 
+// ?man sha384sum: compute sha384 checksums
+// ?man arguments: file ...
+// ?man compute and check sha384 message digests
 int
 main(int argc, char *argv[])
 {

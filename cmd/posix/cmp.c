@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cmp: compare two files
-usage: cmp [-l | -s] file1 file2
 
-compare two files byte by byte
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +13,9 @@ usage(void)
 	enprintf(2, "usage: %s [-l | -s] file1 file2\n", argv0);
 }
 
+// ?man cmp: compare two files
+// ?man arguments: file1 file2
+// ?man compare two files byte by byte
 int
 main(int argc, char *argv[])
 {

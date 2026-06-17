@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-host: dns lookup utility
-usage: host [-t type] name [server]
 
-look up hostnames and IP addresses using dns
-*/
 
 #include "util.h"
 #include "arg.h"
@@ -262,6 +257,9 @@ parse_response(const unsigned char *resp, int resp_len, const char *query_name)
 	return 0;
 }
 
+// ?man host: dns lookup utility
+// ?man arguments: name [server
+// ?man look up hostnames and IP addresses using dns
 int
 main(int argc, char *argv[])
 {
@@ -276,7 +274,7 @@ main(int argc, char *argv[])
 	int i, r;
 
 	ARGBEGIN {
-	// ?man -t: sort or specify timestamp
+	// ?man -t:str: sort or specify timestamp
 	case 't':
 		tflag = EARGF(usage());
 		break;

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-pwdx: print working directory of process
-usage: pwdx pid...
 
-display the current working directory of a process by pid
-*/
 
 #include <errno.h>
 #include <limits.h>
@@ -20,6 +15,9 @@ usage(void)
 	eprintf("usage: %s pid...\n", argv0);
 }
 
+// ?man pwdx: print working directory of process
+// ?man arguments: pid...
+// ?man display the current working directory of a process by pid
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-fold: wrap lines to fit width
-usage: fold [-bs] [-w num | -num] [FILE ...]
 
-wrap input lines to fit a specified width
-*/
 
 #include <ctype.h>
 #include <stdint.h>
@@ -89,6 +84,9 @@ usage(void)
 	eprintf("usage: %s [-bs] [-w num | -num] [FILE ...]\n", argv0);
 }
 
+// ?man fold: wrap lines to fit width
+// ?man arguments: FILE ...
+// ?man wrap input lines to fit a specified width
 int
 main(int argc, char *argv[])
 {
@@ -104,10 +102,11 @@ main(int argc, char *argv[])
 	case 's':
 		sflag = 1;
 		break;
-	// ?man -w: wait for completion
+	// ?man -w:num: wait for completion
 	case 'w':
 		width = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
+	// ?man ARGNUM: specify RGNUM option
 	ARGNUM:
 		if (!(width = ARGNUMF()))
 			eprintf("illegal width value, too small\n");

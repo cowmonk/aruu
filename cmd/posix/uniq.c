@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-uniq: report duplicate lines
-usage: uniq [-c] [-d | -u] [-f fields] [-s chars]
 
-filter out repeated lines from sorted files
-*/
 
 #include <ctype.h>
 #include <stdio.h>
@@ -104,6 +99,8 @@ usage(void)
 	        " [input [output]]\n", argv0);
 }
 
+// ?man uniq: report duplicate lines
+// ?man filter out repeated lines from sorted files
 int
 main(int argc, char *argv[])
 {
@@ -124,11 +121,11 @@ main(int argc, char *argv[])
 	case 'u':
 		uflag = 1;
 		break;
-	// ?man -f: force the operation
+	// ?man -f:num: force the operation
 	case 'f':
 		fskip = estrtonum(EARGF(usage()), 0, INT_MAX);
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s:num: silent mode or print summary
 	case 's':
 		sskip = estrtonum(EARGF(usage()), 0, INT_MAX);
 		break;

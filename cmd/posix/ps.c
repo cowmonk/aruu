@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-ps: report process status
-usage: ps [-aAdef]
 
-display information about active system processes
-*/
 
 #include <sys/ioctl.h>
 #include <sys/sysinfo.h>
@@ -155,6 +150,8 @@ usage(void)
 	eprintf("usage: %s [-aAdef]\n", argv0);
 }
 
+// ?man ps: report process status
+// ?man display information about active system processes
 int
 main(int argc, char *argv[])
 {

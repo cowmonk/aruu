@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-pwd: print working directory
-usage: pwd [-LP]
 
-display the pathname of the current working directory
-*/
 
 #include <sys/stat.h>
 
@@ -34,6 +29,8 @@ usage(void)
 	eprintf("usage: %s [-LP]\n", argv0);
 }
 
+// ?man pwd: print working directory
+// ?man display the pathname of the current working directory
 int
 main(int argc, char *argv[])
 {

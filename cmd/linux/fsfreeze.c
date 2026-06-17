@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-fsfreeze: suspend access to a filesystem
-usage: fsfreeze (-f | -u) mountpoint
 
-freeze or unfreeze a filesystem to allow safe backups
-*/
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -26,6 +21,9 @@ usage(void)
 	eprintf("usage: %s (-f | -u) mountpoint\n", argv0);
 }
 
+// ?man fsfreeze: suspend access to a filesystem
+// ?man arguments: (-f | -u) mountpoint
+// ?man freeze or unfreeze a filesystem to allow safe backups
 int
 main(int argc, char *argv[])
 {

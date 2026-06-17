@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-pathchk: check pathnames
-usage: pathchk [-pP] filename...
 
-verify that pathnames are valid and portable
-*/
 
 #include <sys/stat.h>
 
@@ -85,6 +80,9 @@ usage(void)
 	eprintf("usage: %s [-pP] filename...\n", argv0);
 }
 
+// ?man pathchk: check pathnames
+// ?man arguments: filename...
+// ?man verify that pathnames are valid and portable
 int
 main(int argc, char *argv[])
 {

@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-eject: eject removable media
-usage: eject [-t] [device ...]
 
-eject optical discs or other removable storage media
-*/
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -53,6 +48,9 @@ usage(void)
 	eprintf("usage: %s [-t] [device ...]\n", argv0);
 }
 
+// ?man eject: eject removable media
+// ?man arguments: device ...
+// ?man eject optical discs or other removable storage media
 int
 main(int argc, char *argv[])
 {

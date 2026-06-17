@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mktemp: create temporary file
-usage: mktemp [-dqtu] [-p directory] [template]
 
-create a temporary file or directory safely
-*/
 
 #include <libgen.h>
 #include <stdio.h>
@@ -20,6 +15,9 @@ usage(void)
 	eprintf("usage: %s [-dqtu] [-p directory] [template]\n", argv0);
 }
 
+// ?man mktemp: create temporary file
+// ?man arguments: template
+// ?man create a temporary file or directory safely
 int
 main(int argc, char *argv[])
 {
@@ -33,7 +31,7 @@ main(int argc, char *argv[])
 	case 'd':
 		dflag = 1;
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p:dir: preserve file attributes
 	case 'p':
 		pflag = 1;
 		pdir = EARGF(usage());

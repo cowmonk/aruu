@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-which: locate a command
-usage: which [-a] name ...
 
-find the path of executable files in PATH
-*/
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -75,6 +70,9 @@ usage(void)
 	eprintf("usage: %s [-a] name ...\n", argv0);
 }
 
+// ?man which: locate a command
+// ?man arguments: name ...
+// ?man find the path of executable files in PATH
 int
 main(int argc, char *argv[])
 {

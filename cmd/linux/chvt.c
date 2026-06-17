@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-chvt: change foreground virtual terminal
-usage: chvt num
 
-change the active virtual terminal
-*/
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -35,6 +30,9 @@ usage(void)
 	eprintf("usage: %s num\n", argv0);
 }
 
+// ?man chvt: change foreground virtual terminal
+// ?man arguments: num
+// ?man change the active virtual terminal
 int
 main(int argc, char *argv[])
 {

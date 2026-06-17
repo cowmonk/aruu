@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cols: format columns
-usage: cols [-c num] [file ...]
 
-format standard input into vertical columns
-*/
 
 #include <sys/ioctl.h>
 
@@ -24,6 +19,9 @@ usage(void)
 	eprintf("usage: %s [-c num] [file ...]\n", argv0);
 }
 
+// ?man cols: format columns
+// ?man arguments: file ...
+// ?man format standard input into vertical columns
 int
 main(int argc, char *argv[])
 {
@@ -35,7 +33,7 @@ main(int argc, char *argv[])
 	char *p;
 
 	ARGBEGIN {
-	// ?man -c: print count or perform stdout action
+	// ?man -c:num: print count or perform stdout action
 	case 'c':
 		cflag = 1;
 		chars = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));

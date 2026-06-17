@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-base64: encode or decode base64
-usage: base64 [-d] [-i] [-w cols] [file]
 
-encode or decode data in base64 format
-*/
 
 #include "util.h"
 #include "arg.h"
@@ -135,6 +130,9 @@ decode_stream(FILE *fp, int iflag)
 		eprintf("input is truncated\n");
 }
 
+// ?man base64: encode or decode base64
+// ?man arguments: file
+// ?man encode or decode data in base64 format
 int
 main(int argc, char *argv[])
 {
@@ -157,7 +155,7 @@ main(int argc, char *argv[])
 	case 'i':
 		iflag = 1;
 		break;
-	// ?man -w: wait for completion
+	// ?man -w:num: wait for completion
 	case 'w':
 		wrap = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SSIZE_MAX));
 		break;

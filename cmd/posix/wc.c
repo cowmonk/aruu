@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-wc: count lines, words, and bytes
-usage: wc [-c | -m] [-lw] [file ...]
 
-display the number of lines, words, and bytes in files
-*/
 
 #include <string.h>
 
@@ -73,6 +68,9 @@ usage(void)
 	eprintf("usage: %s [-c | -m] [-lw] [file ...]\n", argv0);
 }
 
+// ?man wc: count lines, words, and bytes
+// ?man arguments: file ...
+// ?man display the number of lines, words, and bytes in files
 int
 main(int argc, char *argv[])
 {

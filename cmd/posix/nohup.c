@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-nohup: run command immune to hangups
-usage: nohup cmd [arg ...]
 
-run a command that persists after logging out
-*/
 
 #include <sys/stat.h>
 
@@ -21,6 +16,9 @@ usage(void)
 	eprintf("usage: %s cmd [arg ...]\n", argv0);
 }
 
+// ?man nohup: run command immune to hangups
+// ?man arguments: cmd [arg ...
+// ?man run a command that persists after logging out
 int
 main(int argc, char *argv[])
 {

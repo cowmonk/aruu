@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-mkdir: create directories
-usage: mkdir [-p] [-m mode] name ...
 
-create directories at specified paths
-*/
 
 #include <sys/stat.h>
 
@@ -19,6 +14,9 @@ usage(void)
 	eprintf("usage: %s [-p] [-m mode] name ...\n", argv0);
 }
 
+// ?man mkdir: create directories
+// ?man arguments: name ...
+// ?man create directories at specified paths
 int
 main(int argc, char *argv[])
 {
@@ -33,7 +31,7 @@ main(int argc, char *argv[])
 	case 'p':
 		pflag = 1;
 		break;
-	// ?man -m: set file mode bits for created directories
+	// ?man -m:mode: set file mode bits for created directories
 	case 'm':
 		mode = parsemode(EARGF(usage()), 0777, mask);
 		break;

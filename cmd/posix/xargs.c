@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-xargs: build and run command lines
-usage: xargs [-0prtx] [-E eofstr] [-I replstr] [-L maxlines] [-n
 
-execute commands built from standard input arguments
-*/
 
 #include <sys/wait.h>
 
@@ -268,6 +263,9 @@ usage(void)
 		argv0);
 }
 
+// ?man xargs: build and run command lines
+// ?man arguments: -n
+// ?man execute commands built from standard input arguments
 int
 main(int argc, char *argv[])
 {
@@ -289,7 +287,7 @@ main(int argc, char *argv[])
 	case '0':
 		nulflag = 1;
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n:num: print line numbers or counts
 	case 'n':
 		nflag = 1;
 		maxargs =
@@ -303,7 +301,7 @@ main(int argc, char *argv[])
 	case 'r':
 		rflag = 1;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s:num: silent mode or print summary
 	case 's':
 		argmaxsz =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
@@ -316,11 +314,11 @@ main(int argc, char *argv[])
 	case 'x':
 		xflag = 1;
 		break;
-	// ?man -E: specify option flag
+	// ?man -E:str: specify option flag
 	case 'E':
 		eofstr = EARGF(usage());
 		break;
-	// ?man -I: specify option flag
+	// ?man -I:str: specify option flag
 	case 'I':
 		Iflag = 1;
 		xflag = 1;
@@ -328,13 +326,13 @@ main(int argc, char *argv[])
 		maxargs = 1;
 		replstr = EARGF(usage());
 		break;
-	// ?man -L: specify option flag
+	// ?man -L:num: specify option flag
 	case 'L':
 		Lflag = 1;
 		maxlines =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -P: specify option flag
+	// ?man -P:num: specify option flag
 	case 'P':
 		maxprocs =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));

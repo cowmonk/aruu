@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-cp: copy files and directories
-usage: cp [-afipv] [-R [-H | -L | -P]] source ... dest
 
-copy files and directories to a destination
-*/
 
 #include <sys/stat.h>
 
@@ -17,6 +12,9 @@ usage(void)
 	eprintf("usage: %s [-afipv] [-R [-H | -L | -P]] source ... dest\n", argv0);
 }
 
+// ?man cp: copy files and directories
+// ?man arguments: source ... dest
+// ?man copy files and directories to a destination
 int
 main(int argc, char *argv[])
 {

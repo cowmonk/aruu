@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-pivot_root: change the root filesystem
-usage: pivot_root new-root put-old
 
-change the root filesystem of the current process
-*/
 
 #include <sys/syscall.h>
 
@@ -20,6 +15,9 @@ usage(void)
 	eprintf("usage: %s new-root put-old\n", argv0);
 }
 
+// ?man pivot_root: change the root filesystem
+// ?man arguments: new-root put-old
+// ?man change the root filesystem of the current process
 int
 main(int argc, char *argv[])
 {

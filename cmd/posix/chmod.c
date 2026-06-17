@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-chmod: change file modes
-usage: chmod [-R] mode file ...
 
-change the file mode bits of files and directories
-*/
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -38,6 +33,9 @@ usage(void)
 	eprintf("usage: %s [-R] mode file ...\n", argv0);
 }
 
+// ?man chmod: change file modes
+// ?man arguments: mode file ...
+// ?man change the file mode bits of files and directories
 int
 main(int argc, char *argv[])
 {

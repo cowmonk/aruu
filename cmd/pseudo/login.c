@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-login: begin terminal session
-usage: login [-p] username
 
-authenticate and start a session on the system
-*/
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -74,6 +69,9 @@ usage(void)
 	eprintf("usage: %s [-p] username\n", argv0);
 }
 
+// ?man login: begin terminal session
+// ?man arguments: username
+// ?man authenticate and start a session on the system
 int
 main(int argc, char *argv[])
 {

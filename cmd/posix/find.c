@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-find: search for files
-usage: find [-H | -L] path ... [expression ...]
 
-search for files in a directory hierarchy
-*/
 
 #include "config.h"
 #include "util.h"
@@ -1425,6 +1420,9 @@ usage(void)
 	eprintf("usage: %s [-H | -L] path ... [expression ...]\n", argv0);
 }
 
+// ?man find: search for files
+// ?man arguments: path ... [expression ...
+// ?man search for files in a directory hierarchy
 int
 main(int argc, char **argv)
 {

@@ -1,15 +1,12 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-nologin: politely refuse login
-usage: nologin
 
-politely refuse a login attempt by exiting with status 1
-*/
 
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 
+// ?man nologin: politely refuse login
+// ?man politely refuse a login attempt by exiting with status 1
 int
 main(void)
 {

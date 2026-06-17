@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-nl: number lines
-usage: nl [-p] [-b type] [-d delim] [-f type]
 
-number the lines of files
-*/
 
 #include <limits.h>
 #include <stdint.h>
@@ -123,6 +118,8 @@ getlinetype(char *type, regex_t *preg)
 	return type[0];
 }
 
+// ?man nl: number lines
+// ?man number the lines of files
 int
 main(int argc, char *argv[])
 {
@@ -132,7 +129,7 @@ main(int argc, char *argv[])
 	char *d, *formattype, *formatblit;
 
 	ARGBEGIN {
-	// ?man -d: specify directory
+	// ?man -d:str: specify directory
 	case 'd':
 		switch (utflen((d = EARGF(usage())))) {
 		case 0:
@@ -151,27 +148,27 @@ main(int argc, char *argv[])
 			break;
 		}
 		break;
-	// ?man -f: force the operation
+	// ?man -f:str: force the operation
 	case 'f':
 		type[0] = getlinetype(EARGF(usage()), preg);
 		break;
-	// ?man -b: specify block size or base directory
+	// ?man -b:str: specify block size or base directory
 	case 'b':
 		type[1] = getlinetype(EARGF(usage()), preg + 1);
 		break;
-	// ?man -h: suppress headers or print help
+	// ?man -h:str: suppress headers or print help
 	case 'h':
 		type[2] = getlinetype(EARGF(usage()), preg + 2);
 		break;
-	// ?man -i: interactive mode or prompt for confirmation
+	// ?man -i:num: interactive mode or prompt for confirmation
 	case 'i':
 		incr = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man -l: list in long format
+	// ?man -l:num: list in long format
 	case 'l':
 		blines = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n:str: print line numbers or counts
 	case 'n':
 		formattype = EARGF(usage());
 		estrlcpy(format, "%", sizeof(format));
@@ -193,16 +190,16 @@ main(int argc, char *argv[])
 	case 'p':
 		pflag = 1;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s:str: silent mode or print summary
 	case 's':
 		sep = EARGF(usage());
 		seplen = unescape(sep);
 		break;
-	// ?man -v: verbose mode; show progress
+	// ?man -v:num: verbose mode; show progress
 	case 'v':
 		startnum = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man -w: wait for completion
+	// ?man -w:num: wait for completion
 	case 'w':
 		width = estrtonum(EARGF(usage()), 1, INT_MAX);
 		break;

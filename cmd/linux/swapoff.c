@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-swapoff: disable swap devices
-usage: swapoff -a | device
 
-disable paging and swapping on specified devices
-*/
 
 #include <sys/swap.h>
 
@@ -21,6 +16,9 @@ usage(void)
 	eprintf("usage: %s -a | device\n", argv0);
 }
 
+// ?man swapoff: disable swap devices
+// ?man arguments: -a | device
+// ?man disable paging and swapping on specified devices
 int
 main(int argc, char *argv[])
 {

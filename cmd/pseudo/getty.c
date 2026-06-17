@@ -1,10 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-/* ?man
-getty: set terminal mode
-usage: getty [tty] [term] [cmd] [args...]
 
-set terminal line discipline, speed, and mode
-*/
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -31,6 +26,9 @@ usage(void)
 	eprintf("usage: %s [tty] [term] [cmd] [args...]\n", argv0);
 }
 
+// ?man getty: set terminal mode
+// ?man arguments: tty] [term] [cmd] [args...
+// ?man set terminal line discipline, speed, and mode
 int
 main(int argc, char *argv[])
 {
