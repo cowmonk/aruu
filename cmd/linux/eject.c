@@ -48,14 +48,15 @@ usage(void)
 	eprintf("usage: %s [-t] [device ...]\n", argv0);
 }
 
-// ?man eject: eject removable media
+// ?man eject: control device trays
 // ?man arguments: device ...
-// ?man eject optical discs or other removable storage media
+// ?man eject opens the tray of each device.
+// ?man If no device is given eject opens the tray of /dev/sr0.
 int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
-	// ?man -t: sort or specify timestamp
+	// ?man -t: Close instead of open the tray.
 	case 't':
 		tflag = 1;
 		break;

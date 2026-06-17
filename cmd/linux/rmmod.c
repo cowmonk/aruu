@@ -18,9 +18,7 @@ usage(void)
 
 // ?man rmmod: remove a module from the Linux kernel
 // ?man arguments: module...
-// ?man rmmod removes a kernel module from the running kernel
-// ?man // ?man -f: force removal of a module even if it is busy or in use
-// ?man // ?man -w: wait for the module to become unused before removing
+// ?man rmmod removes one or more modules from the kernel.
 int
 main(int argc, char *argv[])
 {
@@ -29,11 +27,11 @@ main(int argc, char *argv[])
 	int flags = O_NONBLOCK;
 
 	ARGBEGIN {
-	// ?man -f: specify f option
+	// ?man -f: This option can be extremely dangerous: it has no effect unless CONFIG_MODULE_FORCE_UNLOAD was set when the kernel was compiled. With this option, you can remove modules which are being used, or which are not designed to be removed, or have been marked as unsafe.
 	case 'f':
 		flags |= O_TRUNC;
 		break;
-	// ?man -w: specify w option
+	// ?man -w: Normally, rmmod will refuse to unload modules which are in use. With this option, rmmod will isolate the module, and wait until the module is no longer used. Noone new will be able to use the module, but it's up to you to make sure the current users eventually finish with it.
 	case 'w':
 		flags &= ~O_NONBLOCK;
 		break;

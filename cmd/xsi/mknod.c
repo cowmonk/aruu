@@ -24,7 +24,7 @@ usage(void)
 }
 
 // ?man mknod: create special files
-// ?man arguments: name b|c|u major minor
+// ?man arguments: name <type> major minor
 // ?man create block or character special files
 int
 main(int argc, char *argv[])

@@ -21,7 +21,7 @@ usage(void)
 
 // ?man mountpoint: check if a directory is a mountpoint
 // ?man arguments: target
-// ?man determine if a directory is a mountpoint
+// ?man mountpoint checks if the directory is mentioned in the /proc/mounts file.
 int
 main(int argc, char *argv[])
 {
@@ -32,15 +32,15 @@ main(int argc, char *argv[])
 	struct stat st1, st2;
 
 	ARGBEGIN {
-	// ?man -d: specify directory
+	// ?man -d: Print the major/minor device number of the filesystem on stdout.
 	case 'd':
 		dflag = 1;
 		break;
-	// ?man -q: quiet mode; suppress output
+	// ?man -q: Be quiet, don't print anything.
 	case 'q':
 		qflag = 1;
 		break;
-	// ?man -x: hex format or match whole lines
+	// ?man -x: Print the major/minor device number of the device on stdout.
 	case 'x':
 		xflag = 1;
 		break;

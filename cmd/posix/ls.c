@@ -406,11 +406,11 @@ entcmp(const void *va, const void *vb)
 	const struct entry *a = va, *b = vb;
 
 	switch (sort) {
-	// ?man -S: sort by file size
+	// ?man -S: sort files by size in decreasing order
 	case 'S':
 		cmp = b->size - a->size;
 		break;
-	// ?man -t: sort by modification time
+	// ?man -t: sort files by modification time
 	case 't':
 		if (!(cmp = b->t.tv_sec - a->t.tv_sec))
 			cmp = b->t.tv_nsec - a->t.tv_nsec;
@@ -552,7 +552,7 @@ usage(void)
 }
 
 // ?man ls: list directory contents
-// ?man arguments: [file ...
+// ?man arguments: [file ...]
 // ?man list information about files and directories
 int
 main(int argc, char *argv[])
@@ -706,7 +706,7 @@ main(int argc, char *argv[])
 		uflag = 1;
 		cflag = 0;
 		break;
-	// ?man --: specify - option
+	/* --color[=when] is accepted as a long-option extension */
 	case '-':
 #if FEATURE_LS_COLOR
 		// ?man --color [when]: control coloring

@@ -98,7 +98,7 @@ list_interfaces(int all)
 }
 
 // ?man ifconfig: configure network interfaces
-// ?man arguments: interface [action ...
+// ?man arguments: interface [action ...]
 // ?man configure network interface parameters and view stats
 int
 main(int argc, char *argv[])
@@ -118,7 +118,7 @@ main(int argc, char *argv[])
 	unsigned int mask;
 
 	ARGBEGIN {
-	// ?man -a: print or show all entries
+	// ?man -a: Show all interfaces, including those that are down.
 	case 'a':
 		aflag = 1;
 		break;

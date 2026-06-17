@@ -161,9 +161,20 @@ usage(void)
 		argv0, argv0, argv0);
 }
 
-// ?man cut: cut out fields from lines
-// ?man arguments: -b list [file ...
-// ?man print selected parts of lines from files
+// ?man cut: extract columns of data
+// ?man synopsis: -b list [-n] [file ...]
+// ?man synopsis: -c list [file ...]
+// ?man synopsis: -f list [-d delim] [-s] [file ...]
+// ?man cut out bytes, characters or delimited fields from each line of file and
+// ?man write to stdout.
+// ?man If no file is given or file is '-', cut reads from stdin.
+// ?man list is a comma or space separated list of numbers and ranges starting
+// ?man from 1.
+// ?man Ranges have the form 'N-M'. If N or M is missing, beginning or end
+// ?man of line is assumed.
+// ?man Numbers and ranges may be repeated, overlapping and in any order.
+// ?man Selected input is written in the same order it is read
+// ?man and is written exactly once.
 int
 main(int argc, char *argv[])
 {
@@ -171,27 +182,30 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
-	// ?man -b: specify block size or base directory
+	// ?man -b:list: list specifies byte | character positions.
 	case 'b':
-	// ?man -c: print count or perform stdout action
+	// ?man -c:list: list specifies byte | character positions.
 	case 'c':
-	// ?man -f:mode: force the operation
+	// ?man -f:list: list specifies field numbers.
+	// ?man Lines not containing field delimiters are passed through, unless -s is specified.
 	case 'f':
 		mode = ARGC();
 		parselist(EARGF(usage()));
 		break;
-	// ?man -d:str: specify directory
+	// ?man -d:delim: Use delim as field delimiter, which can be an arbitrary string.
+	// ?man Default is '\\t'.
 	case 'd':
 		delim = EARGF(usage());
 		if (!*delim)
 			eprintf("empty delimiter\n");
 		delimlen = unescape(delim);
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n: Do not split multibyte characters.
+	// ?man A character is written when its last byte is selected.
 	case 'n':
 		nflag = 1;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s: Suppress lines not containing field delimiters.
 	case 's':
 		sflag = 1;
 		break;

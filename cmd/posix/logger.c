@@ -56,19 +56,19 @@ main(int argc, char *argv[])
 	char *buf = NULL, *tag = NULL;
 
 	ARGBEGIN {
-	// ?man -i: interactive mode or prompt for confirmation
+	// ?man -i: include the logger process ID with each message
 	case 'i':
 		logflags |= LOG_PID;
 		break;
-	// ?man -p:str: preserve file attributes
+	// ?man -p:priority: log with the given facility.level priority
 	case 'p':
 		priority = decodepri(EARGF(usage()));
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s: also write each message to standard error
 	case 's':
 		logflags |= LOG_PERROR;
 		break;
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:tag: add tag to each logged message
 	case 't':
 		tag = EARGF(usage());
 		break;

@@ -89,11 +89,11 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
-	// ?man -p: preserve file attributes
+	// ?man -p: check pathnames for portability across POSIX systems
 	case 'p':
 		most = 1;
 		break;
-	// ?man -P: specify option flag
+	// ?man -P: also reject empty pathnames and leading hyphens
 	case 'P':
 		extra = 1;
 		break;

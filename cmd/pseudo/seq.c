@@ -90,17 +90,17 @@ main(int argc, char *argv[])
 	const char *starts = "1", *steps = "1", *ends = "1", *sep = "\n";
 
 	ARGBEGIN {
-	// ?man -f:str: force the operation
+	// ?man -f:fmt: use fmt as the output format
 	case 'f':
 		if (!validfmt(tmp=EARGF(usage())))
 			eprintf("%s: invalid format\n", tmp);
 		fmt = tmp;
 		break;
-	// ?man -s:str: silent mode or print summary
+	// ?man -s:sep: print sep between output numbers
 	case 's':
 		sep = EARGF(usage());
 		break;
-	// ?man -w: wait for completion
+	// ?man -w: pad all numbers to the same width
 	case 'w':
 		wflag = 1;
 		break;

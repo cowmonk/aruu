@@ -47,7 +47,7 @@ usage(void)
 }
 
 // ?man split: split file into pieces
-// ?man arguments: | -l num
+// ?man arguments: [file] [prefix]
 // ?man split a file into fixed-size pieces
 int
 main(int argc, char *argv[])
@@ -58,11 +58,11 @@ main(int argc, char *argv[])
 	char name[NAME_MAX + 1], *prefix = "x", *file = NULL;
 
 	ARGBEGIN {
-	// ?man -a:num: print or show all entries
+	// ?man -a:num: use num characters for generated filename suffixes
 	case 'a':
 		slen = estrtonum(EARGF(usage()), 0, INT_MAX);
 		break;
-	// ?man -b:str: specify block size or base directory
+	// ?man -b:num: start a new file every num bytes
 	case 'b':
 		always = 1;
 		if ((size = parseoffset(EARGF(usage()))) < 0)
@@ -70,12 +70,12 @@ main(int argc, char *argv[])
 		if (!size)
 			eprintf("size needs to be positive\n");
 		break;
-	// ?man -d: specify directory
+	// ?man -d: use decimal suffixes instead of alphabetic ones
 	case 'd':
 		base = 10;
 		start = '0';
 		break;
-	// ?man -l:num: list in long format
+	// ?man -l:num: start a new file every num lines
 	case 'l':
 		always = 0;
 		size = estrtonum(EARGF(usage()), 1, MIN(LLONG_MAX, SSIZE_MAX));

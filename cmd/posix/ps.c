@@ -150,29 +150,29 @@ usage(void)
 	eprintf("usage: %s [-aAdef]\n", argv0);
 }
 
-// ?man ps: report process status
-// ?man display information about active system processes
+// ?man ps: display process status
+// ?man ps displays information about active processes. When given no options, ps prints information about processes of the current user that has a controlling terminal.
 int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
-	// ?man -a: print or show all entries
+	// ?man -a: Select all processes except both session leaders and processes not associated with a terminal.
 	case 'a':
 		flags |= PS_aflag;
 		break;
-	// ?man -A: specify option flag
+	// ?man -A: Select all processes. Identical to -e.
 	case 'A':
 		flags |= PS_Aflag;
 		break;
-	// ?man -d: specify directory
+	// ?man -d: Select all processes except session leaders.
 	case 'd':
 		flags |= PS_dflag;
 		break;
-	// ?man -e: specify expression or pattern
+	// ?man -e: Select all processes. Identical to -A.
 	case 'e':
 		flags |= PS_Aflag;
 		break;
-	// ?man -f: force the operation
+	// ?man -f: Do full-format listing.
 	case 'f':
 		flags |= PS_fflag;
 		break;

@@ -258,7 +258,7 @@ parse_response(const unsigned char *resp, int resp_len, const char *query_name)
 }
 
 // ?man host: dns lookup utility
-// ?man arguments: name [server
+// ?man arguments: name [server]
 // ?man look up hostnames and IP addresses using dns
 int
 main(int argc, char *argv[])
@@ -274,7 +274,7 @@ main(int argc, char *argv[])
 	int i, r;
 
 	ARGBEGIN {
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:type: Query DNS records of the given type.
 	case 't':
 		tflag = EARGF(usage());
 		break;

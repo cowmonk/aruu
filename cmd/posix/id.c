@@ -135,26 +135,26 @@ usage(void)
 	eprintf("usage: %s [-n] [-g | -u | -G] [user | uid]\n", argv0);
 }
 
-// ?man id: print user and group ids
-// ?man arguments: user | uid
-// ?man display real and effective user and group identities
+// ?man id: print real and effective user and group ids
+// ?man synopsis: [-n] [-g | -u | -G] [user | uid]
+// ?man id prints user and group information of the calling process to standard output. If a login name or uid is specified, the user and group information of that user is displayed.
 int
 main(int argc, char *argv[])
 {
 	ARGBEGIN {
-	// ?man -g: specify option flag
+	// ?man -g: Print only the effective group ID.
 	case 'g':
 		gflag = 1;
 		break;
-	// ?man -u: unbuffered output
+	// ?man -u: Print only the effective user ID.
 	case 'u':
 		uflag = 1;
 		break;
-	// ?man -G: specify option flag
+	// ?man -G: Display group information as whitespace separated numbers, in no particular order.
 	case 'G':
 		Gflag = 1;
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n: Print names instead of ID numbers, for -g, -u, and -G.
 	case 'n':
 		nflag = 1;
 		break;

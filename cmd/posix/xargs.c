@@ -263,9 +263,21 @@ usage(void)
 		argv0);
 }
 
-// ?man xargs: build and run command lines
-// ?man arguments: -n
-// ?man execute commands built from standard input arguments
+// ?man xargs: construct argument lists and execute command
+// ?man synopsis: [-0prtx] [-E eofstr] [-I replstr] [-L maxlines] [-n num] [-P maxprocs] [-s num] [cmd [arg ...]]
+// ?man xargs reads space, tab, newline and EOF delimited strings from stdin
+// ?man and executes the specified cmd with the strings as arguments.
+// ?man Any arguments specified on the command line are given to the command upon
+// ?man each invocation, followed by some number of the arguments read from
+// ?man stdin.
+// ?man The command is repeatedly executed one or more times until stdin is exhausted.
+// ?man Spaces, tabs and newlines may be embedded in arguments using single (`'')
+// ?man or double (`"') quotes or backslashes ('\\').
+// ?man Single quotes escape all non-single quote characters, excluding newlines, up
+// ?man to the matching single quote.
+// ?man Double quotes escape all non-double quote characters, excluding newlines, up
+// ?man to the matching double quote.
+// ?man Any single character, including newlines, may be escaped by a backslash.
 int
 main(int argc, char *argv[])
 {
@@ -283,42 +295,45 @@ main(int argc, char *argv[])
 
 	ARGBEGIN
 	{
-	// ?man -0: specify option flag
+	// ?man -0: use NUL characters instead of blanks and newlines as argument separators
 	case '0':
 		nulflag = 1;
 		break;
-	// ?man -n:num: print line numbers or counts
+	// ?man -n:num: Use at most num arguments per command line.
 	case 'n':
 		nflag = 1;
 		maxargs =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p: prompt before running each constructed command line
 	case 'p':
 		pflag = 1;
 		break;
-	// ?man -r: operate recursively
+	// ?man -r: Do not run the command if there are no arguments.
+	// ?man Normally the command is executed at least once even if there are no arguments.
 	case 'r':
 		rflag = 1;
 		break;
-	// ?man -s:num: silent mode or print summary
+	// ?man -s:num: Use at most num bytes per command line.
 	case 's':
 		argmaxsz =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -t: sort or specify timestamp
+	// ?man -t: Write the command line to stderr before executing it.
 	case 't':
 		tflag = 1;
 		break;
-	// ?man -x: hex format or match whole lines
+	// ?man -x: Terminate if the command line exceeds the system limit or the number of bytes given with the -s flag.
 	case 'x':
 		xflag = 1;
 		break;
-	// ?man -E:str: specify option flag
+	// ?man -E:eofstr: Use eofstr as a logical EOF marker.
 	case 'E':
 		eofstr = EARGF(usage());
 		break;
-	// ?man -I:str: specify option flag
+	// ?man -I:replstr: Use replstr as the placeholder for the argument.
+	// ?man Sets the arguments count to 1 per command line.
+	// ?man It also implies the option x.
 	case 'I':
 		Iflag = 1;
 		xflag = 1;
@@ -326,13 +341,13 @@ main(int argc, char *argv[])
 		maxargs = 1;
 		replstr = EARGF(usage());
 		break;
-	// ?man -L:num: specify option flag
+	// ?man -L:maxlines: use at most maxlines input lines per command line
 	case 'L':
 		Lflag = 1;
 		maxlines =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -P:num: specify option flag
+	// ?man -P:maxprocs: run up to maxprocs commands at the same time
 	case 'P':
 		maxprocs =
 			estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));

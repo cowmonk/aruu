@@ -28,9 +28,9 @@ usage(void)
 	eprintf("usage: %s [-o pid1,pid2,...pidN] [-s] [program...]\n", argv0);
 }
 
-// ?man pidof: find process ids
-// ?man arguments: -o pid1
-// ?man find the process identity numbers of running programs
+// ?man pidof: find the process id of a running program
+// ?man arguments: [program ...]
+// ?man pidof finds the process id's of the named programs and prints them to stdout.
 int
 main(int argc, char *argv[])
 {
@@ -44,11 +44,11 @@ main(int argc, char *argv[])
 	struct pidentry *pe;
 
 	ARGBEGIN {
-	// ?man -s: silent mode or print summary
+	// ?man -s: Single shot - this instructs the program to only return one process id.
 	case 's':
 		sflag = 1;
 		break;
-	// ?man -o:str: specify output file
+	// ?man -o:pid: Tell pidof to omit processes with that process id. The special pid %PPID can be used to name the parent process of the pidof program.
 	case 'o':
 		oflag = 1;
 		arg = EARGF(usage());

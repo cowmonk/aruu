@@ -244,7 +244,7 @@ usage(void)
 }
 
 // ?man grep: search files for a pattern
-// ?man arguments: pattern] [file ...
+// ?man arguments: pattern [file ...]
 // ?man grep searches the named input files for lines matching the given pattern
 // ?man if no files are named, or a file is -, standard input is searched
 // ?man by default, matching lines are written to standard output
@@ -260,54 +260,54 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 #if FEATURE_GREP_CONTEXT
-	// ?man -A:num: specify A option
+	// ?man -A:num: print num lines of trailing context after each match
 	case 'A':
 		// ?man -A num: print num lines of trailing context after each match
 		Aflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
-	// ?man -B:num: specify B option
+	// ?man -B:num: print num lines of leading context before each match
 	case 'B':
 		// ?man -B num: print num lines of leading context before each match
 		Bflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
-	// ?man -C:num: specify C option
+	// ?man -C:num: print num lines of context before and after each match
 	case 'C':
 		// ?man -C num: print num lines of context before and after each match; equivalent to -A num -B num
 		Aflag = Bflag = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
-	// ?man ARGNUM: specify RGNUM option
+	/* -num is accepted as shorthand for -C num */
 	ARGNUM:
 		Aflag = Bflag = ARGNUMF();
 		break;
 #endif
 #if FEATURE_GREP_MAX_COUNT
-	// ?man -m:num: specify m option
+	// ?man -m:num: stop reading a file after num matching lines
 	case 'm':
 		// ?man -m num: stop reading a file after num matching lines
 		mval = estrtonum(EARGF(usage()), 0, LONG_MAX);
 		break;
 #endif
-	// ?man -E: specify E option
+	// ?man -E: interpret pattern as an extended regular expression
 	case 'E':
 		// ?man -E: interpret pattern as an extended regular expression
 		Eflag = 1;
 		Fflag = 0;
 		flags |= REG_EXTENDED;
 		break;
-	// ?man -F: specify F option
+	// ?man -F: interpret patterns as fixed strings
 	case 'F':
 		// ?man -F: interpret pattern as a list of fixed strings separated by newlines
 		Fflag = 1;
 		Eflag = 0;
 		flags &= ~REG_EXTENDED;
 		break;
-	// ?man -H: specify H option
+	// ?man -H: always print file names with matching lines
 	case 'H':
 		// ?man -H: always print the file name with matching lines
 		Hflag = 1;
 		hflag = 0;
 		break;
-	// ?man -e:file: specify e option
+	// ?man -e:pattern: specify a pattern to match; may be given multiple times
 	case 'e':
 		// ?man -e pattern: specify a pattern to match; may be given multiple times
 		arg = EARGF(usage());
@@ -317,7 +317,7 @@ main(int argc, char *argv[])
 		efshut(fp, arg);
 		eflag = 1;
 		break;
-	// ?man -f:file: specify f option
+	// ?man -f:file: read patterns from file, one per line
 	case 'f':
 		// ?man -f file: read patterns from file, one per line
 		arg = EARGF(usage());
@@ -328,51 +328,51 @@ main(int argc, char *argv[])
 		efshut(fp, arg);
 		fflag = 1;
 		break;
-	// ?man -h: specify h option
+	// ?man -h: never print file names with matching lines
 	case 'h':
 		// ?man -h: never print file names with matching lines
 		hflag = 1;
 		Hflag = 0;
 		break;
-	// ?man -c: specify c option
+	// ?man -c: print only a count of matching lines per file
 	case 'c':
 		// ?man -c: print only a count of matching lines per file
 		/* FALLTHROUGH */
-	// ?man -l: specify l option
+	// ?man -l: print only the names of files with at least one match
 	case 'l':
 		// ?man -l: print only the names of files with at least one matching line
 		/* FALLTHROUGH */
-	// ?man -n: specify n option
+	// ?man -n: prefix each matching line with its line number
 	case 'n':
 		// ?man -n: prefix each matching line with its line number within its file
 		/* FALLTHROUGH */
-	// ?man -q: specify q option
+	// ?man -q: print nothing and return success on the first match
 	case 'q':
 		// ?man -q: quiet mode; exit immediately with status 0 on first match and write nothing
 		mode = ARGC();
 		break;
-	// ?man -i: specify i option
+	// ?man -i: perform case-insensitive matching
 	case 'i':
 		// ?man -i: perform case-insensitive matching
 		flags |= REG_ICASE;
 		iflag = 1;
 		break;
-	// ?man -s: specify s option
+	// ?man -s: suppress errors for nonexistent or unreadable files
 	case 's':
 		// ?man -s: suppress error messages about nonexistent or unreadable files
 		sflag = 1;
 		break;
-	// ?man -v: specify v option
+	// ?man -v: select lines that do not match
 	case 'v':
 		// ?man -v: invert the sense of matching to select non-matching lines
 		vflag = 1;
 		break;
-	// ?man -w: specify w option
+	// ?man -w: match only whole words
 	case 'w':
 		// ?man -w: match only whole words
 		wflag = 1;
 		break;
-	// ?man -x: specify x option
+	// ?man -x: match only whole lines
 	case 'x':
 		// ?man -x: match only whole lines
 		xflag = 1;

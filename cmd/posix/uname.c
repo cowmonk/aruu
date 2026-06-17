@@ -22,27 +22,27 @@ main(int argc, char *argv[])
 	int mflag = 0, nflag = 0, rflag = 0, sflag = 0, vflag = 0;
 
 	ARGBEGIN {
-	// ?man -a: print or show all entries
+	// ?man -a: print all available system information
 	case 'a':
 		mflag = nflag = rflag = sflag = vflag = 1;
 		break;
-	// ?man -m: specify mode or limit
+	// ?man -m: print the machine hardware name
 	case 'm':
 		mflag = 1;
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n: print the network node hostname
 	case 'n':
 		nflag = 1;
 		break;
-	// ?man -r: operate recursively
+	// ?man -r: print the operating system release
 	case 'r':
 		rflag = 1;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s: print the operating system name
 	case 's':
 		sflag = 1;
 		break;
-	// ?man -v: verbose mode; show progress
+	// ?man -v: print the operating system version
 	case 'v':
 		vflag = 1;
 		break;

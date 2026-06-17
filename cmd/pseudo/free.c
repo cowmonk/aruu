@@ -23,27 +23,27 @@ usage(void)
 	eprintf("usage: %s [-bkmg]\n", argv0);
 }
 
-// ?man free: display memory usage
-// ?man display the amount of free and used memory in the system
+// ?man free: display amount of free and used memory in the system
+// ?man free displays the total amount of free and used physical and swap memory in the system, as well as the buffers used by the kernel.
 int
 main(int argc, char *argv[])
 {
 	struct MemInfo mi;
 
 	ARGBEGIN {
-	// ?man -b: specify block size or base directory
+	// ?man -b: Display the amount of memory in bytes. This is the default.
 	case 'b':
 		unit_shift = 0;
 		break;
-	// ?man -k: specify option flag
+	// ?man -k: Display the amount of memory in kilobytes.
 	case 'k':
 		unit_shift = 10;
 		break;
-	// ?man -m: specify mode or limit
+	// ?man -m: Display the amount of memory in megabytes.
 	case 'm':
 		unit_shift = 20;
 		break;
-	// ?man -g: specify option flag
+	// ?man -g: Display the amount of memory in gigabytes.
 	case 'g':
 		unit_shift = 30;
 		break;

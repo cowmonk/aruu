@@ -116,26 +116,26 @@ main(int argc, char *argv[])
 	char *ref = NULL;
 
 	ARGBEGIN {
-	// ?man -a: print or show all entries
+	// ?man -a: change only the access time
 	case 'a':
 		aflag = 1;
 		break;
-	// ?man -c: print count or perform stdout action
+	// ?man -c: do not create files that do not exist
 	case 'c':
 		cflag = 1;
 		break;
-	// ?man -d: specify directory
+	// ?man -d: set the timestamp from a parsed date string
 	case 'd':
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:time: set the timestamp from [[CC]YY]MMDDhhmm[.SS]
 	case 't':
 		times[0].tv_sec = parsetime(EARGF(usage()));
 		times[0].tv_nsec = 0;
 		break;
-	// ?man -m: specify mode or limit
+	// ?man -m: change only the modification time
 	case 'm':
 		mflag = 1;
 		break;
-	// ?man -r:str: operate recursively
+	// ?man -r:ref_file: use the timestamps from ref_file
 	case 'r':
 		ref = EARGF(usage());
 		if (stat(ref, &st) < 0)
@@ -143,7 +143,7 @@ main(int argc, char *argv[])
 		times[0] = st.st_atim;
 		times[1] = st.st_mtim;
 		break;
-	// ?man -T:num: specify option flag
+	// ?man -T:time: set the timestamp from seconds since the Unix epoch
 	case 'T':
 		times[0].tv_sec = estrtonum(EARGF(usage()), 0, LLONG_MAX);
 		times[0].tv_nsec = 0;

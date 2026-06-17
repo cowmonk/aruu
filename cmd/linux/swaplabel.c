@@ -24,9 +24,9 @@ usage(void)
 	eprintf("usage: %s [-L label] device\n", argv0);
 }
 
-// ?man swaplabel: print or change swap label
+// ?man swaplabel: set the label of a swap filesystem
 // ?man arguments: device
-// ?man display or modify the label and uuid of a swap device
+// ?man swaplabel is used to change the label of a swap device or file.
 int
 main(int argc, char *argv[])
 {
@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 	int i;
 
 	ARGBEGIN {
-	// ?man -L:str: specify option flag
+	// ?man -L:label: Change the label.
 	case 'L':
 		setlabel = 1;
 		label = EARGF(usage());

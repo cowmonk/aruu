@@ -41,11 +41,11 @@ main(int argc, char *argv[])
 	int ret = 0, newline = 0, many = 0;
 
 	ARGBEGIN {
-	// ?man -n:num: print line numbers or counts
+	// ?man -n:num: display the first num lines of each file
 	case 'n':
 		n = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man ARGNUM: specify RGNUM option
+	/* -num is accepted as shorthand for -n num */
 	ARGNUM:
 		n = ARGNUMF();
 		break;

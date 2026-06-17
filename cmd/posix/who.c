@@ -17,8 +17,8 @@ usage(void)
 	eprintf("usage: %s [-ml]\n", argv0);
 }
 
-// ?man who: show logged in users
-// ?man display a list of users currently logged into the system
+// ?man who: print who has logged on
+// ?man who prints a list of who has logged on, their controlling tty, and the time at which they logged on.
 int
 main(int argc, char *argv[])
 {
@@ -32,7 +32,7 @@ main(int argc, char *argv[])
 	time_t t;
 
 	ARGBEGIN {
-	// ?man -m: specify mode or limit
+	// ?man -m: Only show users on current tty.
 	case 'm':
 		mflag = 1;
 		tty = ttyname(0);
@@ -41,7 +41,7 @@ main(int argc, char *argv[])
 		if ((ttmp = strrchr(tty, '/')))
 			tty = ttmp+1;
 		break;
-	// ?man -l: list in long format
+	// ?man -l: Print LOGIN processes as well.
 	case 'l':
 		lflag = 1;
 		break;

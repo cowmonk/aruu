@@ -190,7 +190,7 @@ usage(void)
 }
 
 // ?man tr: translate characters
-// ?man arguments: set1 [set2
+// ?man arguments: set1 [set2]
 // ?man translate, squeeze, or delete characters from standard input
 int
 main(int argc, char *argv[])
@@ -200,17 +200,17 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	ARGBEGIN {
-	// ?man -c: print count or perform stdout action
+	// ?man -c: use the complement of set1
 	case 'c':
-	// ?man -C: specify option flag
+	// ?man -C: use the complement of set1
 	case 'C':
 		cflag = 1;
 		break;
-	// ?man -d: specify directory
+	// ?man -d: delete input characters that match set1
 	case 'd':
 		dflag = 1;
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s: squeeze repeated output characters that match set2, or set1 if -d is set
 	case 's':
 		sflag = 1;
 		break;

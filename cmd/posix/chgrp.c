@@ -48,7 +48,7 @@ main(int argc, char *argv[])
 	struct recursor r = { .fn = chgrp, .maxdepth = 1, .follow = 'P' };
 
 	ARGBEGIN {
-	// ?man -h: affect symbolic links instead of referenced files
+	// ?man -h: operate on symbolic links themselves instead of their targets
 	case 'h':
 		hflag = 1;
 		break;
@@ -56,11 +56,11 @@ main(int argc, char *argv[])
 	case 'R':
 		r.maxdepth = 0;
 		break;
-	// ?man -H: specify option flag
+	// ?man -H: dereference command-line symbolic links during recursive traversal
 	case 'H':
-	// ?man -L: specify option flag
+	// ?man -L: dereference all symbolic links during recursive traversal
 	case 'L':
-	// ?man -P: specify option flag
+	// ?man -P: preserve symbolic links during recursive traversal
 	case 'P':
 		r.follow = ARGC();
 		break;

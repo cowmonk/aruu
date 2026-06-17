@@ -35,12 +35,12 @@ main(int argc, char *argv[])
 	ARGBEGIN
 	{
 #if FEATURE_READLINK_REALPATH
-	// ?man -f: force the operation
+	// ?man -f: canonicalize path by following every symbolic link in its components
 	case 'f':
 		fflag = 1;
 		break;
 #endif
-	// ?man -n: print line numbers or counts
+	// ?man -n: do not print the trailing newline
 	case 'n':
 		nflag = 1;
 		break;

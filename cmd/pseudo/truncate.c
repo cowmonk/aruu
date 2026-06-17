@@ -16,9 +16,9 @@ usage(void)
 	eprintf("usage: %s [-c] -s size file...\n", argv0);
 }
 
-// ?man truncate: set file size
-// ?man arguments: -s size file...
-// ?man shrink or extend a file to a specified size
+// ?man truncate: shrink or extend the size of a file to the specified size
+// ?man synopsis: [-c] -s size file ...
+// ?man truncate shrinks or extends the size of each file specified size. A file argument that does not exist is created. If a file is larger than the specified size, the extra data is lost. If a file is shorter, it is extended and the extended part reads as zero bytes.
 int
 main(int argc, char *argv[])
 {
@@ -27,12 +27,12 @@ main(int argc, char *argv[])
 	long size = 0;
 
 	ARGBEGIN {
-	// ?man -s:num: silent mode or print summary
+	// ?man -s:size: Set or adjust the file size by size bytes.
 	case 's':
 		sflag = 1;
 		size = estrtol(EARGF(usage()), 10);
 		break;
-	// ?man -c: print count or perform stdout action
+	// ?man -c: Do not create any files.
 	case 'c':
 		cflag = 1;
 		break;

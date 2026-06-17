@@ -33,13 +33,13 @@ main(int argc, char *argv[])
 	uint8_t md[MD5_DIGEST_LENGTH];
 
 	ARGBEGIN {
-	// ?man -b: specify block size or base directory
+	// ?man -b: accepted for compatibility; ignored
 	case 'b':
-	// ?man -t: sort or specify timestamp
+	// ?man -t: accepted for compatibility; ignored
 	case 't':
 		/* ignore */
 		break;
-	// ?man -c: print count or perform stdout action
+	// ?man -c: read checksums from files and verify them
 	case 'c':
 		cryptfunc = cryptcheck;
 		break;

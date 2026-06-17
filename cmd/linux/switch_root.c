@@ -67,8 +67,11 @@ usage(void)
 }
 
 // ?man switch_root: switch to another root filesystem
-// ?man arguments: newroot] [init] (PID 1)
-// ?man switch to another filesystem as the root of the mount tree
+// ?man arguments: [newroot] [init]
+// ?man switch_root removes all files and directories on the current root filesystem and overmounts it with newroot.
+// ?man If a console is specified, redirect stdio and stderr to it.
+// ?man After the switch, execute init.
+// ?man switch_root can only be run as PID 1 in an initramfs or tmpfs with a regular and executable /sbin/init.
 int
 main(int argc, char *argv[])
 {
@@ -78,7 +81,7 @@ main(int argc, char *argv[])
 	struct statfs stfs;
 
 	ARGBEGIN {
-	// ?man -c:str: print count or perform stdout action
+	// ?man -c:console: Redirect stdio and stderr to console after switching to newroot.
 	case 'c':
 		console = EARGF(usage());
 		break;

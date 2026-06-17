@@ -1750,8 +1750,10 @@ old_next(void)
 }
 
 // ?man sed: stream editor
-// ?man arguments: script [file ...
-// ?man stream editor for filtering and transforming text
+// ?man synopsis: [-nrE] script [file ...]
+// ?man synopsis: [-nrE] -e script [-e script] ... [-f scriptfile] ... [file ...]
+// ?man synopsis: [-nrE] [-e script] ... -f scriptfile [-f scriptfile] ... [file ...]
+// ?man sed reads line oriented output from file or stdin, applies the editing commands supplied by script or scriptfile and writes the edited stream to stdout.
 int
 main(int argc, char *argv[])
 {
@@ -1759,30 +1761,30 @@ main(int argc, char *argv[])
 	int script = 0;
 
 	ARGBEGIN {
-	// ?man -n: print line numbers or counts
+	// ?man -n: Suppress default printing at the end of each cycle.
 	case 'n':
 		gflags.n = 1;
 		break;
-	// ?man -r: operate recursively
+	// ?man -r: Use extended regular expressions
 	case 'r':
-	// ?man -E: specify option flag
+	// ?man -E: Use extended regular expressions
 	case 'E':
 		gflags.E = 1;
 		break;
-	// ?man -e:str: specify expression or pattern
+	// ?man -e:script: Append script to the list of editing commands.
 	case 'e':
 		arg = EARGF(usage());
 		compile(arg, 0);
 		script = 1;
 		break;
-	// ?man -f:str: force the operation
+	// ?man -f:scriptfile: Append the commands from scriptfile to the list of editing commands.
 	case 'f':
 		arg = EARGF(usage());
 		compile(arg, 1);
 		script = 1;
 		break;
 #if FEATURE_SED_INPLACE
-	// ?man -i: interactive mode or prompt for confirmation
+	// ?man -i: edit files in place
 	case 'i':
 		iflag = 1;
 		if (argv[0][1] != '\0') {
@@ -1795,6 +1797,77 @@ main(int argc, char *argv[])
 #endif
 	default : usage();
 	} ARGEND
+
+	// ?man ## Extended description
+	// ?man Editing commands take the form
+	// ?man
+	// ?man `[address[,address]]function`
+	// ?man
+	// ?man ### Addresses
+	// ?man Addresses are either blank, a positive decimal integer denoting a line
+	// ?man number, the character '$' denoting the last line of input, or a regular
+	// ?man expression.
+	// ?man A command with no addresses matches every line, one address matches
+	// ?man individual lines, and two addresses matches a range of lines from the
+	// ?man first to the second address inclusive.
+	// ?man ### Functions
+	// ?man `a [text]`
+	// ?man : Append text to output after end of current cycle.
+	// ?man `b [label]`
+	// ?man : Branch to label. If no label is provided branch to end of script.
+	// ?man `c [text]`
+	// ?man : Change. Delete addressed range and output text after end of current cycle.
+	// ?man `d`
+	// ?man : Delete pattern space and begin next cycle.
+	// ?man `D`
+	// ?man : Delete pattern space up to and including first newline and begin new cycle without reading input. If there is no newline, behave like d.
+	// ?man `g`
+	// ?man : Get. Replace the pattern space with the hold space.
+	// ?man `G`
+	// ?man : Get. Append a newline and the hold space to the pattern space.
+	// ?man `h`
+	// ?man : Hold. Replace the hold space with the pattern space.
+	// ?man `H`
+	// ?man : Hold. Append a newline and the pattern space to the hold space.
+	// ?man `i [text]`
+	// ?man : Insert text in output.
+	// ?man `l`
+	// ?man : List? Write the pattern space replacing known non printing characters with backslash escaped versions (`\\\\`, `\\a`, `\\b`, `\\f`, `\\r`, `\\t`, `\\v`). Print bad UTF-8 sequences as `\\ooo` where ooo is a three digit octal number. Mark end of lines with '$'.
+	// ?man `n`
+	// ?man : Next. Write pattern space (unless `-n`), read next line into pattern space, and continue current cycle. If there is no next line, quit.
+	// ?man `N`
+	// ?man : Next. Read next line, append newline and next line to pattern space, and continue cycle. If there is no next line, quit without printing current pattern space.
+	// ?man `p`
+	// ?man : Print current pattern space.
+	// ?man `P`
+	// ?man : Print current pattern space up to first newline.
+	// ?man `q`
+	// ?man : Quit.
+	// ?man `r file`
+	// ?man : Read file and write contents to output.
+	// ?man `s/re/text/flags`
+	// ?man : Find occurences of regular expression re in the pattern space and replace with text. A '&' in text is replaced with the entire match. A `\\d` where d is a decimal digit 1-9 is replaced with the corresponding match group from the regular expression. `\\n` represents a newline in both the regular expression and replacement text. A literal newline in the replacement text must be preceded by a `\\`.
+	// ?man ### Flags
+	// ?man `n`
+	// ?man : A positive decimal number denoting which match in the pattern space to replace.
+	// ?man `g`
+	// ?man : Global. Replace all matches in the pattern space.
+	// ?man `p`
+	// ?man : Print the pattern if a replacement was made.
+	// ?man `w file`
+	// ?man : Write the pattern space to file if a replacement was made.
+	// ?man `t [label]`
+	// ?man : Test. Branch to corresponding label if a substitution has been made since the last line was read or last t command was executed. If no label is provided branch to end of script.
+	// ?man `w file`
+	// ?man : Write pattern space to file.
+	// ?man `x`
+	// ?man : Exchange hold space and pattern space.
+	// ?man `y/set1/set2/`
+	// ?man : Replace each occurrence of a character from set 1 with the corresponding character from set 2.
+	// ?man `:label`
+	// ?man : Create a label for b and t commands.
+	// ?man `=`
+	// ?man : Write current input line number to output.
 
 	/* no script to run */
 	if (!script && !argc)

@@ -43,21 +43,21 @@ main(int argc, char *argv[])
 
 	ARGBEGIN
 	{
-	// ?man -d: specify directory
+	// ?man -d: Clear persistence on the interface.
 	case 'd':
 		dflag = 1;
 		tflag = 0;
 		break;
-	// ?man -t: sort or specify timestamp
+	// ?man -t: Make the interface persistent.
 	case 't':
 		tflag = 1;
 		dflag = 0;
 		break;
-	// ?man -T: specify option flag
+	// ?man -T: Create a TAP device instead of a TUN device.
 	case 'T':
 		Tflag = 1;
 		break;
-	// ?man -u:str: unbuffered output
+	// ?man -u:owner: Set the owner of the persistent interface.
 	case 'u':
 		owner = EARGF(usage());
 		break;

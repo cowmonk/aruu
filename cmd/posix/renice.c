@@ -55,19 +55,19 @@ main(int argc, char *argv[])
 	int who;
 
 	ARGBEGIN {
-	// ?man -n:str: print line numbers or counts
+	// ?man -n:num: change niceness by num
 	case 'n':
 		adj = EARGF(usage());
 		break;
-	// ?man -g: specify option flag
+	// ?man -g: treat each id as a process group ID
 	case 'g':
 		which = PRIO_PGRP;
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p: treat each id as a process ID
 	case 'p':
 		which = PRIO_PROCESS;
 		break;
-	// ?man -u: unbuffered output
+	// ?man -u: treat each id as a user name or user ID
 	case 'u':
 		which = PRIO_USER;
 		break;

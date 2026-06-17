@@ -64,7 +64,8 @@ setdate(const char *s, struct tm *now)
 }
 
 // ?man date: print or set system date and time
-// ?man arguments: +format | mmddHHMM[[CC]yy
+// ?man synopsis: [-u] [-d time] [+format]
+// ?man synopsis: [-u] [-d time] [mmddHHMM[[CC]yy]]
 // ?man display or configure the system date and time
 int
 main(int argc, char *argv[])
@@ -78,11 +79,11 @@ main(int argc, char *argv[])
 		eprintf("time:");
 
 	ARGBEGIN {
-	// ?man -d:num: specify directory
+	// ?man -d:time: print time as seconds since the Unix epoch
 	case 'd':
 		t = estrtonum(EARGF(usage()), 0, LLONG_MAX);
 		break;
-	// ?man -u: unbuffered output
+	// ?man -u: print or set UTC time instead of local time
 	case 'u':
 		if (setenv("TZ", "UTC0", 1) < 0)
 			eprintf("setenv:");

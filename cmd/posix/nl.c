@@ -73,7 +73,7 @@ nl(const char *fname, FILE *fp)
 			if (line.data[0] != '\n')
 				donumber = 1;
 			break;
-		// ?man -p: preserve file attributes
+		/* pexpr line-matching mode */
 	case 'p':
 			if (!regexec(preg + section, line.data, 0, NULL, 0))
 				donumber = 1;
@@ -118,8 +118,20 @@ getlinetype(char *type, regex_t *preg)
 	return type[0];
 }
 
-// ?man nl: number lines
-// ?man number the lines of files
+// ?man nl: line numbering filter
+// ?man nl reads lines from file and writes them to stdout, numbering non-empty lines.
+// ?man If no file is given nl reads from stdin.
+// ?man nl treats the input text as a collection of logical pages divided into
+// ?man logical page sections.
+// ?man Each logical page consists of a header section, a body
+// ?man section and a footer section.
+// ?man Sections may be empty.
+// ?man The start of each section is indicated by a single delimiting line, one of:
+// ?man ::: header
+// ?man :: body
+// ?man : footer
+// ?man If the input text contains no delimiting line then all of the input text
+// ?man belongs to a single logical page body section.
 int
 main(int argc, char *argv[])
 {
@@ -129,7 +141,9 @@ main(int argc, char *argv[])
 	char *d, *formattype, *formatblit;
 
 	ARGBEGIN {
-	// ?man -d:str: specify directory
+	// ?man -d:delim: Set delim as the delimiter for logical pages.
+	// ?man If delim is only one character, nl appends \":\" to it.
+	// ?man The default is \"\\:\".
 	case 'd':
 		switch (utflen((d = EARGF(usage())))) {
 		case 0:
@@ -148,27 +162,47 @@ main(int argc, char *argv[])
 			break;
 		}
 		break;
-	// ?man -f:str: force the operation
+	// ?man -f:type: Define which lines to number in the head | body | footer section:
+	// ?man a All lines.
+	// ?man n No lines.
+	// ?man t Only non-empty lines.
+	// ?man This is the default.
+	// ?man pexpr Only lines matching expr according to regex 7 or re_format 7 .
 	case 'f':
 		type[0] = getlinetype(EARGF(usage()), preg);
 		break;
-	// ?man -b:str: specify block size or base directory
+	// ?man -b:type: Define which lines to number in the head | body | footer section:
+	// ?man a All lines.
+	// ?man n No lines.
+	// ?man t Only non-empty lines.
+	// ?man This is the default.
+	// ?man pexpr Only lines matching expr according to regex 7 or re_format 7 .
 	case 'b':
 		type[1] = getlinetype(EARGF(usage()), preg + 1);
 		break;
-	// ?man -h:str: suppress headers or print help
+	// ?man -h:type: Define which lines to number in the head | body | footer section:
+	// ?man a All lines.
+	// ?man n No lines.
+	// ?man t Only non-empty lines.
+	// ?man This is the default.
+	// ?man pexpr Only lines matching expr according to regex 7 or re_format 7 .
 	case 'h':
 		type[2] = getlinetype(EARGF(usage()), preg + 2);
 		break;
-	// ?man -i:num: interactive mode or prompt for confirmation
+	// ?man -i:num: Set the increment between numbered lines to num .
 	case 'i':
 		incr = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man -l:num: list in long format
+	// ?man -l:num: Set the number of adjacent blank lines to be considered as one to num .
+	// ?man The default is 1.
 	case 'l':
 		blines = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man -n:str: print line numbers or counts
+	// ?man -n:format: Set the line number output format to one of:
+	// ?man ln Left justified.
+	// ?man rn Right justified.
+	// ?man This is the default.
+	// ?man rz Right justified with leading zeroes.
 	case 'n':
 		formattype = EARGF(usage());
 		estrlcpy(format, "%", sizeof(format));
@@ -186,20 +220,23 @@ main(int argc, char *argv[])
 		estrlcat(format, formatblit, sizeof(format));
 		estrlcat(format, "*ld", sizeof(format));
 		break;
-	// ?man -p: preserve file attributes
+	// ?man -p: Do not reset line number for logical pages.
 	case 'p':
 		pflag = 1;
 		break;
-	// ?man -s:str: silent mode or print summary
+	// ?man -s:sep: Use sep to separate line numbers and lines.
+	// ?man The default is \"\\t\".
 	case 's':
 		sep = EARGF(usage());
 		seplen = unescape(sep);
 		break;
-	// ?man -v:num: verbose mode; show progress
+	// ?man -v:num: Start counting lines from num .
+	// ?man The default is 1.
 	case 'v':
 		startnum = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)LLONG_MAX, (unsigned long long)SIZE_MAX));
 		break;
-	// ?man -w:num: wait for completion
+	// ?man -w:num: Set the width of the line number to num .
+	// ?man The default is 6.
 	case 'w':
 		width = estrtonum(EARGF(usage()), 1, INT_MAX);
 		break;

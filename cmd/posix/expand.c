@@ -98,11 +98,11 @@ main(int argc, char *argv[])
 	char *tl = "8";
 
 	ARGBEGIN {
-	// ?man -i: interactive mode or prompt for confirmation
+	// ?man -i: only expand tabs at the start of lines
 	case 'i':
 		iflag = 1;
 		break;
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:list: use list as the tab size or tab stops
 	case 't':
 		tl = EARGF(usage());
 		if (!*tl)

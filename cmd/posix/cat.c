@@ -15,8 +15,8 @@ usage(void)
 }
 
 // ?man cat: concatenate files and print to standard output
-// ?man arguments: file ...
-// ?man cat reads each file in sequence and writes it to standard output
+// ?man arguments: [file ...]
+// ?man cat reads each file in sequence and writes its contents to standard output
 // ?man if no file is given, or a file is -, standard input is read
 int
 main(int argc, char *argv[])
@@ -24,9 +24,8 @@ main(int argc, char *argv[])
 	int fd, ret = 0;
 
 	ARGBEGIN {
-	// ?man -u: specify u option
+	// ?man -u: accepted for posix compatibility; output is always unbuffered
 	case 'u':
-		// ?man -u: ignored; accepted for posix compatibility; output is always unbuffered
 		break;
 	default:
 		usage();

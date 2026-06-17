@@ -38,9 +38,9 @@ main(int argc, char *argv[])
 	char mode = 'L';
 
 	ARGBEGIN {
-	// ?man -L: specify option flag
+	// ?man -L: print the logical path using PWD when possible
 	case 'L':
-	// ?man -P: specify option flag
+	// ?man -P: print the physical path with all symbolic links resolved
 	case 'P':
 		mode = ARGC();
 		break;

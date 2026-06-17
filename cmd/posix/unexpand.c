@@ -141,13 +141,13 @@ main(int argc, char *argv[])
 	char *tl = "8";
 
 	ARGBEGIN {
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:list: use list as the tab size or tab stops
 	case 't':
 		tl = EARGF(usage());
 		if (!*tl)
 			eprintf("tablist cannot be empty\n");
 		/* fallthrough */
-	// ?man -a: print or show all entries
+	// ?man -a: convert spaces to tabs throughout each line, not just leading blanks
 	case 'a':
 		aflag = 1;
 		break;

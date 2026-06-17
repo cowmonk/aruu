@@ -16,9 +16,10 @@ usage(void)
 	eprintf("usage: %s -a | device\n", argv0);
 }
 
-// ?man swapoff: disable swap devices
-// ?man arguments: -a | device
-// ?man disable paging and swapping on specified devices
+// ?man swapoff: disable devices and files for paging and swapping
+// ?man synopsis: -a
+// ?man synopsis: device
+// ?man swapoff disables swapping on the specified devices and files.
 int
 main(int argc, char *argv[])
 {
@@ -29,7 +30,7 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	ARGBEGIN {
-	// ?man -a: print or show all entries
+	// ?man -a: Disable swapping on all known swap devices and files as found in /etc/fstab.
 	case 'a':
 		all = 1;
 		break;

@@ -261,19 +261,19 @@ main(int argc, char *argv[])
 	int ret;
 
 	ARGBEGIN {
-	// ?man -h:str: suppress headers or print help
+	// ?man -h:host: Connect to host.
 	case 'h':
 		host = EARGF(usage());
 		break;
-	// ?man -p:str: preserve file attributes
+	// ?man -p:port: Use port instead of the default tftp service.
 	case 'p':
 		port = EARGF(usage());
 		break;
-	// ?man -x: hex format or match whole lines
+	// ?man -x: Download file from the server.
 	case 'x':
 		fn = getfile;
 		break;
-	// ?man -c: print count or perform stdout action
+	// ?man -c: Upload file to the server.
 	case 'c':
 		fn = putfile;
 		break;

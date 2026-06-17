@@ -191,8 +191,8 @@ usage(void)
 }
 
 // ?man mount: mount a filesystem
-// ?man arguments: source] [target
-// ?man mount a filesystem to the directory tree
+// ?man arguments: [source] [target]
+// ?man mount attaches the filesystem specified to the filesystem hierarchy. The umount command will detach it again.
 int
 main(int argc, char *argv[])
 {
@@ -205,32 +205,35 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	ARGBEGIN {
-	// ?man -B: specify option flag
+	// ?man -B: Remount a subtree somewhere else (so that its contents are visible in both places).
 	case 'B':
 		argflags |= MS_BIND;
 		break;
-	// ?man -M: specify option flag
+	// ?man -M: Move a subtree to some other place.
 	case 'M':
 		argflags |= MS_MOVE;
 		break;
-	// ?man -R: operate recursively on directories
+	// ?man -R: Remount a subtree and all possible submounts somewhere else (so that its contents are available in both places).
 	case 'R':
 		argflags |= MS_REC;
 		break;
-	// ?man -a: print or show all entries
+	// ?man -a: Mount all filesystems mentioned in /etc/fstab.
 	case 'a':
 		aflag = 1;
 		break;
-	// ?man -o:str: specify output file
+	// ?man -o:options: Specify a comma separated string of filesystem specific options.
 	case 'o':
 		estrlcat(fsopts, EARGF(usage()), sizeof(fsopts));
 		parseopts(fsopts, &flags, data, sizeof(data));
 		break;
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:fstype: Set the filesystem type. More than one type may be specified in a comma separated list.
+	// ?man The list of file system types can be prefixed with "no" to specify the file system types for which action should not be taken.
+	// ?man For example, mount -a -t nonfs,ext4 mounts all file systems except those of type NFS and EXT4.
+	// ?man mount will attempt to execute a program in your PATH mount.XXX where XXX is replaced by the type name. For example, NFS file systems are mounted by the program mount.nfs.
 	case 't':
 		types = EARGF(usage());
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n: Mount without writing in /etc/mtab. This is the default action.
 	case 'n':
 		break;
 	default:

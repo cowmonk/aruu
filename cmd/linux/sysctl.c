@@ -160,9 +160,12 @@ usage(void)
 	eprintf("usage: %s [-p file] variable[=value]...\n", argv0);
 }
 
-// ?man sysctl: configure kernel parameters
+// ?man sysctl: configure kernel parameters at runtime
 // ?man arguments: variable[=value]...
-// ?man view and modify kernel parameters at runtime
+// ?man sysctl modifies kernel parameters at runtime.
+// ?man The parameters available are those listed under /proc/sys.
+// ?man Procfs is required for sysctl support in Linux.
+// ?man You can use sysctl to both read and write sysctl data.
 int
 main(int argc, char *argv[])
 {
@@ -174,7 +177,7 @@ main(int argc, char *argv[])
 	int r = 0;
 
 	ARGBEGIN {
-	// ?man -p:file: preserve file attributes
+	// ?man -p:file: Load the sysctl key=value pairs from file.
 	case 'p':
 		file = EARGF(usage());
 		break;

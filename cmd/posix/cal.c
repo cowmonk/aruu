@@ -179,11 +179,11 @@ main(int argc, char *argv[])
 
 	ARGBEGIN {
 #ifdef FEATURE_CAL_EXT
-	// ?man -1: specify option flag
+	// ?man -1: print the current month
 	case '1':
 		nmons = 1;
 		break;
-	// ?man -3: specify option flag
+	// ?man -3: print the previous, current, and next month
 	case '3':
 		nmons = 3;
 		if (--month == 0) {
@@ -191,28 +191,28 @@ main(int argc, char *argv[])
 			year--;
 		}
 		break;
-	// ?man -c:num: print count or perform stdout action
+	// ?man -c:num: print num calendars in a row
 	case 'c':
 		ncols = estrtonum(EARGF(usage()), 0, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -f:num: force the operation
+	// ?man -f:num: use num as the first day of the week, where 0 is Sunday
 	case 'f':
 		fday = estrtonum(EARGF(usage()), 0, 6);
 		break;
-	// ?man -m: specify mode or limit
+	// ?man -m: use Monday as the first day of the week
 	case 'm': /* Monday */
 		fday = 1;
 		break;
-	// ?man -n:num: print line numbers or counts
+	// ?man -n:num: output num months starting with the current month
 	case 'n':
 		nmons = estrtonum(EARGF(usage()), 1, MIN((unsigned long long)SIZE_MAX, (unsigned long long)LLONG_MAX));
 		break;
-	// ?man -s: silent mode or print summary
+	// ?man -s: use Sunday as the first day of the week
 	case 's': /* Sunday */
 		fday = 0;
 		break;
 #endif
-	// ?man -y: specify option flag
+	// ?man -y: print the entire year
 	case 'y':
 		month = 1;
 		nmons = 12;

@@ -141,23 +141,23 @@ main(int argc, char *argv[])
 	socklen_t fromlen;
 
 	ARGBEGIN {
-	// ?man -c:str: print count or perform stdout action
+	// ?man -c:count: Stop after sending count requests.
 	case 'c':
 		cflag = EARGF(usage());
 		break;
-	// ?man -i:str: interactive mode or prompt for confirmation
+	// ?man -i:interval: Wait interval seconds between requests.
 	case 'i':
 		iflag = EARGF(usage());
 		break;
-	// ?man -s:str: silent mode or print summary
+	// ?man -s:size: Send size bytes of payload data.
 	case 's':
 		sflag = EARGF(usage());
 		break;
-	// ?man -t:str: sort or specify timestamp
+	// ?man -t:ttl: Set the IP time-to-live.
 	case 't':
 		tflag = EARGF(usage());
 		break;
-	// ?man -w:str: wait for completion
+	// ?man -w:deadline: Stop after deadline seconds.
 	case 'w':
 		wflag = EARGF(usage());
 		break;

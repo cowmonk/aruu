@@ -535,7 +535,7 @@ usage(void)
 }
 
 // ?man modprobe: add or remove modules from the Linux kernel
-// ?man arguments: module [symbol=value ...
+// ?man arguments: module [symbol=value ...]
 // ?man modprobe loads or removes kernel modules from the running system.
 // ?man It reads modules.dep, modules.alias, and modules.symbols from the appropriate
 // ?man /lib/modules/release directory to resolve module names and dependencies,
@@ -551,48 +551,39 @@ main(int argc, char *argv[])
 	int i, ret = 0;
 
 	ARGBEGIN {
-	// ?man -a: specify a option
+	// ?man -a: Load all modules named on the command line rather than stopping after the first.
 	case 'a':
-		// ?man -a: Load all modules named on the command line (rather than stopping after the first).
 		aflag = 1; break;
-	// ?man -r: specify r option
+	// ?man -r: Remove the named modules from the kernel. Dependencies are not automatically removed.
 	case 'r':
-		// ?man -r: Remove the named modules from the kernel.  Dependencies are not automatically removed.
 		rflag = 1; break;
-	// ?man -q: specify q option
+	// ?man -q: Quiet mode. Suppress error messages.
 	case 'q':
-		// ?man -q: Quiet mode.  Suppress error messages.
 		qflag = 1; break;
-	// ?man -v: specify v option
+	// ?man -v: Verbose mode. Print each action taken.
 	case 'v':
-		// ?man -v: Verbose mode.  Print each action taken.
 		vflag = 1; break;
-	// ?man -l: specify l option
+	// ?man -l: List available modules matching the optional pattern, a fnmatch(3) glob.
 	case 'l':
-		// ?man -l: List available modules matching the optional _pattern_ (a fnmatch(3) glob).
 		lflag = 1; break;
 #if FEATURE_MODPROBE_SHOW_DEPENDS
-	// ?man -D: specify D option
+	// ?man -D: Print the sequence of insmod commands that would be used to load the module, without actually loading anything.
 	case 'D':
-		// ?man -D: Print the sequence of insmod commands that would be used to load the module, without actually loading anything.
 		Dflag = 1; break;
 #endif
 #if FEATURE_MODPROBE_BLACKLIST
-	// ?man -b: specify b option
+	// ?man -b: Skip modules listed as blacklist in /etc/modprobe.d/.
 	case 'b':
-		// ?man -b: Skip modules listed as blacklist in /etc/modprobe.d/.
 		bflag = 1; break;
 #endif
 #if FEATURE_MODPROBE_SYSLOG
-	// ?man -s: specify s option
+	// ?man -s: Log messages to syslog(3) facility LOG_DAEMON instead of standard error.
 	case 's':
-		// ?man -s: Log messages to syslog(3) (facility LOG_DAEMON) instead of standard error.
 		sflag = 1; break;
 #endif
 #if FEATURE_MODPROBE_DIR_OVERRIDE
-	// ?man -d:file: specify d option
+	// ?man -d:dir: Use dir as the base directory for module files instead of /lib/modules/release.
 	case 'd':
-		// ?man -d dir: Use dir as the base directory for module files instead of /lib/modules/release.
 		strlist_append(&moddirs, EARGF(usage())); break;
 #endif
 	default:

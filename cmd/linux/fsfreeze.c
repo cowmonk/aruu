@@ -22,8 +22,11 @@ usage(void)
 }
 
 // ?man fsfreeze: suspend access to a filesystem
-// ?man arguments: (-f | -u) mountpoint
-// ?man freeze or unfreeze a filesystem to allow safe backups
+// ?man arguments: mountpoint
+// ?man fsfreeze suspends and resumes access to a filesystem.
+// ?man fsfreeze is intended to be used with hardware RAID devices that support the creation of snapshots.
+// ?man The mountpoint argument is the pathname of the directory where the filesystem is mounted.
+// ?man The filesystem must be mounted to be frozen.
 int
 main(int argc, char *argv[])
 {
@@ -33,11 +36,11 @@ main(int argc, char *argv[])
 	int fd;
 
 	ARGBEGIN {
-	// ?man -f: force the operation
+	// ?man -f: Freeze the filesystem mounted at mountpoint.
 	case 'f':
 		fflag = 1;
 		break;
-	// ?man -u: unbuffered output
+	// ?man -u: Unfreeze the filesystem mounted at mountpoint.
 	case 'u':
 		uflag = 1;
 		break;

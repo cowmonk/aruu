@@ -127,7 +127,9 @@ usage(void)
 
 // ?man umount: unmount filesystems
 // ?man arguments: target...
-// ?man unmount a filesystem from the directory tree
+// ?man umount detaches the target filesystem or filesystems.
+// ?man A file system is specified by giving the directory where it has been mounted.
+// ?man Giving the special device on which the file system lives may also work, but is obsolete, mainly because it will fail in case this device was mounted on more than one directory.
 int
 main(int argc, char *argv[])
 {
@@ -140,23 +142,23 @@ main(int argc, char *argv[])
 #endif
 
 	ARGBEGIN {
-	// ?man -a: print or show all entries
+	// ?man -a: All of the file systems described in /proc/mounts are unmounted. The proc filesystem is not unmounted.
 	case 'a':
 		aflag = 1;
 		break;
-	// ?man -f: force the operation
+	// ?man -f: Force unmount (in case of an unreachable NFS server).
 	case 'f':
 		flags |= MNT_FORCE;
 		break;
-	// ?man -l: list in long format
+	// ?man -l: Lazy unmount. Detach the filesystem from the fs hierarchy now, and cleanup all references to the filesystem as soon as it is not busy anymore.
 	case 'l':
 		flags |= MNT_DETACH;
 		break;
-	// ?man -n: print line numbers or counts
+	// ?man -n: Unmount without writing in /etc/mtab. This is the default action.
 	case 'n':
 		break;
 #if FEATURE_UMOUNT_OPTIONS
-	// ?man -O:str: specify option flag
+	// ?man -O:opts: Only act on mounts matching opts.
 	case 'O':
 		oflag = EARGF(usage());
 		break;

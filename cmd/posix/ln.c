@@ -19,7 +19,7 @@ usage(void)
 }
 
 // ?man ln: make links between files
-// ?man arguments: target [name
+// ?man arguments: target [name]
 // ?man create hard or symbolic links between files
 int
 main(int argc, char *argv[])
@@ -34,11 +34,11 @@ main(int argc, char *argv[])
 	case 'f':
 		fflag = 1;
 		break;
-	// ?man -L: specify option flag
+	// ?man -L: hard-link the target of a symbolic link rather than the link itself
 	case 'L':
 		flags |= AT_SYMLINK_FOLLOW;
 		break;
-	// ?man -P: specify option flag
+	// ?man -P: hard-link a symbolic link itself rather than its target
 	case 'P':
 		flags &= ~AT_SYMLINK_FOLLOW;
 		break;

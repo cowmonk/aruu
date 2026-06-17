@@ -24,7 +24,7 @@ usage(void)
 }
 
 // ?man nice: run command with modified priority
-// ?man arguments: cmd [arg ...
+// ?man arguments: cmd [arg ...]
 // ?man run a command with modified scheduling priority
 int
 main(int argc, char *argv[])
@@ -32,7 +32,7 @@ main(int argc, char *argv[])
 	int val = 10, r, savederrno;
 
 	ARGBEGIN {
-	// ?man -n:num: print line numbers or counts
+	// ?man -n:num: change niceness by num
 	case 'n':
 		val = estrtonum(EARGF(usage()), PRIO_MIN, PRIO_MAX);
 		break;

@@ -17,7 +17,7 @@ usage(void)
 }
 
 // ?man mesg: control write access
-// ?man arguments: n|y
+// ?man synopsis: [n | y]
 // ?man allow or disallow other users to write to the terminal
 int
 main(int argc, char *argv[])

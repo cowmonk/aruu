@@ -327,35 +327,35 @@ main(int argc, char *argv[])
 	size_t i;
 
 	ARGBEGIN {
-	// ?man -O:str: specify output file path
+	// ?man -O:str: Write output to str instead of the default file name.
 	case 'O':
 		Oflag = EARGF(usage());
 		break;
-	// ?man -P:str: specify output directory prefix
+	// ?man -P:str: Write output files under directory str.
 	case 'P':
 		Pflag = EARGF(usage());
 		break;
-	// ?man -T:num: set network read and connect timeout
+	// ?man -T:num: Set the network read and connect timeout to num seconds.
 	case 'T':
 		timeout_sec = estrtonum(EARGF(usage()), 0, 100000);
 		break;
-	// ?man -U:str: set User-Agent header
+	// ?man -U:str: Set the User-Agent header to str.
 	case 'U':
 		user_agent = EARGF(usage());
 		break;
-	// ?man -c: continue retrieval of aborted transfer
+	// ?man -c: Continue retrieval of an aborted transfer.
 	case 'c':
 		cflag = 1;
 		break;
-	// ?man -q: quiet mode to suppress stderr output
+	// ?man -q: Quiet mode. Suppress stderr output.
 	case 'q':
 		qflag = 1;
 		break;
-	// ?man -S: print server response headers to stderr
+	// ?man -S: Print server response headers to stderr.
 	case 'S':
 		Sflag = 1;
 		break;
-	// ?man --: specify - option
+	/* long options handle TLS verification, extra headers, POST data, and spider mode */
 	case '-':
 		if (strcmp(argv[0], "-no-check-certificate") == 0) {
 			no_check_certificate = 1;

@@ -685,7 +685,7 @@ box: $(LIB)
 
 .PHONY: man clean
 
-scripts/mkman/mkman: scripts/mkman/main.go scripts/mkman/troff.go
+scripts/mkman/mkman: scripts/mkman/main.go scripts/mkman/page.go scripts/mkman/parse.go scripts/mkman/mdoc.go
 	cd scripts/mkman && go build -o mkman .
 
 man: scripts/mkman/mkman
@@ -898,7 +898,6 @@ cmd/dev/cc/cc1: $(CC1_OBJ) $(LIB)
 
 cmd/dev/cc/cpp: cmd/dev/cc/cpp.o $(CPP_OBJ) $(LIB)
 	$(CC) $(LDFLAGS) -o $@ cmd/dev/cc/cpp.o $(CPP_OBJ) $(LIB) $(LDLIBS)
-
 
 
 
