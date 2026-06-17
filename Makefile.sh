@@ -44,7 +44,7 @@ done <<EOF
 $(tr ';' '\n' < build.cfg)
 EOF
 unset _line _key _val _trimmed
-CPPFLAGS="-Ishared -DPREFIX=\"$PREFIX\" -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_NETBSD_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64 -DSTD_NON_POSIX$_feature_flags"
+CPPFLAGS="-Ishared -DPREFIX=\"$PREFIX\" -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_NETBSD_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64$_feature_flags"
 if [ "$FEATURE_USE_BEARSSL" = "1" ]; then
 	CPPFLAGS="$CPPFLAGS -IexternalRepos/BearSSL/inc"
 	LDFLAGS="$LDFLAGS -LexternalRepos/BearSSL/build"

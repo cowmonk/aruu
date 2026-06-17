@@ -2,9 +2,10 @@
 #include <sys/types.h>
 
 #include <regex.h>
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <stdarg.h>
+#include <string.h>
 
 #include "arg.h"
 #include "compat.h"
@@ -155,3 +156,17 @@ struct MemInfo {
 	unsigned long long totalswap;
 	unsigned long long freeswap;
 };
+
+int net_get_interfaces(struct NetInterface **, int *);
+int net_get_stats(const char *, struct NetStats *);
+int net_set_flags(const char *, unsigned int, int);
+int net_set_mtu(const char *, int);
+int net_set_mac(const char *, const unsigned char *);
+int net_add_addr(const char *, const char *, int);
+int net_del_addr(const char *, const char *, int);
+int net_show_routes(void);
+int net_add_route(const char *, const char *, const char *, const char *, int);
+int net_del_route(const char *, const char *, const char *, const char *, int);
+int net_flush_addrs(const char *);
+int net_set_txqueuelen(const char *, int);
+int net_set_name(const char *, const char *);

@@ -4,6 +4,35 @@ ip: show or configure routing and devices
 usage: ip [addr | link | route] [args...]
 
 configure and view network devices, routing, and tunnels
+
+## COMMANDS
+
+### addr [show | list [dev <device>]]
+show interface addresses
+
+### addr add <ip>/<prefix> dev <device>
+add address to interface
+
+### addr del <ip>/<prefix> dev <device>
+delete address from interface
+
+### addr flush dev <device>
+flush all addresses from interface
+
+### link [show | list [dev <device>]]
+show interface link states
+
+### link set <interface> [up | down | mtu <mtu> | address <mac> | arp on|off | multicast on|off | allmulticast on|off | promisc on|off | name <newname> | txqueuelen <qlen>]
+configure interface settings
+
+### route [show | list]
+show routing table
+
+### route add <prefix> [via <gateway>] [dev <device>] [metric <metric>]
+add route to routing table
+
+### route del <prefix> [via <gateway>] [dev <device>] [metric <metric>]
+delete route from routing table
 */
 
 #include <arpa/inet.h>
@@ -19,14 +48,27 @@ configure and view network devices, routing, and tunnels
 
 #include "util.h"
 
-int net_get_interfaces(struct NetInterface **, int *);
-int net_get_stats(const char *, struct NetStats *);
-int net_set_flags(const char *, unsigned int, int);
-int net_set_mtu(const char *, int);
-int net_set_mac(const char *, const unsigned char *);
-int net_add_addr(const char *, const char *, int);
-int net_del_addr(const char *, const char *, int);
-int net_show_routes(void);
+#if FEATURE_IP_ROUTE_ADD_DEL
+static void
+prefix_to_mask(int prefix, char *mask_str, size_t mask_str_len)
+{
+	unsigned long mask;
+	struct in_addr addr;
+
+	if (prefix < 0)
+		prefix = 32;
+	if (prefix > 32)
+		eprintf("invalid prefix: %d\n", prefix);
+
+	if (prefix == 0) {
+		mask = 0;
+	} else {
+		mask = 0xffffffffUL << (32 - prefix);
+	}
+	addr.s_addr = htonl(mask);
+	strlcpy(mask_str, inet_ntoa(addr), mask_str_len);
+}
+#endif
 
 static void
 usage(void)
@@ -150,6 +192,23 @@ do_addr(int argc, char *argv[])
 		return 0;
 	}
 
+#if FEATURE_IP_ADDR_FLUSH
+	if (strcmp(cmd, "flush") == 0) {
+		dev = NULL;
+		for (i = 1; i < argc; i++) {
+			if (strcmp(argv[i], "dev") == 0 && i + 1 < argc) {
+				dev = argv[i + 1];
+				break;
+			}
+		}
+		if (!dev)
+			eprintf("missing dev parameter for flush\n");
+		if (net_flush_addrs(dev) < 0)
+			eprintf("net_flush_addrs:");
+		return 0;
+	}
+#endif
+
 	usage();
 	return 1;
 }
@@ -208,6 +267,46 @@ do_link(int argc, char *argv[])
 				if (net_set_mac(dev, mac) < 0)
 					eprintf("net_set_mac:");
 				i++;
+#if FEATURE_IP_LINK_SET
+#ifdef IFF_NOARP
+			} else if (strcmp(argv[i], "arp") == 0 && i + 1 < argc) {
+				int set = (strcmp(argv[i + 1], "off") == 0);
+				if (net_set_flags(dev, IFF_NOARP, set) < 0)
+					eprintf("net_set_flags arp:");
+				i++;
+#endif
+#ifdef IFF_MULTICAST
+			} else if (strcmp(argv[i], "multicast") == 0 && i + 1 < argc) {
+				int set = (strcmp(argv[i + 1], "on") == 0);
+				if (net_set_flags(dev, IFF_MULTICAST, set) < 0)
+					eprintf("net_set_flags multicast:");
+				i++;
+#endif
+#ifdef IFF_ALLMULTI
+			} else if (strcmp(argv[i], "allmulticast") == 0 && i + 1 < argc) {
+				int set = (strcmp(argv[i + 1], "on") == 0);
+				if (net_set_flags(dev, IFF_ALLMULTI, set) < 0)
+					eprintf("net_set_flags allmulticast:");
+				i++;
+#endif
+#ifdef IFF_PROMISC
+			} else if (strcmp(argv[i], "promisc") == 0 && i + 1 < argc) {
+				int set = (strcmp(argv[i + 1], "on") == 0);
+				if (net_set_flags(dev, IFF_PROMISC, set) < 0)
+					eprintf("net_set_flags promisc:");
+				i++;
+#endif
+			} else if (strcmp(argv[i], "name") == 0 && i + 1 < argc) {
+				if (net_set_name(dev, argv[i + 1]) < 0)
+					eprintf("net_set_name:");
+				dev = argv[i + 1];
+				i++;
+			} else if (strcmp(argv[i], "txqueuelen") == 0 && i + 1 < argc) {
+				int qlen = atoi(argv[i + 1]);
+				if (net_set_txqueuelen(dev, qlen) < 0)
+					eprintf("net_set_txqueuelen:");
+				i++;
+#endif
 			}
 		}
 		return 0;
@@ -220,7 +319,10 @@ do_link(int argc, char *argv[])
 static int
 do_route(int argc, char *argv[])
 {
-	char *cmd;
+	char *cmd, *dst, *slash;
+	const char *gateway = NULL, *dev = NULL;
+	int prefix_len = -1, metric = -1, i;
+	char mask_str[32];
 
 	if (argc == 0)
 		cmd = "show";
@@ -232,6 +334,46 @@ do_route(int argc, char *argv[])
 			eprintf("net_show_routes:");
 		return 0;
 	}
+
+#if FEATURE_IP_ROUTE_ADD_DEL
+	if (strcmp(cmd, "add") == 0 || strcmp(cmd, "del") == 0) {
+		if (argc < 2)
+			eprintf("usage: ip route %s <prefix> [via <gateway>] [dev <device>] [metric <metric>]\n", cmd);
+
+		dst = argv[1];
+		slash = strchr(dst, '/');
+		if (slash) {
+			*slash = '\0';
+			prefix_len = atoi(slash + 1);
+		} else if (strcmp(dst, "default") == 0) {
+			prefix_len = 0;
+		}
+
+		prefix_to_mask(prefix_len, mask_str, sizeof(mask_str));
+
+		for (i = 2; i < argc; i++) {
+			if (strcmp(argv[i], "via") == 0 && i + 1 < argc) {
+				gateway = argv[i + 1];
+				i++;
+			} else if (strcmp(argv[i], "dev") == 0 && i + 1 < argc) {
+				dev = argv[i + 1];
+				i++;
+			} else if (strcmp(argv[i], "metric") == 0 && i + 1 < argc) {
+				metric = atoi(argv[i + 1]);
+				i++;
+			}
+		}
+
+		if (strcmp(cmd, "add") == 0) {
+			if (net_add_route(dst, gateway, mask_str, dev, metric) < 0)
+				eprintf("net_add_route:");
+		} else {
+			if (net_del_route(dst, gateway, mask_str, dev, metric) < 0)
+				eprintf("net_del_route:");
+		}
+		return 0;
+	}
+#endif
 
 	usage();
 	return 1;

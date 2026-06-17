@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <ifaddrs.h>
 #include <net/if.h>
+#include <net/route.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -399,5 +400,171 @@ net_show_routes(void)
 #else
 	printf("route listing not implemented on this OS\n");
 	return 0;
+#endif
+}
+
+int
+net_add_route(const char *dst, const char *gateway, const char *mask, const char *dev, int metric)
+{
+	struct rtentry rt;
+	struct sockaddr_in *sin;
+	int sock;
+
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sock < 0)
+		return -1;
+
+	memset(&rt, 0, sizeof(rt));
+
+	sin = (struct sockaddr_in *)&rt.rt_dst;
+	sin->sin_family = AF_INET;
+	if (strcmp(dst, "default") == 0) {
+		sin->sin_addr.s_addr = INADDR_ANY;
+	} else {
+		if (inet_pton(AF_INET, dst, &sin->sin_addr) <= 0) {
+			close(sock);
+			return -1;
+		}
+	}
+
+	if (gateway) {
+		sin = (struct sockaddr_in *)&rt.rt_gateway;
+		sin->sin_family = AF_INET;
+		if (inet_pton(AF_INET, gateway, &sin->sin_addr) <= 0) {
+			close(sock);
+			return -1;
+		}
+		rt.rt_flags |= RTF_GATEWAY;
+	}
+
+	if (mask) {
+		sin = (struct sockaddr_in *)&rt.rt_genmask;
+		sin->sin_family = AF_INET;
+		if (inet_pton(AF_INET, mask, &sin->sin_addr) <= 0) {
+			close(sock);
+			return -1;
+		}
+	}
+
+	rt.rt_flags |= RTF_UP;
+	if (dev)
+		rt.rt_dev = (char *)dev;
+	if (metric >= 0)
+		rt.rt_metric = metric + 1;
+
+	if (ioctl(sock, SIOCADDRT, &rt) < 0) {
+		close(sock);
+		return -1;
+	}
+
+	close(sock);
+	return 0;
+}
+
+int
+net_del_route(const char *dst, const char *gateway, const char *mask, const char *dev, int metric)
+{
+	struct rtentry rt;
+	struct sockaddr_in *sin;
+	int sock;
+
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sock < 0)
+		return -1;
+
+	memset(&rt, 0, sizeof(rt));
+
+	sin = (struct sockaddr_in *)&rt.rt_dst;
+	sin->sin_family = AF_INET;
+	if (strcmp(dst, "default") == 0) {
+		sin->sin_addr.s_addr = INADDR_ANY;
+	} else {
+		if (inet_pton(AF_INET, dst, &sin->sin_addr) <= 0) {
+			close(sock);
+			return -1;
+		}
+	}
+
+	if (gateway) {
+		sin = (struct sockaddr_in *)&rt.rt_gateway;
+		sin->sin_family = AF_INET;
+		if (inet_pton(AF_INET, gateway, &sin->sin_addr) <= 0) {
+			close(sock);
+			return -1;
+		}
+		rt.rt_flags |= RTF_GATEWAY;
+	}
+
+	if (mask) {
+		sin = (struct sockaddr_in *)&rt.rt_genmask;
+		sin->sin_family = AF_INET;
+		if (inet_pton(AF_INET, mask, &sin->sin_addr) <= 0) {
+			close(sock);
+			return -1;
+		}
+	}
+
+	rt.rt_flags |= RTF_UP;
+	if (dev)
+		rt.rt_dev = (char *)dev;
+	if (metric >= 0)
+		rt.rt_metric = metric + 1;
+
+	if (ioctl(sock, SIOCDELRT, &rt) < 0) {
+		close(sock);
+		return -1;
+	}
+
+	close(sock);
+	return 0;
+}
+
+int
+net_flush_addrs(const char *dev)
+{
+	struct NetInterface *ifaces = NULL;
+	int count = 0, i, r = 0;
+
+	if (net_get_interfaces(&ifaces, &count) < 0)
+		return -1;
+
+	for (i = 0; i < count; i++) {
+		if (strcmp(ifaces[i].name, dev) == 0) {
+			if (ifaces[i].has_ipv4) {
+				char addr_str[16];
+				struct sockaddr_in *sin = &ifaces[i].ipv4_addr;
+				inet_ntop(AF_INET, &sin->sin_addr, addr_str, sizeof(addr_str));
+				if (net_del_addr(dev, addr_str, -1) < 0)
+					r = -1;
+			}
+		}
+	}
+	free(ifaces);
+	return r;
+}
+
+int
+net_set_name(const char *name, const char *newname)
+{
+#ifdef __linux__
+	struct ifreq ifr;
+	int sock;
+
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sock < 0)
+		return -1;
+	memset(&ifr, 0, sizeof(ifr));
+	strlcpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
+	strlcpy(ifr.ifr_newname, newname, sizeof(ifr.ifr_newname));
+	if (ioctl(sock, SIOCSIFNAME, &ifr) < 0) {
+		close(sock);
+		return -1;
+	}
+	close(sock);
+	return 0;
+#else
+	(void)name;
+	(void)newname;
+	return -1;
 #endif
 }

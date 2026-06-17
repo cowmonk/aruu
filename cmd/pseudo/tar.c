@@ -1,6 +1,7 @@
 /* ?man
 tar: tape archiver
-usage: tar [x | t | -x | -t] [-C dir] [-J | -Z | -a | -j | -z] [-m] [-p]
+usage: tar [x | t | -x | -t] [-C dir] [-J | -Z | -a | -j | -z] [-m] [-p] [-O] [-k] [-T file] [-X file] [--strip-components num] [-f file] [file ...]
+       tar [c | -c] [-C dir] [-J | -Z | -a | -j | -z] [-h] [-T file] [-X file] path ... [-f file]
 
 manipulate tape archive files
 */
@@ -26,7 +27,7 @@ manipulate tape archive files
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef STD_NON_POSIX
+#if FEATURE_TAR_TTY_SAFE
 static void
 safe_puts(const char *s)
 {
@@ -139,6 +140,99 @@ static const char *filtertools[] = {
 	['j'] = "bzip2",
 	['z'] = "gzip",
 };
+
+#if FEATURE_TAR_TO_STDOUT
+static int Oflag_stdout = 0;
+#else
+#define Oflag_stdout 0
+#endif
+
+#if FEATURE_TAR_KEEP_OLD
+static int kflag_keep = 0;
+#else
+#define kflag_keep 0
+#endif
+
+#if FEATURE_TAR_STRIP_COMPONENTS
+static int strip_components_count = 0;
+
+static char *
+strip_components(char *path, int count)
+{
+	char *p = path;
+	int i;
+
+	for (i = 0; i < count; i++) {
+		p = strchr(p, '/');
+		if (!p)
+			return NULL;
+		while (*p == '/')
+			p++;
+	}
+	return p;
+}
+#else
+#define strip_components_count 0
+#endif
+
+#if FEATURE_TAR_FILES_FROM
+static char **files_from = NULL;
+static size_t files_from_cnt = 0;
+
+static void
+add_files_from(const char *path)
+{
+	files_from = ereallocarray(files_from, files_from_cnt + 1, sizeof(*files_from));
+	files_from[files_from_cnt++] = estrdup(path);
+}
+
+static void
+load_files_from_file(const char *path)
+{
+	FILE *fp = fopen(path, "r");
+	char line[PATH_MAX];
+
+	if (!fp)
+		eprintf("open %s:", path);
+	while (fgets(line, sizeof(line), fp)) {
+		size_t len = strlen(line);
+		while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+			len--;
+		line[len] = '\0';
+		if (len > 0)
+			add_files_from(line);
+	}
+	fclose(fp);
+}
+#else
+#define files_from_cnt 0
+#endif
+
+#if FEATURE_TAR_EXCLUDE_FROM
+static void
+load_excludes_from_file(const char *path)
+{
+	FILE *fp = fopen(path, "r");
+	char line[PATH_MAX];
+
+	if (!fp)
+		eprintf("open %s:", path);
+	while (fgets(line, sizeof(line), fp)) {
+		size_t len = strlen(line);
+		while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+			len--;
+		line[len] = '\0';
+		if (len > 0) {
+#if FEATURE_TAR_EXCLUDE
+			add_exclude(line);
+#else
+			(void)line;
+#endif
+		}
+	}
+	fclose(fp);
+}
+#endif
 
 static void
 pushdirtime(char *name, time_t mtime)
@@ -351,86 +445,119 @@ archive(const char *path)
 }
 #endif
 
+static void
+skipblk(ssize_t l)
+{
+	char b[BLKSIZ];
+
+	for (; l > 0; l -= BLKSIZ)
+		if (!eread(tarfd, b, BLKSIZ))
+			break;
+}
+
 static int
 unarchive(char *fname, ssize_t l, char b[BLKSIZ])
 {
 	struct header *h = (struct header *)b;
 	struct timespec times[2];
+	struct stat st;
 	char lname[101], *tmp, *p;
 	long mode, major, minor, type, mtime, uid, gid;
 	int  fd = -1, lnk = h->type == SYMLINK;
 
-	if (!mflag && ((mtime = strtol(h->mtime, &p, 8)) < 0 || *p != '\0'))
-		eprintf("strtol %s: invalid mtime\n", h->mtime);
-	if (strcmp(fname, ".") && strcmp(fname, "./") && remove(fname) < 0)
-		if (errno != ENOENT) weprintf("remove %s:", fname);
-
-	tmp = estrdup(fname);
-	mkdirp(dirname(tmp), 0777, 0777);
-	free(tmp);
-
-	switch (h->type) {
-	case REG:
-	case AREG:
-	case RESERVED:
-		if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
-			eprintf("strtol %s: invalid mode\n", h->mode);
-#ifdef STD_NON_POSIX
-		fd = open(fname, O_WRONLY | O_TRUNC | O_CREAT | O_NOFOLLOW, 0600);
-#else
-		fd = open(fname, O_WRONLY | O_TRUNC | O_CREAT, 0600);
-#endif
-		if (fd < 0)
-			eprintf("open %s:", fname);
-		break;
-	case HARDLINK:
-	case SYMLINK:
-		snprintf(lname, sizeof(lname), "%.*s", (int)sizeof(h->linkname),
-		         h->linkname);
-		if ((lnk ? symlink:link)(lname, fname) < 0)
-			eprintf("%s %s -> %s:", lnk ? "symlink":"link", fname, lname);
-		lnk++;
-		break;
-	case DIRECTORY:
-		if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
-			eprintf("strtol %s: invalid mode\n", h->mode);
-		if (mkdir(fname, (mode_t)mode) < 0 && errno != EEXIST)
-			eprintf("mkdir %s:", fname);
-		pushdirtime(fname, mtime);
-		break;
-	case CHARDEV:
-	case BLOCKDEV:
-		if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
-			eprintf("strtol %s: invalid mode\n", h->mode);
-		if ((major = strtol(h->major, &p, 8)) < 0 || *p != '\0')
-			eprintf("strtol %s: invalid major device\n", h->major);
-		if ((minor = strtol(h->minor, &p, 8)) < 0 || *p != '\0')
-			eprintf("strtol %s: invalid minor device\n", h->minor);
-		type = (h->type == CHARDEV) ? S_IFCHR : S_IFBLK;
-		if (mknod(fname, type | mode, makedev(major, minor)) < 0)
-			eprintf("mknod %s:", fname);
-		break;
-	case FIFO:
-		if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
-			eprintf("strtol %s: invalid mode\n", h->mode);
-		if (mknod(fname, S_IFIFO | mode, 0) < 0)
-			eprintf("mknod %s:", fname);
-		break;
-	default:
-		eprintf("unsupported tar-filetype %c\n", h->type);
+	if (kflag_keep && !Oflag_stdout) {
+		if (lstat(fname, &st) == 0) {
+			skipblk(l);
+			return 0;
+		}
 	}
 
-	if ((uid = strtol(h->uid, &p, 8)) < 0 || *p != '\0')
-		eprintf("strtol %s: invalid uid\n", h->uid);
-	if ((gid = strtol(h->gid, &p, 8)) < 0 || *p != '\0')
-		eprintf("strtol %s: invalid gid\n", h->gid);
+	if (!mflag && ((mtime = strtol(h->mtime, &p, 8)) < 0 || *p != '\0'))
+		eprintf("strtol %s: invalid mtime\n", h->mtime);
+
+	if (Oflag_stdout) {
+		if (h->type == REG || h->type == AREG || h->type == RESERVED) {
+			fd = 1;
+		} else {
+			return 0;
+		}
+	} else {
+		if (strcmp(fname, ".") && strcmp(fname, "./") && remove(fname) < 0)
+			if (errno != ENOENT) weprintf("remove %s:", fname);
+
+		tmp = estrdup(fname);
+		mkdirp(dirname(tmp), 0777, 0777);
+		free(tmp);
+
+		switch (h->type) {
+		case REG:
+		case AREG:
+		case RESERVED:
+			if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
+				eprintf("strtol %s: invalid mode\n", h->mode);
+#if FEATURE_TAR_NOFOLLOW
+			fd = open(fname, O_WRONLY | O_TRUNC | O_CREAT | O_NOFOLLOW, 0600);
+#else
+			fd = open(fname, O_WRONLY | O_TRUNC | O_CREAT, 0600);
+#endif
+			if (fd < 0)
+				eprintf("open %s:", fname);
+			break;
+		case HARDLINK:
+		case SYMLINK:
+			snprintf(lname, sizeof(lname), "%.*s", (int)sizeof(h->linkname),
+			         h->linkname);
+			if ((lnk ? symlink:link)(lname, fname) < 0)
+				eprintf("%s %s -> %s:", lnk ? "symlink":"link", fname, lname);
+			lnk++;
+			break;
+		case DIRECTORY:
+			if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
+				eprintf("strtol %s: invalid mode\n", h->mode);
+			if (mkdir(fname, (mode_t)mode) < 0 && errno != EEXIST)
+				eprintf("mkdir %s:", fname);
+			pushdirtime(fname, mtime);
+			break;
+		case CHARDEV:
+		case BLOCKDEV:
+			if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
+				eprintf("strtol %s: invalid mode\n", h->mode);
+			if ((major = strtol(h->major, &p, 8)) < 0 || *p != '\0')
+				eprintf("strtol %s: invalid major device\n", h->major);
+			if ((minor = strtol(h->minor, &p, 8)) < 0 || *p != '\0')
+				eprintf("strtol %s: invalid minor device\n", h->minor);
+			type = (h->type == CHARDEV) ? S_IFCHR : S_IFBLK;
+			if (mknod(fname, type | mode, makedev(major, minor)) < 0)
+				eprintf("mknod %s:", fname);
+			break;
+		case FIFO:
+			if ((mode = strtol(h->mode, &p, 8)) < 0 || *p != '\0')
+				eprintf("strtol %s: invalid mode\n", h->mode);
+			if (mknod(fname, S_IFIFO | mode, 0) < 0)
+				eprintf("mknod %s:", fname);
+			break;
+		default:
+			eprintf("unsupported tar-filetype %c\n", h->type);
+		}
+	}
+
+	if (!Oflag_stdout) {
+		if ((uid = strtol(h->uid, &p, 8)) < 0 || *p != '\0')
+			eprintf("strtol %s: invalid uid\n", h->uid);
+		if ((gid = strtol(h->gid, &p, 8)) < 0 || *p != '\0')
+			eprintf("strtol %s: invalid gid\n", h->gid);
+	}
 
 	if (fd != -1) {
 		for (; l > 0; l -= BLKSIZ)
 			if (eread(tarfd, b, BLKSIZ) > 0)
 				ewrite(fd, b, MIN(l, (ssize_t)BLKSIZ));
-		close(fd);
+		if (fd != 1)
+			close(fd);
 	}
+
+	if (Oflag_stdout)
+		return 0;
 
 	if (lnk == 1)
 		return 0;
@@ -452,15 +579,6 @@ unarchive(char *fname, ssize_t l, char b[BLKSIZ])
 	return 0;
 }
 
-static void
-skipblk(ssize_t l)
-{
-	char b[BLKSIZ];
-
-	for (; l > 0; l -= BLKSIZ)
-		if (!eread(tarfd, b, BLKSIZ))
-			break;
-}
 
 static int
 print(char *fname, ssize_t l, char b[BLKSIZ])
@@ -560,12 +678,15 @@ static void
 xt(int argc, char *argv[], int mode)
 {
 	long size;
-	char b[BLKSIZ], fname[PATH_MAX + 1], *p, *q = NULL;
-	int i, m, n;
+	char b[BLKSIZ], fname[PATH_MAX + 1], *p, *q = NULL, *stripped;
+	int i, m, n, match;
 	int (*fn)(char *, ssize_t, char[BLKSIZ]) = (mode == 'x') ? unarchive : print;
 	struct timespec times[2];
 	struct header *h = (struct header *)b;
 	struct dirtime *dirtime;
+#if FEATURE_TAR_FILES_FROM
+	size_t idx;
+#endif
 
 	while (eread(tarfd, b, BLKSIZ) > 0 && (h->name[0] || h->prefix[0])) {
 		chktar(h);
@@ -610,20 +731,47 @@ xt(int argc, char *argv[], int mode)
 		}
 		q = NULL;
 
-		/* If argc > 0 then only extract the given files/dirs */
-		if (argc) {
+		/* If argc > 0 or files_from_cnt > 0 then only extract the matching files/dirs */
+		if (argc || files_from_cnt) {
+			match = 0;
 			for (i = 0; i < argc; i++) {
-				if (strncmp(argv[i], fname, n = strlen(argv[i])) == 0)
-					if (strchr("/", fname[n]) || argv[i][n-1] == '/')
+				if (strncmp(argv[i], fname, n = strlen(argv[i])) == 0) {
+					if (strchr("/", fname[n]) || argv[i][n-1] == '/') {
+						match = 1;
 						break;
+					}
+				}
 			}
-			if (i == argc) {
+#if FEATURE_TAR_FILES_FROM
+			if (!match) {
+				for (idx = 0; idx < files_from_cnt; idx++) {
+					if (strncmp(files_from[idx], fname, n = strlen(files_from[idx])) == 0) {
+						if (strchr("/", fname[n]) || files_from[idx][n-1] == '/') {
+							match = 1;
+							break;
+						}
+					}
+				}
+			}
+#endif
+			if (!match) {
 				skipblk(size);
 				continue;
 			}
 		}
 
-		fn(fname, size, b);
+		stripped = fname;
+#if FEATURE_TAR_STRIP_COMPONENTS
+		if (mode == 'x' && strip_components_count > 0) {
+			stripped = strip_components(fname, strip_components_count);
+			if (!stripped || *stripped == '\0') {
+				skipblk(size);
+				continue;
+			}
+		}
+#endif
+
+		fn(stripped, size, b);
 		if (vflag && mode != 't')
 			safe_puts(fname);
 	}
@@ -667,6 +815,7 @@ main(int argc, char *argv[])
 	struct stat st;
 	char *file = NULL, *dir = ".", mode = '\0';
 	int fd;
+	size_t i;
 
 	argv0 = argv[0];
 #if FEATURE_TAR_CREATE
@@ -725,20 +874,110 @@ main(int argc, char *argv[])
 	// ?man -p: preserve file attributes
 	case 'p':
 		break;  /* do nothing as already default behaviour */
-#if FEATURE_TAR_EXCLUDE
-	case '-':
-		if (strncmp(argv[0], "-exclude=", 9) == 0) {
-			add_exclude(argv[0] + 9);
+#if FEATURE_TAR_TO_STDOUT
+	// ?man -O: extract files to stdout
+	case 'O':
+		Oflag_stdout = 1;
+		break;
+#endif
+#if FEATURE_TAR_KEEP_OLD
+	// ?man -k: keep existing files, do not overwrite
+	case 'k':
+		kflag_keep = 1;
+		break;
+#endif
+#if FEATURE_TAR_FILES_FROM
+	// ?man -T file: read filenames from file
+	case 'T':
+		load_files_from_file(EARGF(usage()));
+		break;
+#endif
+#if FEATURE_TAR_EXCLUDE_FROM
+	// ?man -X file: exclude patterns in file
+	case 'X':
+		load_excludes_from_file(EARGF(usage()));
+		break;
+#endif
+#if FEATURE_TAR_STRIP_COMPONENTS
+	// ?man -strip-components num: strip num components
+	case 's':
+		if (strcmp(argv[0], "strip-components") == 0) {
+			argv[0] = "s";
+			strip_components_count = estrtonum(EARGF(usage()), 0, INT_MAX);
 			brk_ = 1;
-		} else if (strcmp(argv[0], "-exclude") == 0) {
-			argv[0] = "-";
-			add_exclude(EARGF(usage()));
+		} else if (strncmp(argv[0], "strip-components=", 17) == 0) {
+			strip_components_count = estrtonum(argv[0] + 17, 0, INT_MAX);
 			brk_ = 1;
 		} else {
 			usage();
 		}
 		break;
 #endif
+	case '-':
+#if FEATURE_TAR_EXCLUDE
+		if (strncmp(argv[0], "-exclude=", 9) == 0) {
+			add_exclude(argv[0] + 9);
+			brk_ = 1;
+			break;
+		} else if (strcmp(argv[0], "-exclude") == 0) {
+			argv[0] = "-";
+			add_exclude(EARGF(usage()));
+			brk_ = 1;
+			break;
+		}
+#endif
+#if FEATURE_TAR_EXCLUDE_FROM
+		if (strncmp(argv[0], "-exclude-from=", 14) == 0) {
+			load_excludes_from_file(argv[0] + 14);
+			brk_ = 1;
+			break;
+		} else if (strcmp(argv[0], "-exclude-from") == 0) {
+			argv[0] = "-";
+			load_excludes_from_file(EARGF(usage()));
+			brk_ = 1;
+			break;
+		}
+#endif
+#if FEATURE_TAR_TO_STDOUT
+		if (strcmp(argv[0], "-to-stdout") == 0) {
+			Oflag_stdout = 1;
+			brk_ = 1;
+			break;
+		}
+#endif
+#if FEATURE_TAR_KEEP_OLD
+		if (strcmp(argv[0], "-keep-old-files") == 0) {
+			kflag_keep = 1;
+			brk_ = 1;
+			break;
+		}
+#endif
+#if FEATURE_TAR_STRIP_COMPONENTS
+		if (strncmp(argv[0], "-strip-components=", 18) == 0) {
+			strip_components_count = estrtonum(argv[0] + 18, 0, INT_MAX);
+			brk_ = 1;
+			break;
+		} else if (strcmp(argv[0], "-strip-components") == 0) {
+			argv[0] = "-";
+			strip_components_count = estrtonum(EARGF(usage()), 0, INT_MAX);
+			brk_ = 1;
+			break;
+		}
+#endif
+#if FEATURE_TAR_FILES_FROM
+		if (strncmp(argv[0], "-files-from=", 12) == 0) {
+			load_files_from_file(argv[0] + 12);
+			brk_ = 1;
+			break;
+		} else if (strcmp(argv[0], "-files-from") == 0) {
+			argv[0] = "-";
+			load_files_from_file(EARGF(usage()));
+			brk_ = 1;
+			break;
+		}
+#endif
+		usage();
+		break;
 	default:
 		usage();
 	} ARGEND
@@ -747,7 +986,7 @@ main(int argc, char *argv[])
 #if FEATURE_TAR_CREATE
 	// ?man -c: create a new archive
 	case 'c':
-		if (!argc)
+		if (!argc && !files_from_cnt)
 			usage();
 		tarfd = 1;
 		if (file && *file != '-') {
@@ -767,6 +1006,10 @@ main(int argc, char *argv[])
 			eprintf("chdir %s:", dir);
 		for (; *argv; argc--, argv++)
 			recurse(AT_FDCWD, *argv, NULL, &r);
+#if FEATURE_TAR_FILES_FROM
+		for (i = 0; i < files_from_cnt; i++)
+			recurse(AT_FDCWD, files_from[i], NULL, &r);
+#endif
 		break;
 #endif
 	// ?man -t: list the contents of an archive
@@ -796,10 +1039,16 @@ main(int argc, char *argv[])
 
 #if FEATURE_TAR_EXCLUDE
 	if (excludes) {
-		size_t i;
 		for (i = 0; i < excludes_cnt; i++)
 			free(excludes[i]);
 		free(excludes);
+	}
+#endif
+#if FEATURE_TAR_FILES_FROM
+	if (files_from) {
+		for (i = 0; i < files_from_cnt; i++)
+			free(files_from[i]);
+		free(files_from);
 	}
 #endif
 	return recurse_status;

@@ -9,7 +9,7 @@
 set -e
 
 : "${CC:=cc}"
-: "${CPPFLAGS:=-Ishared -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_NETBSD_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64 -DSTD_NON_POSIX}"
+: "${CPPFLAGS:=-Ishared -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_NETBSD_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64}"
 : "${CFLAGS:=-std=c99 -Wall -Wextra -pedantic}"
 : "${LDFLAGS:=}"
 : "${LDLIBS:=-lcrypt -lresolv}"
@@ -19,6 +19,7 @@ set -e
 ROOT=$(CDPATH= cd "$(dirname "$0")/.." && pwd)
 BDIR="${ROOT}/.box"
 BOX="${ROOT}/aruu-box"
+LIBREDLINE="${ROOT}/shared/libredline/libredline.a"
 LIBUTIL="${ROOT}/shared/libutil/libutil.a"
 LIBUTF="${ROOT}/shared/libutf/libutf.a"
 
@@ -30,6 +31,7 @@ die() {
 # Clean up build directory on exit or signal termination
 trap 'rm -rf "${BDIR}"' EXIT INT QUIT TERM
 
+[ -f "${LIBREDLINE}" ] || die "libredline.a not found; run 'make' first"
 [ -f "${LIBUTIL}" ] || die "libutil.a not found; run 'make' first"
 [ -f "${LIBUTF}" ]  || die "libutf.a not found; run 'make' first"
 
@@ -387,7 +389,7 @@ eval "${CC} ${CPPFLAGS} ${CFLAGS} -c \"\$DISP\" -o \"\${BDIR}/aruu-box.o\"" ||
 OBJS="${OBJS} ${BDIR}/aruu-box.o"
 
 printf 'mkbox: ld aruu-box\n'
-eval "${CC} ${LDFLAGS} -o \"\$BOX\" \$OBJS \"\$LIBUTIL\" \"\$LIBUTF\" \${LDLIBS}" ||
+eval "${CC} ${LDFLAGS} -o \"\$BOX\" \$OBJS \"\$LIBREDLINE\" \"\$LIBUTIL\" \"\$LIBUTF\" \${LDLIBS}" ||
 	die "link failed"
 
 printf 'mkbox: done => %s\n' "${BOX}"

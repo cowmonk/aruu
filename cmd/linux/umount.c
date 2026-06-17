@@ -15,7 +15,7 @@ unmount a filesystem from the directory tree
 
 #include "util.h"
 
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 static int
 fsopt_matches(const char *opts_list, const char *opt, size_t optlen)
 {
@@ -81,7 +81,7 @@ fsopts_matches(const char *opts_list, const char *reqopts_list)
 
 static int
 umountall(int flags
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
           , const char *oflag
 #endif
 )
@@ -98,7 +98,7 @@ umountall(int flags
 	while ((me = getmntent(fp))) {
 		if (strcmp(me->mnt_type, "proc") == 0)
 			continue;
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 		if (oflag && !fsopts_matches(me->mnt_opts, oflag))
 			continue;
 #endif
@@ -120,7 +120,7 @@ umountall(int flags
 static void
 usage(void)
 {
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 	weprintf("usage: %s [-lfn] [-O options] target...\n", argv0);
 	weprintf("usage: %s -a [-lfn] [-O options]\n", argv0);
 #else
@@ -137,7 +137,7 @@ main(int argc, char *argv[])
 	int aflag = 0;
 	int flags = 0;
 	int ret = 0;
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 	char *oflag = NULL;
 #endif
 
@@ -157,7 +157,7 @@ main(int argc, char *argv[])
 	// ?man -n: print line numbers or counts
 	case 'n':
 		break;
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 	// ?man -O: specify option flag
 	case 'O':
 		oflag = EARGF(usage());
@@ -170,14 +170,14 @@ main(int argc, char *argv[])
 	if (argc < 1 && aflag == 0)
 		usage();
 
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 	if (oflag && aflag == 0)
 		usage();
 #endif
 
 	if (aflag == 1)
 		return umountall(flags
-#ifdef STD_NON_POSIX
+#if FEATURE_UMOUNT_OPTIONS
 		                 , oflag
 #endif
 		);

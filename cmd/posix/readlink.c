@@ -17,7 +17,7 @@ display the target of a symbolic link
 static void
 usage(void)
 {
-#ifdef STD_NON_POSIX
+#if FEATURE_READLINK_REALPATH
 	eprintf("usage: %s [-fn] path\n", argv0);
 #else
 	eprintf("usage: %s [-n] path\n", argv0);
@@ -30,13 +30,13 @@ main(int argc, char *argv[])
 	char buf[PATH_MAX];
 	ssize_t n;
 	int nflag = 0;
-#ifdef STD_NON_POSIX
+#if FEATURE_READLINK_REALPATH
 	int fflag = 0;
 #endif
 
 	ARGBEGIN
 	{
-#ifdef STD_NON_POSIX
+#if FEATURE_READLINK_REALPATH
 	// ?man -f: force the operation
 	case 'f':
 		fflag = 1;
@@ -57,7 +57,7 @@ main(int argc, char *argv[])
 	if (strlen(argv[0]) >= PATH_MAX)
 		eprintf("path too long\n");
 
-#ifdef STD_NON_POSIX
+#if FEATURE_READLINK_REALPATH
 	if (fflag) {
 		if (!realpath(argv[0], buf))
 			eprintf("realpath %s:", argv[0]);
