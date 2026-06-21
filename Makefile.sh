@@ -441,9 +441,7 @@ build_cc() {
 }
 
 build_dev() {
-	if [ ! -f cmd/dev/config.h ]; then
-		sh cmd/dev/configure
-	fi
+	[ -f cmd/dev/configure ] && sh cmd/dev/configure
 	build_ar
 	build_as
 	build_ld
